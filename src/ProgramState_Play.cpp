@@ -2,11 +2,13 @@
 
 ProgramState_Play::ProgramState_Play(Program& _program)
     : 	ProgramState(_program),
-		m_chunk(),
+		m_chunk(0),
+		m_chunk2(1),
 		m_rendererChunk(*m_program.m_window){
 
 
 	m_rendererChunk.update(&m_chunk);
+	m_rendererChunk.update(&m_chunk2);
 
 }
 

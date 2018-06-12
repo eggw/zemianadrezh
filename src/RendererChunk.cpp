@@ -13,9 +13,11 @@ void RendererChunk::update(const WorldChunk* _chunk) {
 
     int vertexIndex{0};
 
+    int xOffset = CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * _chunk->getID();
+
     for(auto& block : blocks) {
 
-        sf::Vector2f topLeft{   block.m_positionX * BLOCK_DIMENSIONS_X,
+        sf::Vector2f topLeft{   block.m_positionX * BLOCK_DIMENSIONS_X + xOffset,
                                 block.m_positionY * BLOCK_DIMENSIONS_Y};
 
         sf::Vector2f topRight{  topLeft.x + BLOCK_DIMENSIONS_X,

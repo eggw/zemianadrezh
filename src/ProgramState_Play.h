@@ -17,6 +17,7 @@ class ProgramState_Play : public ProgramState {
 
   private:
 	WorldChunk m_chunk;
+	WorldChunk m_chunk2;
 	RendererChunk m_rendererChunk;
 };
 
