@@ -16,7 +16,8 @@ class ProgramState_Play : public ProgramState {
     void draw();
 
   private:
-	Server m_server;
+	Server m_localServer;
+	sf::TcpSocket m_serverConnection;
 	RendererChunk m_rendererChunk;
 };
 

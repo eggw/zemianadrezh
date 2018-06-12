@@ -5,7 +5,7 @@
 Program::Program() {
     m_window = std::unique_ptr<sf::RenderWindow>
                (new sf::RenderWindow(sf::VideoMode(800,600),
-                                     "Hmmmm"));
+                                     "zemianadrezh"));
     m_window->setFramerateLimit(60);
 
 	m_states.push(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));

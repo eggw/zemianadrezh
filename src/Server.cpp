@@ -2,19 +2,29 @@
 #include <iostream>
 
 Server::Server()
-	:	m_socket(),
-		m_world(){
+	:m_listener(),
+	 m_world() {
 
-	sf::Socket::Status status = m_socket.connect(sf::IpAddress::LocalHost, 7777);
-	if (status != sf::Socket::Done){
-		std::cout << "Error!" << std::endl;
-	}
-	else{
-		std::cout << "Success!" << std::endl;
-	}
 }
 
 
-const World& Server::getWorld() const{
+const World& Server::getWorld() const {
 	return m_world;
+}
+
+void Server::listen() {
+	if (m_listener.listen(7777) != sf::Socket::Done) {
+		std::cout << "Error listening to port" << std::endl;
+	}
+}
+
+void Server::accept() {
+	sf::Socket::Status status = m_listener.accept(m_clientConnection);
+	if (status != sf::Socket::Done) {
+		std::cout << "Error!" << std::endl;
+	} else {
+		std::cout << "SERVER: Success!" << std::endl;
+		sf::Packet worldPacket = m_world.sendData();
+		m_clientConnection.send(worldPacket);
+	}
 }

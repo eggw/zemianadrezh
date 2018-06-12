@@ -4,16 +4,17 @@
 #include "SFML/Network.hpp"
 
 #include "World.h"
-
-#include "Singleton.h"
-
-class Server : public Singleton<Server> {
+class Server {
   public:
     Server();
 
     const World& getWorld() const;
+
+    void listen();
+    void accept();
   private:
-  	sf::TcpSocket m_socket;
+    sf::TcpListener m_listener;
+    sf::TcpSocket m_clientConnection;
 
     World m_world;
 };
