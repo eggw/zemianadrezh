@@ -2,14 +2,15 @@
 
 ProgramState_Play::ProgramState_Play(Program& _program)
     : 	ProgramState(_program),
-		m_chunk(0),
-		m_chunk2(1),
+		m_world(),
 		m_rendererChunk(*m_program.m_window){
 
 
-	m_rendererChunk.update(&m_chunk);
-	m_rendererChunk.update(&m_chunk2);
+	auto worldChunks = m_world.getChunks();
 
+	for(auto& chunk : worldChunks){
+		m_rendererChunk.update(&chunk);
+	}
 }
 
 ProgramState_Play::~ProgramState_Play() {

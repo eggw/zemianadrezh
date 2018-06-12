@@ -3,7 +3,7 @@
 
 #include "ProgramState.h"
 
-#include "WorldChunk.h"
+#include "World.h"
 #include "RendererChunk.h"
 
 class ProgramState_Play : public ProgramState {
@@ -16,8 +16,7 @@ class ProgramState_Play : public ProgramState {
     void draw();
 
   private:
-	WorldChunk m_chunk;
-	WorldChunk m_chunk2;
+	World m_world;
 	RendererChunk m_rendererChunk;
 };
 

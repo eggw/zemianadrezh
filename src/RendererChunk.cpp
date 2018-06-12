@@ -4,7 +4,7 @@ RendererChunk::RendererChunk(sf::RenderWindow& _window)
     : m_window(_window) {
 }
 
-void RendererChunk::update(const WorldChunk* _chunk) {
+void RendererChunk::update(const WorldChunk* _chunk) const {
 	sf::VertexArray vertexArray;
 	vertexArray.setPrimitiveType(sf::PrimitiveType::Triangles);
     vertexArray.resize((CHUNK_DIMENSIONS_X * CHUNK_DIMENSIONS_Y) * 6);
