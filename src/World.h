@@ -5,9 +5,7 @@
 
 #include "WorldChunk.h"
 
-#include "Singleton.h"
-
-class World: public Singleton<World> {
+class World {
   public:
     World();
 	const std::vector<WorldChunk>& getChunks() const;

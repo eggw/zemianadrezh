@@ -1,6 +1,8 @@
 #ifndef SINGLETON_H_INCLUDED
 #define SINGLETON_H_INCLUDED
 
+#include <type_traits>
+
 template<typename T>
 class Singleton {
   protected:

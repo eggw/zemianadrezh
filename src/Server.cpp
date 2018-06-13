@@ -1,5 +1,6 @@
 #include "Server.h"
-#include <iostream>
+
+#include "LoggerNetwork.h"
 
 Server::Server()
     :m_listener(),
@@ -7,14 +8,18 @@ Server::Server()
 
 }
 
-
 const World& Server::getWorld() const {
     return m_world;
 }
 
 void Server::listen() {
     if(m_listener.listen(7777) != sf::Socket::Done) {
-        std::cout << "Error listening to port" << std::endl;
+        LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::SERVER,
+											LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_FAILURE);
+    }
+    else{
+        LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::SERVER,
+											LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_SUCCESS);
     }
 }
 
@@ -23,12 +28,13 @@ void Server::accept() {
 
     sf::Socket::Status status = m_listener.accept(*m_clientConnections.back());
     if(status != sf::Socket::Done) {
-        std::cout << "Error!" << std::endl;
+        LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::SERVER,
+											LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE);
         m_clientConnections.pop_back();
     }
     else {
-        std::cout << "SERVER: Success!" << std::endl;
-        sf::Packet worldPacket = m_world.sendData();
-        m_clientConnections.back()->send(worldPacket);
+        LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::SERVER,
+											LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
+        //send world data
     }
 }

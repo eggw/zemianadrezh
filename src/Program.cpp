@@ -8,7 +8,7 @@ Program::Program() {
                                      "zemianadrezh"));
     m_window->setFramerateLimit(60);
 
-	m_states.push(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+    m_states.push(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
 
     gameLoop();
 }

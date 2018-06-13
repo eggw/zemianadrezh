@@ -1,5 +1,6 @@
 #include "ProgramState_Play.h"
-#include <iostream>
+
+#include "LoggerNetwork.h"
 
 ProgramState_Play::ProgramState_Play(Program& _program)
 	: 	ProgramState(_program),
@@ -11,16 +12,19 @@ ProgramState_Play::ProgramState_Play(Program& _program)
 	m_localServer.listen();
 	sf::Socket::Status status = m_serverConnection.connect(sf::IpAddress::LocalHost, 7777);\
 	m_localServer.accept();
+
 	if (status != sf::Socket::Done) {
-		std::cout << "Error!" << std::endl;
+		LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::CLIENT,
+											LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE);
 	}
 	else {
-		std::cout << "CLIENT: Success!" << std::endl;
-		sf::Packet worldPacket;
-		m_serverConnection.receive(worldPacket);
+		LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::CLIENT,
+											LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
+		//receive world data
 	}
 
 	auto worldChunks = m_localServer.getWorld().getChunks();
+
 
 	for(auto& chunk : worldChunks) {
 		m_rendererChunk.update(&chunk);
