@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "SFML/Network.hpp"
+#include "NetworkManagerServer.h"
 
 #include "World.h"
 
@@ -13,12 +13,10 @@ class Server {
 
     const World& getWorld() const;
 
-    void listen();
-    void accept();
-  private:
-    sf::TcpListener m_listener;
-    std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
+  public:
+	NetworkManagerServer m_networkManager;
 
+  private:
     World m_world;
 };
 

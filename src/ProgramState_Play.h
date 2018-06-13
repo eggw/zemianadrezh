@@ -5,6 +5,7 @@
 
 #include "Server.h"
 #include "RendererChunk.h"
+#include "NetworkManagerClient.h"
 
 class ProgramState_Play : public ProgramState {
   public:
@@ -16,8 +17,8 @@ class ProgramState_Play : public ProgramState {
     void draw();
 
   private:
+  	NetworkManagerClient m_networkManager;
 	Server m_localServer;
-	sf::TcpSocket m_serverConnection;
 	RendererChunk m_rendererChunk;
 };
 

@@ -4,27 +4,20 @@
 
 ProgramState_Play::ProgramState_Play(Program& _program)
 	: 	ProgramState(_program),
+
 	   m_localServer(),
-	   m_rendererChunk(*m_program.m_window) {
+	   m_rendererChunk(*m_program.m_window),
+	   m_networkManager() {
 
 	//m_serverConnection.setBlocking(false);
 
-	m_localServer.listen();
-	sf::Socket::Status status = m_serverConnection.connect(sf::IpAddress::LocalHost, 7777);\
-	m_localServer.accept();
+	m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
+	m_localServer.m_networkManager.accept();
 
-	if (status != sf::Socket::Done) {
-		LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::CLIENT,
-											LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE);
-	}
-	else {
-		LoggerNetwork::get_instance().log(	LoggerNetwork::LOG_SENDER::CLIENT,
-											LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
-		//receive world data
-	}
+	m_localServer.m_networkManager.sendPacket(Packet::Type::DATA_WORLD);
+	m_networkManager.receivePacket();
 
 	auto worldChunks = m_localServer.getWorld().getChunks();
-
 
 	for(auto& chunk : worldChunks) {
 		m_rendererChunk.update(&chunk);
@@ -55,6 +48,11 @@ void ProgramState_Play::getInput() {
 }
 
 void ProgramState_Play::update() {
+	//send world data request packet
+	//m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
+
+	//if world packet received,
+	//	set state of world
 
 }
 
