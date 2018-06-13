@@ -1,9 +1,12 @@
 #ifndef SERVER_H_INCLUDED
 #define SERVER_H_INCLUDED
 
+#include <memory>
+
 #include "SFML/Network.hpp"
 
 #include "World.h"
+
 class Server {
   public:
     Server();
@@ -14,7 +17,7 @@ class Server {
     void accept();
   private:
     sf::TcpListener m_listener;
-    sf::TcpSocket m_clientConnection;
+    std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
 
     World m_world;
 };
