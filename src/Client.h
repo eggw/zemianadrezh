@@ -19,6 +19,8 @@ class Client : public GameInstance {
     Client(Server* _localServer = nullptr);
 
     void update();
+
+    bool isLocal() const;
   public:
 	NetworkManagerClient m_networkManager;
   private:
