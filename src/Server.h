@@ -5,19 +5,13 @@
 
 #include "NetworkManagerServer.h"
 
-#include "World.h"
+#include "GameInstance.h"
 
-class Server {
+class Server : public GameInstance {
   public:
     Server();
-
-    const World& getWorld() const;
-
   public:
 	NetworkManagerServer m_networkManager;
-
-  private:
-    World m_world;
 };
 
 #endif // SERVER_H_INCLUDED

@@ -7,9 +7,11 @@
 
 #include "PacketTypes.h"
 
+class Server;
+
 class NetworkManagerServer {
   public:
-  	NetworkManagerServer();
+  	NetworkManagerServer(Server& _server);
 
   	void sendPacket(Packet::Type _type);
   	void receivePacket();
@@ -18,6 +20,7 @@ class NetworkManagerServer {
 
   	void listen();
     void accept();  private:
+  	Server& m_server;
 	sf::TcpListener m_listener;
     std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
 };

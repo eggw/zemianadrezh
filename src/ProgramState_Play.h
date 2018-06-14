@@ -4,8 +4,8 @@
 #include "ProgramState.h"
 
 #include "Server.h"
+#include "Client.h"
 #include "RendererChunk.h"
-#include "NetworkManagerClient.h"
 
 class ProgramState_Play : public ProgramState {
   public:
@@ -17,8 +17,8 @@ class ProgramState_Play : public ProgramState {
     void draw();
 
   private:
-  	NetworkManagerClient m_networkManager;
 	Server m_localServer;
+	Client m_client;
 	RendererChunk m_rendererChunk;
 };
 

@@ -25,14 +25,14 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
     std::ofstream output;
     output.open("log_network.txt", std::fstream::app);
 
-    if(!m_init){
-		output << "\n";
-		output << "--------------------------------------------------";
-		output << "\n";
-		output << "Log begin at " << currentDateTime() << "\n";
-		output << "--------------------------------------------------";
-		output << "\n";
-		m_init = true;
+    if(!m_init) {
+        output << "\n";
+        output << "--------------------------------------------------";
+        output << "\n";
+        output << "Log begin at " << currentDateTime() << "\n";
+        output << "--------------------------------------------------";
+        output << "\n";
+        m_init = true;
     }
 
     output << currentDateTime() << " - ";
@@ -54,12 +54,16 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
         output << "connection established!";
         break;
 
-	case LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_FAILURE:
+    case LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_FAILURE:
         output << "failed to listen to port 7777";
         break;
 
-	case LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_SUCCESS:
+    case LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_SUCCESS:
         output << "listening to port 7777...";
+        break;
+
+    case LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST:
+        output << "connected to local server!";
         break;
     }
 

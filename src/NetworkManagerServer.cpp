@@ -4,8 +4,9 @@
 
 #include <iostream>
 
-NetworkManagerServer::NetworkManagerServer()
-    : m_listener() {
+NetworkManagerServer::NetworkManagerServer(Server& _server)
+    : m_server(_server),
+      m_listener() {
 
     m_listener.setBlocking(false);
     listen();

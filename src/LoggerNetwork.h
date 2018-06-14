@@ -17,7 +17,8 @@ class LoggerNetwork: public Singleton<LoggerNetwork> {
         CONNECTION_SUCCESS,
         CONNECTION_FAILURE,
         LISTEN_PORT_SUCCESS,
-        LISTEN_PORT_FAILURE
+        LISTEN_PORT_FAILURE,
+        CONNECTION_LOCALHOST
     };
 
     void log(LOG_SENDER _sender, LOG_MESSAGE _message);
