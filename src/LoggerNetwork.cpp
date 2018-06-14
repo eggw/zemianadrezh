@@ -3,6 +3,12 @@
 #include <fstream>
 #include <time.h>
 
+#include <map>
+#include <iostream>
+
+static std::map<LoggerNetwork::LOG_SENDER, std::string> senderMap;
+static std::map<LoggerNetwork::LOG_MESSAGE, std::string> messageMap;
+
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 const std::string currentDateTime() {
     time_t     now = time(0);
@@ -17,6 +23,14 @@ const std::string currentDateTime() {
 }
 
 LoggerNetwork::LoggerNetwork() {
+    senderMap.emplace(LOG_SENDER::CLIENT, "Client");
+    senderMap.emplace(LOG_SENDER::SERVER, "Server");
+
+    messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");
+    messageMap.emplace(LOG_MESSAGE::CONNECTION_SUCCESS, "connection established!");
+    messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_FAILURE, "failed to listen to port 7777");
+    messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_SUCCESS, "listening on port 7777...");
+    messageMap.emplace(LOG_MESSAGE::CONNECTION_LOCALHOST, "connected to local server!");
 
 }
 
@@ -37,39 +51,16 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
 
     output << currentDateTime() << " - ";
 
-    switch(_sender) {
-    case LoggerNetwork::LOG_SENDER::CLIENT:
-        output << "Client: ";
-        break;
-    case LoggerNetwork::LOG_SENDER::SERVER:
-        output << "Server: ";
-        break;
-    }
-
-    switch(_message) {
-    case LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE:
-        output << "connection failure!";
-        break;
-    case LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS:
-        output << "connection established!";
-        break;
-
-    case LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_FAILURE:
-        output << "failed to listen to port 7777";
-        break;
-
-    case LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_SUCCESS:
-        output << "listening to port 7777...";
-        break;
-
-    case LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST:
-        output << "connected to local server!";
-        break;
-    }
+    output << senderMap[_sender] << ": ";
+    output << messageMap[_message];
 
     output << "\n";
 
     output.close();
 
     return;
+}
+
+void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_MESSAGE _message){
+    std::cout << senderMap[_sender] << ": " << messageMap[_message] << std::endl;
 }

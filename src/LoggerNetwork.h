@@ -22,6 +22,7 @@ class LoggerNetwork: public Singleton<LoggerNetwork> {
     };
 
     void log(LOG_SENDER _sender, LOG_MESSAGE _message);
+    void logConsole(LOG_SENDER _sender, LOG_MESSAGE _message);
 
   private:
     bool m_init{false};
