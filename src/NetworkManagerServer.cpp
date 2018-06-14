@@ -40,7 +40,9 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
             packet << worldData.chunkIDs;
             packet << worldData.invisibleBlocks;
             recipient->send(packet);
-            std::cout << "SERVER: Sent world packet" << std::endl;
+            LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                                                packetCode);
         }
 
         break;
@@ -55,7 +57,9 @@ void NetworkManagerServer::receivePacket() {
         if(connection->receive(packet) == sf::Socket::Status::Done) {
             packet >> packetCode;
             Packet::Type packetType{Packet::toType(packetCode)};
-            std::cout << "SERVER: received: " << packetCode << std::endl;
+            LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
+                                                packetCode);
 
             switch(packetType) {
             case Packet::Type::REQUEST_WORLD:

@@ -25,7 +25,9 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 
     case Packet::Type::REQUEST_WORLD:
         m_serverConnection.send(packet);
-        std::cout << "CLIENT: sent world request" << std::endl;
+        LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
+                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                                                packetCode);
         break;
     default:
         break;
@@ -44,7 +46,9 @@ void NetworkManagerClient::receivePacket() {
     if(m_serverConnection.receive(packet) == sf::Socket::Status::Done) {
         packet >> packetCode;
         Packet::Type packetType{Packet::toType(packetCode)};
-        std::cout << "CLIENT: received: " << packetCode << std::endl;
+        LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
+                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
+                                                packetCode);
 
         switch(packetType) {
         case Packet::Type::DATA_WORLD:{

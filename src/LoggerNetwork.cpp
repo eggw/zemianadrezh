@@ -6,7 +6,11 @@
 #include <map>
 #include <iostream>
 
+#include "PacketTypes.h"
+
 static std::map<LoggerNetwork::LOG_SENDER, std::string> senderMap;
+static std::map<LoggerNetwork::LOG_PACKET_DATATRANSFER, std::string> packetMap;
+static std::map<Packet::Type, std::string> packetTypeMap;
 static std::map<LoggerNetwork::LOG_MESSAGE, std::string> messageMap;
 
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
@@ -25,6 +29,12 @@ const std::string currentDateTime() {
 LoggerNetwork::LoggerNetwork() {
     senderMap.emplace(LOG_SENDER::CLIENT, "Client");
     senderMap.emplace(LOG_SENDER::SERVER, "Server");
+
+    packetMap.emplace(LOG_PACKET_DATATRANSFER::PACKET_RECEIVED, "Packet received");
+    packetMap.emplace(LOG_PACKET_DATATRANSFER::PACKET_SENT, "Packet sent");
+
+    packetTypeMap.emplace(Packet::Type::DATA_WORLD, "DATA_WORLD");
+    packetTypeMap.emplace(Packet::Type::REQUEST_WORLD, "REQUEST_WORLD");
 
     messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");
     messageMap.emplace(LOG_MESSAGE::CONNECTION_SUCCESS, "connection established!");
@@ -63,4 +73,10 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
 
 void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_MESSAGE _message){
     std::cout << senderMap[_sender] << ": " << messageMap[_message] << std::endl;
+}
+
+void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_PACKET_DATATRANSFER _d, int _packetCode){
+    auto type = Packet::toType(_packetCode);
+    std::cout << senderMap[_sender] << ": " << packetMap[_d] << "\t" << packetTypeMap[type] << std::endl;
+
 }

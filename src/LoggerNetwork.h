@@ -5,27 +5,33 @@
 
 class LoggerNetwork: public Singleton<LoggerNetwork> {
 
-  public:
-    LoggerNetwork();
+    public:
+        LoggerNetwork();
 
-    enum class LOG_SENDER {
-        SERVER,
-        CLIENT
-    };
+        enum class LOG_SENDER {
+            SERVER,
+            CLIENT
+        };
 
-    enum class LOG_MESSAGE {
-        CONNECTION_SUCCESS,
-        CONNECTION_FAILURE,
-        LISTEN_PORT_SUCCESS,
-        LISTEN_PORT_FAILURE,
-        CONNECTION_LOCALHOST
-    };
+        enum class LOG_MESSAGE {
+            CONNECTION_SUCCESS,
+            CONNECTION_FAILURE,
+            LISTEN_PORT_SUCCESS,
+            LISTEN_PORT_FAILURE,
+            CONNECTION_LOCALHOST
+        };
 
-    void log(LOG_SENDER _sender, LOG_MESSAGE _message);
-    void logConsole(LOG_SENDER _sender, LOG_MESSAGE _message);
+        enum class LOG_PACKET_DATATRANSFER {
+            PACKET_SENT,
+            PACKET_RECEIVED
+        };
 
-  private:
-    bool m_init{false};
+        void log(LOG_SENDER _sender, LOG_MESSAGE _message);
+        void logConsole(LOG_SENDER _sender, LOG_MESSAGE _message);
+        void logConsole(LOG_SENDER _sender, LOG_PACKET_DATATRANSFER _d, int _packetCode);
+
+    private:
+        bool m_init{false};
 
 };
 
