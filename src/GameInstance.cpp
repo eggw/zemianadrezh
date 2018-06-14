@@ -10,7 +10,7 @@ const World& GameInstance::getWorld() const {
 }
 
 const World::EncodedWorldData GameInstance::encodeWorldData() const {
-	return m_world.encodeData();
+    return m_world.encodeData();
 }
 
 void GameInstance::parseWorldData(World::EncodedWorldData& _data) {

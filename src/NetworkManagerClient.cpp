@@ -13,7 +13,7 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 }
 
 void NetworkManagerClient::sendPacket(Packet::Type _type) {
-    if(m_client.isLocal()){
+    if(m_client.isLocal()) {
         return;
     }
 
@@ -23,20 +23,20 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 
     switch(_type) {
 
-    case Packet::Type::REQUEST_WORLD:
-        m_serverConnection.send(packet);
-        LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
-                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-                                                packetCode);
-        break;
-    default:
-        break;
+        case Packet::Type::REQUEST_WORLD:
+            m_serverConnection.send(packet);
+            LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
+                    LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                    packetCode);
+            break;
+        default:
+            break;
     }
 }
 
 
 void NetworkManagerClient::receivePacket() {
-    if(m_client.isLocal()){
+    if(m_client.isLocal()) {
         return;
     }
 
@@ -47,22 +47,22 @@ void NetworkManagerClient::receivePacket() {
         packet >> packetCode;
         Packet::Type packetType{Packet::toType(packetCode)};
         LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
-                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
-                                                packetCode);
+                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
+                packetCode);
 
         switch(packetType) {
-        case Packet::Type::DATA_WORLD:{
+            case Packet::Type::DATA_WORLD: {
 
-            World::EncodedWorldData worldData;
+                World::EncodedWorldData worldData;
 
-            packet >> worldData.chunkIDs;
-            packet >> worldData.invisibleBlocks;
+                packet >> worldData.chunkIDs;
+                packet >> worldData.invisibleBlocks;
 
-            m_client.parseWorldData(worldData);
-            break;
-        }
-        default:
-            break;
+                m_client.parseWorldData(worldData);
+                break;
+            }
+            default:
+                break;
         }
     }
 }

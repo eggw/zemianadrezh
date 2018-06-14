@@ -8,12 +8,12 @@
 #include "GameInstance.h"
 
 class Server : public GameInstance {
-  public:
-    Server();
+    public:
+        Server();
 
-    void update();
-  public:
-	NetworkManagerServer m_networkManager;
+        void update();
+    public:
+        NetworkManagerServer m_networkManager;
 };
 
 #endif // SERVER_H_INCLUDED

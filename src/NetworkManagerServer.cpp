@@ -30,22 +30,22 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
     switch(_type) {
 
-    case Packet::Type::DATA_WORLD:
+        case Packet::Type::DATA_WORLD:
 
-        World::EncodedWorldData worldData = m_server.getWorld().encodeData();
+            World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
-        for(auto& recipient : recipients) {
-            sf::Packet packet;
-            packet << packetCode;
-            packet << worldData.chunkIDs;
-            packet << worldData.invisibleBlocks;
-            recipient->send(packet);
-            LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
-                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-                                                packetCode);
-        }
+            for(auto& recipient : recipients) {
+                sf::Packet packet;
+                packet << packetCode;
+                packet << worldData.chunkIDs;
+                packet << worldData.invisibleBlocks;
+                recipient->send(packet);
+                LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+                        LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                        packetCode);
+            }
 
-        break;
+            break;
     }
 }
 
@@ -58,15 +58,15 @@ void NetworkManagerServer::receivePacket() {
             packet >> packetCode;
             Packet::Type packetType{Packet::toType(packetCode)};
             LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
-                                                LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
-                                                packetCode);
+                    LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
+                    packetCode);
 
             switch(packetType) {
-            case Packet::Type::REQUEST_WORLD:
-                sendPacket(Packet::Type::DATA_WORLD, connection.get());
-                break;
-            default:
-                break;
+                case Packet::Type::REQUEST_WORLD:
+                    sendPacket(Packet::Type::DATA_WORLD, connection.get());
+                    break;
+                default:
+                    break;
             }
         }
     }

@@ -6,21 +6,21 @@
 #include "WorldChunk.h"
 
 class World {
-  public:
-  	struct EncodedWorldData{
-		std::string chunkIDs;
-		std::string invisibleBlocks;
-  	};
+    public:
+        struct EncodedWorldData {
+            std::string chunkIDs;
+            std::string invisibleBlocks;
+        };
 
-    World();
+        World();
 
-    void addChunk(int _num = 1);
+        void addChunk(int _num = 1);
 
-	const std::vector<WorldChunk>& getChunks() const;
-    const EncodedWorldData encodeData() const;
-    void parseData(EncodedWorldData& _data);
-  private:
-    std::vector<WorldChunk> m_chunks;
+        const std::vector<WorldChunk>& getChunks() const;
+        const EncodedWorldData encodeData() const;
+        void parseData(EncodedWorldData& _data);
+    private:
+        std::vector<WorldChunk> m_chunks;
 };
 
 

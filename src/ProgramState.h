@@ -7,16 +7,16 @@
 
 class ProgramState {
 
-  public:
-    ProgramState(Program& _p);
-    virtual ~ProgramState() = 0;
+    public:
+        ProgramState(Program& _p);
+        virtual ~ProgramState() = 0;
 
-	virtual void getInput() = 0;
-    virtual void update() = 0;
-    virtual void draw() = 0;
+        virtual void getInput() = 0;
+        virtual void update() = 0;
+        virtual void draw() = 0;
 
-  protected:
-    Program& m_program;
+    protected:
+        Program& m_program;
 };
 
 #endif // PROGRAMSTATE_H_INCLUDED

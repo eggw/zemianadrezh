@@ -9,18 +9,18 @@ constexpr int CHUNK_DIMENSIONS_X = 32;
 constexpr int CHUNK_DIMENSIONS_Y = 32;
 
 class WorldChunk {
-  public:
-    WorldChunk(int _id);
+    public:
+        WorldChunk(int _id);
 
-    int getID() const;
+        int getID() const;
 
-    const std::vector<Block>& getBlocks() const;
+        const std::vector<Block>& getBlocks() const;
 
-    void toggleVisibility(int _id, bool _v);
+        void toggleVisibility(int _id, bool _v);
 
-  private:
-  	int m_id;
-  	std::vector<Block> m_blocks{};
+    private:
+        int m_id;
+        std::vector<Block> m_blocks{};
 };
 
 #endif // WORLDCHUNK_H_INCLUDED

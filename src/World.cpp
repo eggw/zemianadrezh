@@ -4,8 +4,8 @@ World::World() {
 
 }
 
-void World::addChunk(int _num){
-    for(int i{0}; i < _num; i++){
+void World::addChunk(int _num) {
+    for(int i{0}; i < _num; i++) {
         m_chunks.push_back(m_chunks.size());
     }
 }
@@ -77,7 +77,7 @@ void World::parseData(World::EncodedWorldData& _data) {
 
     currentNumber.clear();
 
-    if(chunkIDs.empty()){
+    if(chunkIDs.empty()) {
         return;
     }
 
@@ -86,18 +86,18 @@ void World::parseData(World::EncodedWorldData& _data) {
 
 
     for(char& c : _data.invisibleBlocks) {
-		if(c == '.') {
+        if(c == '.') {
             int id = std::stoi(currentNumber);
             currentNumber.clear();
             m_chunks[currentChunkID].toggleVisibility(id, false);
         }
 
-		else if(c == '%') {
-			if(it != chunkIDs.end() - 1){
-				it++;
-				currentChunkID = *it;
-			}
-		}
+        else if(c == '%') {
+            if(it != chunkIDs.end() - 1) {
+                it++;
+                currentChunkID = *it;
+            }
+        }
 
         else {
             currentNumber += c;

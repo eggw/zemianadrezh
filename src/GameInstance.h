@@ -4,16 +4,16 @@
 #include "World.h"
 
 class GameInstance {
-  public:
-    GameInstance();
+    public:
+        GameInstance();
 
-    const World& getWorld() const;
+        const World& getWorld() const;
 
-    const World::EncodedWorldData encodeWorldData() const;
-    void parseWorldData(World::EncodedWorldData& _data);
+        const World::EncodedWorldData encodeWorldData() const;
+        void parseWorldData(World::EncodedWorldData& _data);
 
-  protected:
-    World m_world;
+    protected:
+        World m_world;
 };
 
 #endif // GAMEINSTANCE_H_INCLUDED

@@ -1,7 +1,7 @@
 #ifndef ENTITY_H_INCLUDED
 #define ENTITY_H_INCLUDED
 
-struct Entity{
+struct Entity {
     int m_positionX;
     int m_positionY;
 };

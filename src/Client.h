@@ -15,16 +15,16 @@ server.
 class Server;
 
 class Client : public GameInstance {
-  public:
-    Client(Server* _localServer = nullptr);
+    public:
+        Client(Server* _localServer = nullptr);
 
-    void update();
+        void update();
 
-    bool isLocal() const;
-  public:
-	NetworkManagerClient m_networkManager;
-  private:
-	Server* m_localServer;
+        bool isLocal() const;
+    public:
+        NetworkManagerClient m_networkManager;
+    private:
+        Server* m_localServer;
 };
 
 #endif // CLIENT_H_INCLUDED

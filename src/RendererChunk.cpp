@@ -5,8 +5,8 @@ RendererChunk::RendererChunk(sf::RenderWindow& _window)
 }
 
 void RendererChunk::update(const WorldChunk* _chunk) const {
-	sf::VertexArray vertexArray;
-	vertexArray.setPrimitiveType(sf::PrimitiveType::Triangles);
+    sf::VertexArray vertexArray;
+    vertexArray.setPrimitiveType(sf::PrimitiveType::Triangles);
     vertexArray.resize((CHUNK_DIMENSIONS_X * CHUNK_DIMENSIONS_Y) * 6);
 
     auto blocks = _chunk->getBlocks();
@@ -16,9 +16,9 @@ void RendererChunk::update(const WorldChunk* _chunk) const {
     int xOffset = CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * _chunk->getID();
 
     for(auto& block : blocks) {
-        if(!block.getVisibility()){
-                vertexIndex += 6;
-                continue;
+        if(!block.getVisibility()) {
+            vertexIndex += 6;
+            continue;
         }
 
         sf::Vector2f topLeft{   block.m_positionX * BLOCK_DIMENSIONS_X + xOffset,
@@ -72,16 +72,16 @@ void RendererChunk::update(const WorldChunk* _chunk) const {
 
     auto it = m_vertexMap.find(_chunk);
 
-    if(it != m_vertexMap.end()){
+    if(it != m_vertexMap.end()) {
         it->second = vertexArray;
     }
-    else{
-		m_vertexMap.emplace(_chunk, vertexArray);
+    else {
+        m_vertexMap.emplace(_chunk, vertexArray);
     }
 }
 
 void RendererChunk::draw() const {
-    for(auto& vertexArray : m_vertexMap){
-		m_window.draw(vertexArray.second);
+    for(auto& vertexArray : m_vertexMap) {
+        m_window.draw(vertexArray.second);
     }
 }
