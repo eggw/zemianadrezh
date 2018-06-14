@@ -20,3 +20,7 @@ int WorldChunk::getID() const{
 const std::vector<Block>& WorldChunk::getBlocks() const {
 	return m_blocks;
 }
+
+void WorldChunk::toggleVisibility(int _id, bool _v){
+    m_blocks[_id].setVisibility(_v);
+}

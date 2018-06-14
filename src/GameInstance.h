@@ -9,6 +9,9 @@ class GameInstance {
 
     const World& getWorld() const;
 
+    const World::EncodedWorldData encodeWorldData() const;
+    void parseWorldData(World::EncodedWorldData& _data);
+
   protected:
     World m_world;
 };

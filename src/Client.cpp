@@ -19,9 +19,5 @@ Client::Client(Server* _localServer)
 }
 
 void Client::update(){
-	//send world data request packet
-    //m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
-
-    //if world packet received,
-    //	set state of world
+    m_networkManager.receivePacket();
 }

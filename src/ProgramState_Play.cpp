@@ -5,7 +5,7 @@
 ProgramState_Play::ProgramState_Play(Program& _program)
     : 	ProgramState(_program),
        m_localServer(),
-       m_client(&m_localServer),
+       m_client(),
        m_rendererChunk(*m_program.m_window) {
 
     //m_serverConnection.setBlocking(false);
@@ -13,12 +13,13 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
     m_localServer.m_networkManager.accept();
 
-    m_localServer.m_networkManager.sendPacket(Packet::Type::DATA_WORLD);
-    m_client.m_networkManager.receivePacket();
+    m_client.m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
 
-    auto worldChunks = m_localServer.getWorld().getChunks();
+    //auto worldData = m_localServer.getWorld().encodeData();
+    //m_client.parseWorldData(worldData);
 
-    for(auto& chunk : worldChunks) {
+    auto worldData = m_client.getWorld().getChunks();
+    for(auto& chunk : worldData){
         m_rendererChunk.update(&chunk);
     }
 }
@@ -47,7 +48,8 @@ void ProgramState_Play::getInput() {
 }
 
 void ProgramState_Play::update() {
-
+    m_localServer.update();
+    m_client.update();
 }
 
 void ProgramState_Play::draw() {

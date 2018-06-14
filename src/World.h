@@ -7,11 +7,16 @@
 
 class World {
   public:
+  	struct EncodedWorldData{
+		std::string chunkIDs;
+		std::string invisibleBlocks;
+  	};
+
     World();
 	const std::vector<WorldChunk>& getChunks() const;
 
-    sf::Packet sendData();
-    void parseData(sf::Packet _packet);
+    const EncodedWorldData encodeData() const;
+    void parseData(EncodedWorldData& _data);
   private:
     std::vector<WorldChunk> m_chunks;
 };

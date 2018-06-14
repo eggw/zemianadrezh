@@ -13,9 +13,6 @@ class NetworkManagerClient {
 
   	void sendPacket(Packet::Type _type);
   	void receivePacket();
-
-
-
   	void connect(sf::IpAddress _ip, int _port);  private:
   	Client& m_client;
 	sf::TcpSocket m_serverConnection;

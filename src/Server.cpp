@@ -5,3 +5,7 @@ Server::Server()
      m_networkManager(*this) {
 
 }
+
+void Server::update(){
+    m_networkManager.receivePacket();
+}

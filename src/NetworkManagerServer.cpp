@@ -1,8 +1,10 @@
 #include "NetworkManagerServer.h"
 
+#include <iostream>
+
 #include "LoggerNetwork.h"
 
-#include <iostream>
+#include "Server.h"
 
 NetworkManagerServer::NetworkManagerServer(Server& _server)
     : m_server(_server),
@@ -14,17 +16,20 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 
 void NetworkManagerServer::sendPacket(Packet::Type _type) {
     int packetCode = Packet::toInt(_type);
-    sf::Packet packet;
-    packet << packetCode;
 
     switch(_type) {
 
     case Packet::Type::DATA_WORLD:
-        for(auto& client : m_clientConnections) {
-            packet << "world info here";
 
+        World::EncodedWorldData worldData = m_server.getWorld().encodeData();
+
+        for(auto& client : m_clientConnections) {
+            sf::Packet packet;
+            packet << packetCode;
+            packet << worldData.chunkIDs;
+            packet << worldData.invisibleBlocks;
             client->send(packet);
-            std::cout << "Sent world packet" << std::endl;
+            std::cout << "SERVER: Sent world packet" << std::endl;
         }
 
         break;
@@ -32,9 +37,25 @@ void NetworkManagerServer::sendPacket(Packet::Type _type) {
 }
 
 void NetworkManagerServer::receivePacket() {
+    int packetCode;
+    sf::Packet packet;
 
+    for(auto& connection : m_clientConnections){
+            if(connection->receive(packet) == sf::Socket::Status::Done) {
+            packet >> packetCode;
+            Packet::Type packetType{Packet::toType(packetCode)};
+            std::cout << "SERVER: received: " << packetCode << std::endl;
+
+            switch(packetType){
+            case Packet::Type::REQUEST_WORLD:
+                sendPacket(Packet::Type::DATA_WORLD);
+                break;
+            default:
+                break;
+            }
+        }
+    }
 }
-
 
 const std::vector<std::unique_ptr<sf::TcpSocket>>& NetworkManagerServer::getClients() {
     return m_clientConnections;
