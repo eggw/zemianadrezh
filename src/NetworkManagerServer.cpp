@@ -14,8 +14,19 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
     listen();
 }
 
-void NetworkManagerServer::sendPacket(Packet::Type _type) {
+void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipient) {
     int packetCode = Packet::toInt(_type);
+
+    std::vector<sf::TcpSocket*> recipients;
+
+    if(_recipient == nullptr) {
+        for(auto& client : m_clientConnections) {
+            recipients.push_back(client.get());
+        }
+    }
+    else {
+        recipients.push_back(_recipient);
+    }
 
     switch(_type) {
 
@@ -23,12 +34,12 @@ void NetworkManagerServer::sendPacket(Packet::Type _type) {
 
         World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
-        for(auto& client : m_clientConnections) {
+        for(auto& recipient : recipients) {
             sf::Packet packet;
             packet << packetCode;
             packet << worldData.chunkIDs;
             packet << worldData.invisibleBlocks;
-            client->send(packet);
+            recipient->send(packet);
             std::cout << "SERVER: Sent world packet" << std::endl;
         }
 
@@ -40,15 +51,15 @@ void NetworkManagerServer::receivePacket() {
     int packetCode;
     sf::Packet packet;
 
-    for(auto& connection : m_clientConnections){
-            if(connection->receive(packet) == sf::Socket::Status::Done) {
+    for(auto& connection : m_clientConnections) {
+        if(connection->receive(packet) == sf::Socket::Status::Done) {
             packet >> packetCode;
             Packet::Type packetType{Packet::toType(packetCode)};
             std::cout << "SERVER: received: " << packetCode << std::endl;
 
-            switch(packetType){
+            switch(packetType) {
             case Packet::Type::REQUEST_WORLD:
-                sendPacket(Packet::Type::DATA_WORLD);
+                sendPacket(Packet::Type::DATA_WORLD, connection.get());
                 break;
             default:
                 break;

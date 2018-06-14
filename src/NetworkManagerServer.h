@@ -13,7 +13,7 @@ class NetworkManagerServer {
   public:
   	NetworkManagerServer(Server& _server);
 
-  	void sendPacket(Packet::Type _type);
+  	void sendPacket(Packet::Type _type, sf::TcpSocket* _recipient = nullptr);
   	void receivePacket();
 
   	const std::vector<std::unique_ptr<sf::TcpSocket>>& getClients();
