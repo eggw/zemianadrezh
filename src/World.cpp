@@ -1,11 +1,13 @@
 #include "World.h"
-#include <iostream>
 
 World::World() {
-    m_chunks.push_back(0);
-    m_chunks.push_back(1);
-    m_chunks.push_back(2);
-    m_chunks.push_back(3);
+
+}
+
+void World::addChunk(int _num){
+    for(int i{0}; i < _num; i++){
+        m_chunks.push_back(m_chunks.size());
+    }
 }
 
 const std::vector<WorldChunk>& World::getChunks() const {
@@ -51,15 +53,11 @@ const World::EncodedWorldData World::encodeData() const {
 
     }
 
-    //std::cout << "chunkIDs: " << data.chunkIDs << std::endl;
-    //std::cout << "invisibleBlocks: " << data.invisibleBlocks << std::endl;
-
     return data;
 }
 
 void World::parseData(World::EncodedWorldData& _data) {
     m_chunks.clear();
-
     std::vector<int> chunkIDs;
 
     std::string currentNumber;
@@ -77,8 +75,11 @@ void World::parseData(World::EncodedWorldData& _data) {
         }
     }
 
-    std::cout << std::endl;
     currentNumber.clear();
+
+    if(chunkIDs.empty()){
+        return;
+    }
 
     auto it = chunkIDs.begin();
     int currentChunkID{*it};
@@ -101,11 +102,5 @@ void World::parseData(World::EncodedWorldData& _data) {
         else {
             currentNumber += c;
         }
-
-
-
-
     }
-
-
 }

@@ -14,6 +14,8 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     m_localServer.m_networkManager.accept();
 
     m_client.m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
+    m_localServer.m_networkManager.receivePacket();
+    m_client.m_networkManager.receivePacket();
 
     auto worldData = m_client.getWorld().getChunks();
     for(auto& chunk : worldData){

@@ -13,8 +13,10 @@ class World {
   	};
 
     World();
-	const std::vector<WorldChunk>& getChunks() const;
 
+    void addChunk(int _num = 1);
+
+	const std::vector<WorldChunk>& getChunks() const;
     const EncodedWorldData encodeData() const;
     void parseData(EncodedWorldData& _data);
   private:
