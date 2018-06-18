@@ -7,7 +7,8 @@
 
 Player::Player()
     :m_sprite(),
-     m_animationSheet(TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER)) {
+     m_animationSheet(TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER)),
+     m_playerName{"default"} {
 
     constexpr int SPRITE_WIDTH{32};
     constexpr int SPRITE_HEIGHT{48};
@@ -65,6 +66,10 @@ Player::Player()
     m_animationSheet.setAnimationRange(11, 21);
 }
 
+const std::string& Player::getName() const{
+    return m_playerName;
+}
+
 void Player::getInput() {
     if(sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
         m_facingLeft = true;
@@ -78,7 +83,7 @@ void Player::getInput() {
         m_speed = 3;
 
     }
-    else{
+    else {
         m_speed = 0;
     }
 }

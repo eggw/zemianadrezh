@@ -21,10 +21,7 @@ ProgramState_Play::ProgramState_Play(Program& _program)
         m_rendererChunk.update(&chunk);
     }
 
-
     m_rendererPlayer.addPlayer(m_client.getPlayer());
-
-
 }
 
 ProgramState_Play::~ProgramState_Play() {

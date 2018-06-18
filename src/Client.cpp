@@ -8,7 +8,7 @@ Client::Client(Server* _localServer)
     :GameInstance(),
      m_networkManager(*this),
      m_localServer(_localServer),
-     m_player() {
+     m_player(){
 
     if(m_localServer != nullptr) {
         m_world = m_localServer->getWorld();
