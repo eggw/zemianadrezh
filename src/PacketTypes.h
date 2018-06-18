@@ -6,7 +6,8 @@ namespace Packet {
     enum class Type
     {
         REQUEST_WORLD,
-        DATA_WORLD
+        DATA_WORLD,
+        DATA_PLAYER
     };
 
     constexpr auto toInt(Type _t) {

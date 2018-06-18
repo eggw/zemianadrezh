@@ -101,3 +101,21 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(m_sprite, states);
 }
 
+const Player::EncodedPlayerData Player::encodeData() const{
+    EncodedPlayerData data;
+
+    data.playerName = getName();
+    data.speed = m_speed;
+    data.positionX = m_positionX;
+    data.positionY = m_positionY;
+
+    return data;
+}
+
+void Player::parseData(Player::EncodedPlayerData& _data){
+    m_playerName = _data.playerName;
+    m_speed = _data.speed;
+    m_positionX = _data.positionX;
+    m_positionY = _data.positionY;
+}
+

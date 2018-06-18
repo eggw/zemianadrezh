@@ -13,7 +13,15 @@ class NetworkManagerServer {
     public:
         NetworkManagerServer(Server& _server);
 
-        void sendPacket(Packet::Type _type, sf::TcpSocket* _recipient = nullptr);
+        //The second and third arguments here are optional.
+        //Depending on whether _exclude is true or false,
+        //the packet will either be sent to everyone but the
+        //specificed recipient (true), or only include the specified
+        //recipient (false, default).
+        void sendPacket(Packet::Type _type,
+                        sf::TcpSocket* _recipient = nullptr,
+                        bool _exclude = false);
+
         void receivePacket();
 
         const std::vector<std::unique_ptr<sf::TcpSocket>>& getClients();

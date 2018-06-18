@@ -14,7 +14,7 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
     listen();
 }
 
-void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipient) {
+void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipient, bool _exclude) {
     int packetCode = Packet::toInt(_type);
 
     std::vector<sf::TcpSocket*> recipients;
@@ -25,12 +25,21 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
         }
     }
     else {
-        recipients.push_back(_recipient);
+        if(!_exclude) {
+            recipients.push_back(_recipient);
+        }
+        else{
+            for(auto& client : m_clientConnections) {
+                if(client.get() != _recipient){
+                    recipients.push_back(client.get());
+                }
+            }
+        }
     }
 
     switch(_type) {
-
-        case Packet::Type::DATA_WORLD:
+        //////////////////////////////////////////////////////////////////////////////
+        case Packet::Type::DATA_WORLD:{
 
             World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
@@ -46,6 +55,8 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
             }
 
             break;
+        }
+        //////////////////////////////////////////////////////////////////////////////
     }
 }
 
