@@ -69,16 +69,23 @@ void Player::getInput() {
     if(sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
         m_facingLeft = true;
         m_animationSheet.setAnimationRange(0, 10);
+        m_speed = -3;
     }
 
-    if(sf::Keyboard::isKeyPressed(Key::RIGHT_KEY)) {
+    else if(sf::Keyboard::isKeyPressed(Key::RIGHT_KEY)) {
         m_facingLeft = false;
         m_animationSheet.setAnimationRange(11, 21);
+        m_speed = 3;
+
+    }
+    else{
+        m_speed = 0;
     }
 }
 
 void Player::update() {
-    m_animationSheet.setAnimationSpeed(m_speed);
+    m_animationSheet.setAnimationSpeed(abs(m_speed) * 0.01);
+    m_positionX += m_speed;
     m_animationSheet.update();
 
     m_sprite = m_animationSheet.getSprite();
