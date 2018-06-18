@@ -15,14 +15,14 @@ void RendererPlayer::addPlayer(const Player* _player) const {
     }
 }
 
-void RendererPlayer::update(){
-    if(!m_players.empty()){
+void RendererPlayer::update() {
+    if(!m_players.empty()) {
         m_view.setCenter(m_players[0]->getPosition());
     }
 }
 
 void RendererPlayer::draw() const {
-	m_window.setView(m_view);
+    m_window.setView(m_view);
 
     for(auto& player : m_players) {
         m_window.draw(*player);

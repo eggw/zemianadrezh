@@ -24,17 +24,17 @@ class Animation {
 
         void update();
     private:
-    	std::vector<sf::IntRect> m_textureRects;
-    	int m_currentIndex;
-    	int m_minIndex;
-    	int m_maxIndex;
+        std::vector<sf::IntRect> m_textureRects;
+        int m_currentIndex;
+        int m_minIndex;
+        int m_maxIndex;
 
-    	const sf::Texture& m_texture;
+        const sf::Texture& m_texture;
 
-    	float m_animationSpeed;
+        float m_animationSpeed;
 
-    	sf::Clock m_animationTimer;
-    	bool m_animationRunning;
+        sf::Clock m_animationTimer;
+        bool m_animationRunning;
 };
 
 #endif // ANIMATION_H_INCLUDED

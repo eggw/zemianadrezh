@@ -66,7 +66,7 @@ Player::Player()
     m_animationSheet.setAnimationRange(11, 21);
 }
 
-const std::string& Player::getName() const{
+const std::string& Player::getName() const {
     return m_playerName;
 }
 
@@ -101,7 +101,7 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(m_sprite, states);
 }
 
-const Player::EncodedPlayerData Player::encodeData() const{
+const Player::EncodedPlayerData Player::encodeData() const {
     EncodedPlayerData data;
 
     data.playerName = getName();
@@ -112,7 +112,7 @@ const Player::EncodedPlayerData Player::encodeData() const{
     return data;
 }
 
-void Player::parseData(Player::EncodedPlayerData& _data){
+void Player::parseData(Player::EncodedPlayerData& _data) {
     m_playerName = _data.playerName;
     m_speed = _data.speed;
     m_positionX = _data.positionX;

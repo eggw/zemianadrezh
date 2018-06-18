@@ -24,14 +24,14 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
     switch(_type) {
 
         //////////////////////////////////////////////////////////////////////////////
-        case Packet::Type::REQUEST_WORLD:{
+        case Packet::Type::REQUEST_WORLD: {
             m_serverConnection.send(packet);
             break;
         }
         //////////////////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////////////////
-        case Packet::Type::DATA_PLAYER:{
+        case Packet::Type::DATA_PLAYER: {
             Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
             packet << playerData.playerName;
             packet << playerData.speed;
@@ -50,8 +50,8 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 
 
     LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
-                    LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-                    packetCode);
+            LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+            packetCode);
 }
 
 

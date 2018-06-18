@@ -28,9 +28,9 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
         if(!_exclude) {
             recipients.push_back(_recipient);
         }
-        else{
+        else {
             for(auto& client : m_clientConnections) {
-                if(client.get() != _recipient){
+                if(client.get() != _recipient) {
                     recipients.push_back(client.get());
                 }
             }
@@ -39,7 +39,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
     switch(_type) {
         //////////////////////////////////////////////////////////////////////////////
-        case Packet::Type::DATA_WORLD:{
+        case Packet::Type::DATA_WORLD: {
 
             World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
@@ -56,7 +56,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
             break;
         }
-        //////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////
     }
 }
 

@@ -7,7 +7,7 @@ ProgramState_Play::ProgramState_Play(Program& _program)
        m_localServer(),
        m_client(),
        m_rendererChunk(*m_program.m_window),
-       m_rendererPlayer(*m_program.m_window){
+       m_rendererPlayer(*m_program.m_window) {
 
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
     m_localServer.m_networkManager.accept();

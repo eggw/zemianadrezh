@@ -12,7 +12,7 @@ class TextureManager : public Singleton<TextureManager> {
 
         enum class Type
         {
-        	PLAYER
+            PLAYER
         };
 
         const sf::Texture& getTexture(Type _type);
