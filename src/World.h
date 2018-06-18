@@ -14,6 +14,8 @@ class World {
 
         World();
 
+        const sf::Vector2f getCenter() const;
+
         void addChunk(int _num = 1);
 
         const std::vector<WorldChunk>& getChunks() const;

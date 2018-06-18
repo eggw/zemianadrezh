@@ -6,6 +6,7 @@
 #include "Server.h"
 #include "Client.h"
 #include "RendererChunk.h"
+#include "RendererPlayer.h"
 
 class ProgramState_Play : public ProgramState {
   public:
@@ -20,6 +21,7 @@ class ProgramState_Play : public ProgramState {
 	Server m_localServer;
 	Client m_client;
 	RendererChunk m_rendererChunk;
+	RendererPlayer m_rendererPlayer;
 };
 
 #endif // PROGRAMSTATE_PLAY_H_INCLUDED

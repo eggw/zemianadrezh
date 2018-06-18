@@ -1,7 +1,32 @@
 #include "World.h"
 
+#include <iostream>
+
 World::World() {
 
+}
+
+const sf::Vector2f World::getCenter() const{
+    int index{0};
+    float xPos{0};
+    float yPos{0};
+
+    if(m_chunks.size() == 0){
+        return {0,0};
+    }
+    else if(m_chunks.size() % 2 == 0){
+        index = m_chunks.size() / 2;
+        xPos = index * BLOCK_DIMENSIONS_X * CHUNK_DIMENSIONS_X;
+        yPos = 300;
+    }
+    else{
+        index = m_chunks.size() / 2;
+        xPos = index * BLOCK_DIMENSIONS_X * CHUNK_DIMENSIONS_X;
+        xPos += (CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X) / 2;
+        yPos = 300;
+    }
+
+    return {xPos,yPos};
 }
 
 void World::addChunk(int _num) {
