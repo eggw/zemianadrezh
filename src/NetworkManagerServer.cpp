@@ -64,7 +64,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
         case Packet::Type::DATA_PLAYER: {
 
             for(auto& recipient : recipients) {
-                for(auto& player : *m_server.getOtherPlayers()){
+                for(auto& player : *m_server.getOtherPlayers()) {
                     Player::EncodedPlayerData playerData = player->encodeData();
 
                     packet << playerData.playerName;
@@ -73,8 +73,8 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
                     //belongs to the recipient's player; if it does, we'll cancel
                     //and not redundantly send it back to them
                     auto i = m_clientNames.find(playerData.playerName);
-                    if(i != m_clientNames.end()){
-                        if(i->second == recipient){
+                    if(i != m_clientNames.end()) {
+                        if(i->second == recipient) {
                             continue;
                         }
                     }
@@ -86,14 +86,14 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
                     recipient->send(packet);
                     LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
-                        LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-                        packetCode);
+                            LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                            packetCode);
                 }
             }
 
             break;
         }
-        //////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////
     }
 }
 

@@ -3,8 +3,8 @@
 
 #include "Server.h"
 
-class ServerLocal : public Server{
-public:
+class ServerLocal : public Server {
+    public:
 
 };
 
