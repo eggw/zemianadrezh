@@ -8,6 +8,11 @@
 class ProgramState_Menu : public ProgramState {
     public:
         ProgramState_Menu(Program& _program);
+        ~ProgramState_Menu();
+
+        void getInput();
+        void update();
+        void draw();
 
         void addTextItem(const std::string _string);
 

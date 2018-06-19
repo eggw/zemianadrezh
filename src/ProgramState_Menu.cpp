@@ -7,6 +7,25 @@ ProgramState_Menu::ProgramState_Menu(Program& _program)
 
 }
 
+ProgramState_Menu::~ProgramState_Menu() {
+
+}
+
+void ProgramState_Menu::getInput() {
+
+}
+
+void ProgramState_Menu::update() {
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*m_program.m_window);
+
+}
+
+void ProgramState_Menu::draw() {
+	for(auto& text : m_texts){
+		m_program.m_window->draw(text);
+	}
+}
+
 void ProgramState_Menu::addTextItem(const std::string _string){
 	sf::Text text;
 	float verticalSpacing{40.0f};
