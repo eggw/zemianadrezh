@@ -53,7 +53,17 @@ void Program::gameLoop() {
     }
 }
 
+void Program::pushState_Play() {
+    m_states.push(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+}
 
+void Program::popState() {
+    m_states.pop();
+}
+
+void Program::closeWindow() {
+    m_window->close();
+}
 
 
 

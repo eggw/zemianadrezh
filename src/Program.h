@@ -19,6 +19,11 @@ class Program : public Singleton<Program> {
         void init();
         void gameLoop();
 
+        void pushState_Play();
+        void popState();
+
+        void closeWindow();
+
         std::stack<std::unique_ptr<ProgramState>> m_states;
         std::unique_ptr<sf::RenderWindow> m_window;
 };
