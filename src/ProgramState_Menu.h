@@ -17,7 +17,7 @@ class ProgramState_Menu : public ProgramState {
         void addTextItem(const std::string _string, void(Program::*f)() = nullptr);
 
     private:
-
+        typedef std::tuple<bool, void(Program::*)(), sf::Text> MenuItem;
         //We'll represent the menu items with a vector of tuples.
         //
         //The first element, a boolean, represents whether the
@@ -28,7 +28,7 @@ class ProgramState_Menu : public ProgramState {
         //
         //The last element, an sf::Text object, is what the user
         //sees on the menu screen
-        std::vector<std::tuple<bool, void(Program::*)(), sf::Text>> m_menuItems;
+        std::vector<MenuItem> m_menuItems;
 };
 
 #endif // PROGRAMSTATE_MENU_H_INCLUDED

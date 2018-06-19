@@ -19,8 +19,6 @@ Client::Client(Server* _localServer)
                                           LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
     }
 
-    //m_player.setPosition(m_world.getCenter());
-
 }
 
 void Client::getInput() {
@@ -43,6 +41,9 @@ void Client::receivePackets() {
     m_networkManager.receivePacket();
 }
 
+void Client::respawnPlayer() {
+    m_player.setPosition({m_world.getCenter().x, 0});
+}
 
 void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
     if(m_otherPlayers == nullptr) {

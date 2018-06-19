@@ -16,6 +16,8 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     m_localServer.m_networkManager.receivePacket();
     m_client.m_networkManager.receivePacket();
 
+    m_client.respawnPlayer();
+
     auto worldData = m_client.getWorld().getChunks();
     for(auto& chunk : worldData) {
         m_rendererChunk.update(&chunk);

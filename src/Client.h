@@ -25,6 +25,8 @@ class Client : public GameInstance {
         void sendPackets();
         void receivePackets();
 
+        void respawnPlayer();
+
         const Player* getPlayer() const;
 
         bool isLocal() const;

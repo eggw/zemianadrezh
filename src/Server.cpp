@@ -4,7 +4,7 @@ Server::Server()
     :GameInstance(),
      m_networkManager(*this) {
 
-    m_world.addChunk(2);
+    m_world.addChunk(5);
 
 }
 
