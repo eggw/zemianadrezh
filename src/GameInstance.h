@@ -11,7 +11,7 @@ class GameInstance {
         GameInstance();
 
         const World& getWorld() const;
-        const std::vector<std::unique_ptr<Player>>& getOtherPlayers() const;
+        const std::shared_ptr<std::vector<std::unique_ptr<Player>>> getOtherPlayers() const;
 
         const World::EncodedWorldData encodeWorldData() const;
         void parseWorldData(World::EncodedWorldData& _data);
@@ -27,7 +27,11 @@ class GameInstance {
 
     protected:
         World m_world;
-        std::vector<std::unique_ptr<Player>> m_otherPlayers;
+        //The reason we use a shared pointer here is because in the case
+        //of a local server, we're going to bypass packet communication completely
+        //and simply assign the client's resources to the memory address of the
+        //server's.
+        std::shared_ptr<std::vector<std::unique_ptr<Player>>> m_otherPlayers;
 };
 
 #endif // GAMEINSTANCE_H_INCLUDED

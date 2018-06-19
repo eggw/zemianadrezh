@@ -61,7 +61,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
         case Packet::Type::DATA_PLAYER: {
 
             for(auto& recipient : recipients) {
-                for(auto& player : m_server.getOtherPlayers()){
+                for(auto& player : *m_server.getOtherPlayers()){
                     Player::EncodedPlayerData playerData = player->encodeData();
                     packet << playerData.playerName;
                     packet << playerData.facingLeft;
