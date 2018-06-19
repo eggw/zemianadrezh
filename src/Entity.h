@@ -5,18 +5,14 @@
 
 struct Entity {
     void setPosition(sf::Vector2f _pos) {
-        m_positionX = _pos.x;
-        m_positionY = _pos.y;
+        m_position = _pos;
     }
 
     const sf::Vector2f getPosition() const {
-        return {m_positionX, m_positionY};
+        return {m_position};
     }
 
-
-
-    float m_positionX{0};
-    float m_positionY{0};
+    sf::Vector2f m_position{0.f, 0.f};
 };
 
 #endif // ENTITY_H_INCLUDED

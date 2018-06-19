@@ -5,8 +5,8 @@ WorldChunk::WorldChunk(int _id)
     for(int y{0}; y < CHUNK_DIMENSIONS_Y; y++) {
         for(int x{0}; x < CHUNK_DIMENSIONS_X; x++) {
             Block block;
-            block.m_positionX = x;
-            block.m_positionY = y;
+            block.m_position.x = x;
+            block.m_position.y = y;
 
             m_blocks.push_back(block);
         }

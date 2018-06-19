@@ -21,8 +21,8 @@ void RendererChunk::update(const WorldChunk* _chunk) const {
             continue;
         }
 
-        sf::Vector2f topLeft{   block.m_positionX * BLOCK_DIMENSIONS_X + xOffset,
-                                block.m_positionY * BLOCK_DIMENSIONS_Y};
+        sf::Vector2f topLeft{   block.m_position.x * BLOCK_DIMENSIONS_X + xOffset,
+                                block.m_position.y * BLOCK_DIMENSIONS_Y};
 
         sf::Vector2f topRight{  topLeft.x + BLOCK_DIMENSIONS_X,
                                 topLeft.y};
