@@ -84,6 +84,21 @@ void NetworkManagerClient::receivePacket() {
                 break;
             }
             //////////////////////////////////////////////////////////////////////////////
+
+            //////////////////////////////////////////////////////////////////////////////
+            case Packet::Type::DATA_PLAYER: {
+                Player::EncodedPlayerData playerData;
+
+                packet >> playerData.playerName;
+                packet >> playerData.facingLeft;
+                packet >> playerData.speed;
+                packet >> playerData.positionX;
+                packet >> playerData.positionY;
+
+                m_client.updateOtherPlayers(playerData);
+                break;
+            }
+            //////////////////////////////////////////////////////////////////////////////
             default:
                 break;
         }

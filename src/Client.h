@@ -5,8 +5,6 @@
 
 #include "GameInstance.h"
 
-#include "Player.h"
-
 /*
 The client class takes an optional pointer to a server.
 This pointer should only be passed if the server is local;
@@ -24,6 +22,8 @@ class Client : public GameInstance {
         void update();
 
         const Player* getPlayer() const;
+
+
 
         bool isLocal() const;
     public:
