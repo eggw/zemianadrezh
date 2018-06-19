@@ -25,7 +25,7 @@ void Program::init() {
 
 void Program::gameLoop() {
     while(m_window->isOpen()) {
-        m_window->clear(sf::Color(61,122,77));
+        m_window->clear(sf::Color(53,80,200));
 
         //Monitor window closing
         /////////////////////////////////////////////////////
@@ -35,13 +35,6 @@ void Program::gameLoop() {
             if(event.type == sf::Event::Closed) {
                 m_window->close();
             }
-
-            if(event.type == sf::Event::KeyPressed) {
-                if(event.key.code == sf::Keyboard::Escape) {
-                    m_window->close();
-                }
-            }
-
         }
         /////////////////////////////////////////////////////
 

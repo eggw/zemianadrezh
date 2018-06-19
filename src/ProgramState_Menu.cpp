@@ -29,6 +29,7 @@ void ProgramState_Menu::getInput() {
 }
 
 void ProgramState_Menu::update() {
+    m_program.m_window->setView(m_program.m_window->getDefaultView());
     sf::Vector2i mousePos = sf::Mouse::getPosition(*m_program.m_window);
     for(auto& menuItem : m_menuItems) {
         if(std::get<2>(menuItem).getGlobalBounds().intersects({float(mousePos.x), float(mousePos.y), 1, 1})) {
@@ -55,7 +56,7 @@ void ProgramState_Menu::addTextItem(const std::string _string, void(Program::*f)
     menuItem.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
     menuItem.setString(_string);
     menuItem.setOrigin(menuItem.getGlobalBounds().width / 2,
-                   menuItem.getGlobalBounds().height / 2);
+                       menuItem.getGlobalBounds().height / 2);
 
     m_menuItems.push_back(std::make_tuple(false, f, menuItem));
 
