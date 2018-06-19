@@ -12,6 +12,9 @@ class Server : public GameInstance {
         Server();
 
         void update();
+        void updateOtherPlayers(Player::EncodedPlayerData _data);
+
+        void receivePackets();
     public:
         NetworkManagerServer m_networkManager;
 };

@@ -4,6 +4,7 @@
 
 #include "LoggerNetwork.h"
 
+#include <iostream>
 Client::Client(Server* _localServer)
     :GameInstance(),
      m_networkManager(*this),
@@ -27,7 +28,36 @@ void Client::getInput() {
 
 void Client::update() {
     m_player.update();
-    m_networkManager.receivePacket();
+}
+
+void Client::sendPackets(){
+	m_networkManager.sendPacket(Packet::Type::DATA_PLAYER);
+}
+
+void Client::receivePackets(){
+	m_networkManager.receivePacket();
+}
+
+
+void Client::updateOtherPlayers(Player::EncodedPlayerData _data){
+    if(_data.playerName == m_player.getName()){
+        return;
+    }
+
+	bool found{false};
+
+	for(auto& player : m_otherPlayers){
+		if(player->getName() == _data.playerName){
+			player->parseData(_data);
+			found = true;
+		}
+	}
+
+	if(!found){
+        auto newPlayer = std::unique_ptr<Player>(new Player());
+        newPlayer->parseData(_data);
+        m_otherPlayers.push_back(std::move(newPlayer));
+	}
 }
 
 const Player* Client::getPlayer() const {

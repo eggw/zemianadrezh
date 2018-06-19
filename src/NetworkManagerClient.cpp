@@ -2,8 +2,6 @@
 
 #include "LoggerNetwork.h"
 
-#include <iostream>
-
 #include "Client.h"
 
 NetworkManagerClient::NetworkManagerClient(Client& _client)

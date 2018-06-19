@@ -35,6 +35,7 @@ LoggerNetwork::LoggerNetwork() {
 
     packetTypeMap.emplace(Packet::Type::DATA_WORLD, "DATA_WORLD");
     packetTypeMap.emplace(Packet::Type::REQUEST_WORLD, "REQUEST_WORLD");
+    packetTypeMap.emplace(Packet::Type::DATA_PLAYER, "DATA_PLAYER");
 
     messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");
     messageMap.emplace(LOG_MESSAGE::CONNECTION_SUCCESS, "connection established!");

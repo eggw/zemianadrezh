@@ -20,10 +20,12 @@ class Client : public GameInstance {
 
         void getInput();
         void update();
+        void updateOtherPlayers(Player::EncodedPlayerData _data);
+
+        void sendPackets();
+        void receivePackets();
 
         const Player* getPlayer() const;
-
-
 
         bool isLocal() const;
     public:

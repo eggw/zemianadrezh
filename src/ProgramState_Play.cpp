@@ -50,8 +50,12 @@ void ProgramState_Play::getInput() {
 }
 
 void ProgramState_Play::update() {
-    m_localServer.update();
+    m_client.sendPackets();
+    m_localServer.receivePackets();
+    m_client.receivePackets();
+
     m_client.update();
+    m_localServer.update();
     m_rendererPlayer.update();
 }
 
