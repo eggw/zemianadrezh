@@ -29,6 +29,10 @@ void Client::getInput() {
 
 void Client::update() {
     m_player.update();
+
+    if(!isLocal()) {
+        GameInstance::update();
+    }
 }
 
 void Client::sendPackets() {

@@ -16,6 +16,8 @@ class GameInstance {
         const World::EncodedWorldData encodeWorldData() const;
         void parseWorldData(World::EncodedWorldData& _data);
 
+        virtual void update();
+
         //Server and Client both have different implementations of this.
         //The server either adds or updates the player data, depending on whether
         //it is already present in m_otherPlayers or not.

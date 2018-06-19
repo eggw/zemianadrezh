@@ -21,3 +21,7 @@ const World::EncodedWorldData GameInstance::encodeWorldData() const {
 void GameInstance::parseWorldData(World::EncodedWorldData& _data) {
     m_world.parseData(_data);
 }
+
+void GameInstance::update(){
+
+}

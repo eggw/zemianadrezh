@@ -8,10 +8,6 @@ Server::Server()
 
 }
 
-void Server::update() {
-
-}
-
 void Server::updateOtherPlayers(Player::EncodedPlayerData _data){
 	if(m_otherPlayers == nullptr){
 		m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
