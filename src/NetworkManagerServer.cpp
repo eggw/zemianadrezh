@@ -50,6 +50,9 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
                 packet << worldData.chunkIDs;
                 packet << worldData.invisibleBlocks;
                 recipient->send(packet);
+                LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+                        LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                        packetCode);
 
             }
 
@@ -63,13 +66,28 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
             for(auto& recipient : recipients) {
                 for(auto& player : *m_server.getOtherPlayers()){
                     Player::EncodedPlayerData playerData = player->encodeData();
+
                     packet << playerData.playerName;
+
+                    //Here we do a quick check to see if the playerdata generated
+                    //belongs to the recipient's player; if it does, we'll cancel
+                    //and not redundantly send it back to them
+                    auto i = m_clientNames.find(playerData.playerName);
+                    if(i != m_clientNames.end()){
+                        if(i->second == recipient){
+                            continue;
+                        }
+                    }
+
                     packet << playerData.facingLeft;
                     packet << playerData.speed;
                     packet << playerData.positionX;
                     packet << playerData.positionY;
 
                     recipient->send(packet);
+                    LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+                        LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                        packetCode);
                 }
             }
 
@@ -77,10 +95,6 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
         }
         //////////////////////////////////////////////////////////////////////////////
     }
-
-    LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
-                        LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-                        packetCode);
 }
 
 void NetworkManagerServer::receivePacket() {
@@ -112,6 +126,8 @@ void NetworkManagerServer::receivePacket() {
                     packet >> playerData.speed;
                     packet >> playerData.positionX;
                     packet >> playerData.positionY;
+
+                    m_clientNames.insert(std::make_pair(playerData.playerName, connection.get()));
 
                     m_server.updateOtherPlayers(playerData);
 

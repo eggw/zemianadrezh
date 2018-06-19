@@ -2,6 +2,7 @@
 #define NETWORKMANAGERSERVER_H_INCLUDED
 
 #include <memory>
+#include <map>
 
 #include "SFML/Network.hpp"
 
@@ -32,6 +33,7 @@ class NetworkManagerServer {
         Server& m_server;
         sf::TcpListener m_listener;
         std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
+        std::map<std::string, sf::TcpSocket*> m_clientNames;
 };
 
 
