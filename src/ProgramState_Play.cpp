@@ -29,24 +29,7 @@ ProgramState_Play::~ProgramState_Play() {
 }
 
 void ProgramState_Play::getInput() {
-    sf::Event event;
-
-    while(m_program.m_window->pollEvent(event)) {
-
-        if(event.type == sf::Event::Closed) {
-            m_program.m_window->close();
-        }
-
-        if(event.type == sf::Event::KeyPressed) {
-            if(event.key.code == sf::Keyboard::Escape) {
-                m_program.m_window->close();
-            }
-        }
-
-    }
-
     m_client.getInput();
-
 }
 
 void ProgramState_Play::update() {
