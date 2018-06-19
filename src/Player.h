@@ -8,6 +8,7 @@ class Player : public EntityMoving, public sf::Drawable {
     public:
         struct EncodedPlayerData {
             std::string playerName;
+            bool facingLeft;
             float speed;
             float positionX;
             float positionY;

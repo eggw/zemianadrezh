@@ -105,6 +105,7 @@ const Player::EncodedPlayerData Player::encodeData() const {
     EncodedPlayerData data;
 
     data.playerName = getName();
+    data.facingLeft = m_facingLeft;
     data.speed = m_speed;
     data.positionX = m_positionX;
     data.positionY = m_positionY;
@@ -114,6 +115,7 @@ const Player::EncodedPlayerData Player::encodeData() const {
 
 void Player::parseData(Player::EncodedPlayerData& _data) {
     m_playerName = _data.playerName;
+    m_facingLeft = _data.facingLeft;
     m_speed = _data.speed;
     m_positionX = _data.positionX;
     m_positionY = _data.positionY;

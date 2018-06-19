@@ -34,6 +34,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
         case Packet::Type::DATA_PLAYER: {
             Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
             packet << playerData.playerName;
+            packet << playerData.facingLeft;
             packet << playerData.speed;
             packet << playerData.positionX;
             packet << playerData.positionY;
