@@ -21,18 +21,26 @@ calls the function pointer, if it's not null.
 void ProgramState_Menu::getInput() {
     if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         for(auto& menuItem : m_menuItems) {
-            if(std::get<0>(menuItem) && std::get<1>(menuItem) != nullptr) {
+            if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
                 (m_program.*std::get<1>(menuItem))();
             }
         }
     }
 }
 
+bool ProgramState_Menu::isMousedOver(ProgramState_Menu::MenuItem _menuItem){
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*m_program.m_window);
+    return std::get<2>(_menuItem).getGlobalBounds().intersects({float(mousePos.x), float(mousePos.y), 1, 1});
+}
+
+bool ProgramState_Menu::isFunctionNull(ProgramState_Menu::MenuItem _menuItem){
+    return std::get<1>(_menuItem) == nullptr;
+}
+
 void ProgramState_Menu::update() {
     m_program.m_window->setView(m_program.m_window->getDefaultView());
-    sf::Vector2i mousePos = sf::Mouse::getPosition(*m_program.m_window);
     for(auto& menuItem : m_menuItems) {
-        if(std::get<2>(menuItem).getGlobalBounds().intersects({float(mousePos.x), float(mousePos.y), 1, 1})) {
+        if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
             std::get<0>(menuItem) = true;
             std::get<2>(menuItem).setFillColor(sf::Color::Yellow);
             std::get<2>(menuItem).setScale({1.2, 1.2});

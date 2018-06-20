@@ -18,6 +18,8 @@ class ProgramState_Menu : public ProgramState {
 
     private:
         typedef std::tuple<bool, void(Program::*)(), sf::Text> MenuItem;
+        bool isMousedOver(MenuItem _menuItem);
+        bool isFunctionNull(MenuItem _menuItem);
         //We'll represent the menu items with a vector of tuples.
         //
         //The first element, a boolean, represents whether the
