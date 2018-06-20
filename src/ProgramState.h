@@ -11,7 +11,7 @@ class ProgramState {
 		ProgramState(Program& _p);
 		virtual ~ProgramState() = 0;
 
-		virtual void getInput() = 0;
+		virtual void getInput(sf::Event& _event) = 0;
 		virtual void update() = 0;
 		virtual void draw() = 0;
 

@@ -17,10 +17,13 @@ ChatBox::ChatBox(sf::RenderWindow& _window)
 	 m_view( {
 	sf::FloatRect({0}, {0}, m_window.getSize().x * X_WINDOW_RATIO, m_window.getSize().y * Y_WINDOW_RATIO)
 }),
-m_messages() {
+m_shadedRectangle(),
+m_messages(),
+m_enteringText{false} {
 
-
+	m_shadedRectangle.setSize(m_view.getSize());
 	m_view.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
+
 	appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
 	appendMessage("message1", "Test");
 	appendMessage("message2", "Test");
@@ -54,10 +57,10 @@ void ChatBox::appendMessage(const std::string _message, const std::string _sende
 	positionMessage(newMessage);
 
 	m_messages.push_back(newMessage);
-	//updateView();
+	updateView();
 }
 
-void ChatBox::getInput() {
+void ChatBox::getInput(sf::Event& _event) {
 	if(sf::Keyboard::isKeyPressed(Key::CHAT_UP)) {
 		std::cout << "view size is " << m_view.getSize().x << ", "<< m_view.getSize().y << std::endl;
 		if(!viewAtHighest()) {
@@ -71,15 +74,44 @@ void ChatBox::getInput() {
 			m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + 5);
 		}
 	}
+
+    //In the case of the enter key, we're going to poll an event.
+    //The reason for this is that we only want to toggle this once,
+    //and not have it rapidly be called every frame.
+
+	switch(_event.type) {
+	case sf::Event::KeyPressed: {
+			if(_event.key.code == Key::CHAT_SEND) {
+				m_enteringText = !m_enteringText;
+			}
+			break;
+		}
+    default:
+        break;
+	}
+
 }
 
 void ChatBox::update() {
+	static int alphaValue{0};
+
+	if(m_enteringText) {
+		alphaValue = 100;
+		std::cout << "setting alphaValue to 100" << std::endl;
+	}
+	else if(alphaValue > 0) {
+		alphaValue -= 1;
+		std::cout << "reducing alphaValue..." << std::endl;
+	}
+
+	m_shadedRectangle.setFillColor(sf::Color(0,0,0,alphaValue));
 
 }
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	sf::View previousView = target.getView();
 	target.setView(m_view);
+	target.draw(m_shadedRectangle, states);
 	for(auto& message : m_messages) {
 		target.draw(message.text, states);
 	}

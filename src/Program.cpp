@@ -5,7 +5,7 @@
 
 Program::Program() {
 	m_window = std::unique_ptr<sf::RenderWindow>
-			   (new sf::RenderWindow(sf::VideoMode(1920,1080),
+			   (new sf::RenderWindow(sf::VideoMode(800,600),
 									 "zemianadrezh"));
 	m_window->setFramerateLimit(60);
 
@@ -29,16 +29,16 @@ void Program::gameLoop() {
 
 		//Monitor window closing
 		/////////////////////////////////////////////////////
-		sf::Event event;
+        sf::Event event;
 		while(m_window->pollEvent(event)) {
-
 			if(event.type == sf::Event::Closed) {
 				m_window->close();
 			}
+
+			m_states.top()->getInput(event);
 		}
 		/////////////////////////////////////////////////////
 
-		m_states.top()->getInput();
 		m_states.top()->update();
 		m_states.top()->draw();
 

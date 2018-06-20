@@ -18,7 +18,7 @@ When a left click is registered, this function checks if any
 menu items are selected (via their boolean value). It then
 calls the function pointer, if it's not null.
 */
-void ProgramState_Menu::getInput() {
+void ProgramState_Menu::getInput(sf::Event& _event) {
 	if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		for(auto& menuItem : m_menuItems) {
 			if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {

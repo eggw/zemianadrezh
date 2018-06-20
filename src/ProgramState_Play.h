@@ -14,7 +14,7 @@ class ProgramState_Play : public ProgramState {
 		ProgramState_Play(Program& _program);
 		~ProgramState_Play();
 
-		void getInput();
+		void getInput(sf::Event& _event);
 		void update();
 		void draw();
 

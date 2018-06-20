@@ -78,5 +78,5 @@ void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_MESSAGE _message) {
 
 void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_PACKET_DATATRANSFER _d, int _packetCode) {
 	auto type = Packet::toType(_packetCode);
-	std::cout << senderMap[_sender] << ": " << packetMap[_d] << "\t" << packetTypeMap[type] << std::endl;
+	//std::cout << senderMap[_sender] << ": " << packetMap[_d] << "\t" << packetTypeMap[type] << std::endl;
 }

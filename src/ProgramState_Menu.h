@@ -10,7 +10,7 @@ class ProgramState_Menu : public ProgramState {
 		ProgramState_Menu(Program& _program);
 		~ProgramState_Menu();
 
-		void getInput();
+		void getInput(sf::Event& _event);
 		void update();
 		void draw();
 

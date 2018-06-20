@@ -31,13 +31,13 @@ ProgramState_Play::~ProgramState_Play() {
 
 }
 
-void ProgramState_Play::getInput() {
+void ProgramState_Play::getInput(sf::Event& _event) {
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 		m_program.popState();
 	}
 
 	m_client.getInput();
-	m_chatBox.getInput();
+	m_chatBox.getInput(_event);
 }
 
 void ProgramState_Play::update() {
@@ -46,6 +46,7 @@ void ProgramState_Play::update() {
 	m_client.receivePackets();
 
 	m_client.update();
+	m_chatBox.update();
 	m_localServer.update();
 	m_rendererPlayer.update();
 }
