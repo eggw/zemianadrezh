@@ -40,6 +40,7 @@ class ChatBox : public sf::Drawable {
 	private:
 		sf::RenderWindow& m_window;
 		sf::View m_view;
+		sf::View m_shadedRectangleView;
 		sf::RectangleShape m_shadedRectangle;
 		std::vector<Message> m_messages;
 
