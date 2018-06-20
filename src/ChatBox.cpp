@@ -166,9 +166,7 @@ void ChatBox::updateView() {
 	if(!m_messages.empty()) {
 		Message& message = m_messages.back();
 
-		float viewHeight = getViewHeight();
-
-		if(message.text.getPosition().y - message.text.getGlobalBounds().height * 2 > viewHeight) {
+		if(message.text.getPosition().y - message.text.getGlobalBounds().height * 2 > m_view.getSize().y) {
 			sf::Vector2f newCenter = m_view.getCenter();
 			newCenter.y += message.numberOfLines * (Y_OFFSET);
 			m_view.setCenter(newCenter);
@@ -176,20 +174,12 @@ void ChatBox::updateView() {
 	}
 }
 
-float ChatBox::getViewHeight() const {
-	return (1 - m_view.getViewport().top)
-		   *
-		   m_window.getSize().y;
-}
-
 bool ChatBox::viewAtHighest() const {
-	float viewHeight = getViewHeight();
-
 	std::cout << "Up\t";
-	std::cout << m_view.getCenter().y - viewHeight / 2;
+	std::cout << m_view.getCenter().y - m_view.getSize().y / 2;
 	std::cout << " is ";
 
-	if(m_view.getCenter().y - viewHeight / 2 >= 0) {
+	if(m_view.getCenter().y - m_view.getSize().y / 2 >= 0) {
 		std::cout << ">= 0; failure!" << std::endl;
 		return true;
 	}
@@ -200,13 +190,11 @@ bool ChatBox::viewAtHighest() const {
 }
 
 bool ChatBox::viewAtLowest() const {
-	float viewHeight = getViewHeight();
-
 	std::cout << "Down\t";
-	std::cout << m_view.getCenter().y + viewHeight / 2;
+	std::cout << m_view.getCenter().y + m_view.getSize().y / 2;
 	std::cout << " is ";
 
-	if(m_view.getCenter().y + viewHeight / 2 >= m_messages.back().text.getPosition().y) {
+	if(m_view.getCenter().y + m_view.getSize().y / 2 >= m_messages.back().text.getPosition().y) {
 		std::cout << ">= " << m_messages.back().text.getPosition().y <<"; failure!" << std::endl;
 		return true;
 	}

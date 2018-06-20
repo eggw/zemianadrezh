@@ -33,7 +33,6 @@ class ChatBox : public sf::Drawable {
 		//View-related
 		/////////////////////////////////////////
 		void updateView();
-		float getViewHeight() const;
 		bool viewAtHighest() const;
 		bool viewAtLowest() const;
 		/////////////////////////////////////////
