@@ -7,12 +7,12 @@ constexpr float BLOCK_DIMENSIONS_X = 16;
 constexpr float BLOCK_DIMENSIONS_Y = 16;
 
 class Block : public Entity {
-    public:
-        Block();
-        bool getVisibility() const;
-        void setVisibility(bool _v);
-    private:
-        bool m_visible;
+	public:
+		Block();
+		bool getVisibility() const;
+		void setVisibility(bool _v);
+	private:
+		bool m_visible;
 };
 
 

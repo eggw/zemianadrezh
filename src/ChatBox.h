@@ -4,44 +4,44 @@
 #include <SFML/Graphics.hpp>
 
 class ChatBox : public sf::Drawable {
-    public:
-        ChatBox(sf::RenderWindow& _window);
+	public:
+		ChatBox(sf::RenderWindow& _window);
 
-        void appendMessage(const std::string _message, const std::string _sender = "");
-        void getInput();
-        void update();
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		void appendMessage(const std::string _message, const std::string _sender = "");
+		void getInput();
+		void update();
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-    private:
-    	struct Message{
-    		Message(sf::Text& _text, unsigned int _numberOfLines = 1)
-						:text{_text},
-						numberOfLines{_numberOfLines}{
-					}
+	private:
+		struct Message {
+			Message(sf::Text& _text, unsigned int _numberOfLines = 1)
+				:text{_text},
+				 numberOfLines{_numberOfLines} {
+			}
 
 			sf::Text text;
 			unsigned int numberOfLines;
-    	};
+		};
 
-    	//Message-related
-    	/////////////////////////////////////////
-    	const bool messageTooWide(Message& _message) const;
-    	void splitMessage(Message& _message);
-    	void positionMessage(Message& _message);
-    	/////////////////////////////////////////
+		//Message-related
+		/////////////////////////////////////////
+		const bool messageTooWide(Message& _message) const;
+		void splitMessage(Message& _message);
+		void positionMessage(Message& _message);
+		/////////////////////////////////////////
 
-    	//View-related
-    	/////////////////////////////////////////
-    	void updateView();
+		//View-related
+		/////////////////////////////////////////
+		void updateView();
 		float getViewHeight() const;
-    	bool viewAtHighest() const;
-    	bool viewAtLowest() const;
-    	/////////////////////////////////////////
+		bool viewAtHighest() const;
+		bool viewAtLowest() const;
+		/////////////////////////////////////////
 
 	private:
-    	sf::RenderWindow& m_window;
-    	sf::View m_view;
-    	std::vector<Message> m_messages;
+		sf::RenderWindow& m_window;
+		sf::View m_view;
+		std::vector<Message> m_messages;
 };
 
 #endif // CHATBOX_H_INCLUDED

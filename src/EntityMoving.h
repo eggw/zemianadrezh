@@ -4,8 +4,8 @@
 #include "Entity.h"
 
 struct EntityMoving : public Entity {
-    float m_horizontalSpeed{1.0f};
-    bool m_facingLeft{false};
+	float m_horizontalSpeed{1.0f};
+	bool m_facingLeft{false};
 };
 
 #endif // ENTITYMOVING_H_INCLUDED

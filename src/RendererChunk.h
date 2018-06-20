@@ -8,14 +8,14 @@
 #include "WorldChunk.h"
 
 class RendererChunk {
-    public:
-        RendererChunk(sf::RenderWindow& _window);
-        void update(const WorldChunk* _chunk) const;
-        void draw() const;
+	public:
+		RendererChunk(sf::RenderWindow& _window);
+		void update(const WorldChunk* _chunk) const;
+		void draw() const;
 
-    private:
-        sf::RenderWindow& m_window;
-        mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
+	private:
+		sf::RenderWindow& m_window;
+		mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
 
 };
 

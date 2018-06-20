@@ -15,26 +15,26 @@ server.
 class Server;
 
 class Client : public GameInstance {
-    public:
-        Client(Server* _localServer = nullptr);
+	public:
+		Client(Server* _localServer = nullptr);
 
-        void getInput();
-        void update();
-        void updateOtherPlayers(Player::EncodedPlayerData _data);
+		void getInput();
+		void update();
+		void updateOtherPlayers(Player::EncodedPlayerData _data);
 
-        void sendPackets();
-        void receivePackets();
+		void sendPackets();
+		void receivePackets();
 
-        void respawnPlayer();
+		void respawnPlayer();
 
-        const Player* getPlayer() const;
+		const Player* getPlayer() const;
 
-        bool isLocal() const;
-    public:
-        NetworkManagerClient m_networkManager;
-    private:
-        Server* m_localServer;
-        Player m_player;
+		bool isLocal() const;
+	public:
+		NetworkManagerClient m_networkManager;
+	private:
+		Server* m_localServer;
+		Player m_player;
 };
 
 #endif // CLIENT_H_INCLUDED

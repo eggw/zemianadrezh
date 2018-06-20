@@ -8,5 +8,5 @@ TODO:
 */
 
 int main() {
-    Program program;
+	Program program;
 }

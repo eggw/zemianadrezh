@@ -5,29 +5,29 @@
 #include "Animation.h"
 
 class Player : public EntityMoving, public sf::Drawable {
-    public:
-        struct EncodedPlayerData {
-            std::string playerName;
-            bool facingLeft;
-            float speed;
-            float positionX;
-            float positionY;
-        };
+	public:
+		struct EncodedPlayerData {
+			std::string playerName;
+			bool facingLeft;
+			float speed;
+			float positionX;
+			float positionY;
+		};
 
-        Player();
+		Player();
 
-        const std::string& getName() const;
+		const std::string& getName() const;
 
-        void getInput();
-        void update();
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		void getInput();
+		void update();
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-        const EncodedPlayerData encodeData() const;
-        void parseData(EncodedPlayerData& _data);
-    private:
-        sf::Sprite m_sprite;
-        Animation m_animationSheet;
-        std::string m_playerName;
+		const EncodedPlayerData encodeData() const;
+		void parseData(EncodedPlayerData& _data);
+	private:
+		sf::Sprite m_sprite;
+		Animation m_animationSheet;
+		std::string m_playerName;
 };
 
 

@@ -6,8 +6,8 @@
 #include "ProgramState_Menu.h"
 
 class ProgramState_MainMenu : public ProgramState_Menu {
-    public:
-        ProgramState_MainMenu(Program& _program);
+	public:
+		ProgramState_MainMenu(Program& _program);
 };
 
 #endif // PROGRAMSTATE_MAINMENU_H_INCLUDED
