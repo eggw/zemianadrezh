@@ -9,7 +9,7 @@
 constexpr float X_WINDOW_RATIO{0.3};
 constexpr float Y_WINDOW_RATIO{0.25};
 
-const unsigned int CHARACTER_SIZE {19};
+const unsigned int CHARACTER_SIZE {20};
 const float Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
 
 ChatBox::ChatBox(sf::RenderWindow& _window)
@@ -33,8 +33,12 @@ m_clock() {
 	appendMessage("message3", "Test");
 	appendMessage("message4", "Test");
 	appendMessage("message5", "Test");
+
 	appendMessage("message6", "Test");
 	appendMessage("message7", "Test");
+	appendMessage("message8", "Test");
+	appendMessage("message9", "Test");
+
 }
 
 void ChatBox::appendMessage(const std::string _message, const std::string _sender) {
@@ -60,24 +64,10 @@ void ChatBox::appendMessage(const std::string _message, const std::string _sende
 	positionMessage(newMessage);
 
 	m_messages.push_back(newMessage);
-	updateView();
+	snapToLatestMessage();
 }
 
 void ChatBox::getInput(sf::Event& _event) {
-	if(sf::Keyboard::isKeyPressed(Key::CHAT_UP)) {
-		std::cout << "view size is " << m_view.getSize().x << ", "<< m_view.getSize().y << std::endl;
-		if(!viewAtHighest()) {
-			m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - 5);
-		}
-	}
-
-	if(sf::Keyboard::isKeyPressed(Key::CHAT_DOWN)) {
-		std::cout << "view size is " << m_view.getSize().x << ", "<< m_view.getSize().y << std::endl;
-		if(!viewAtLowest()) {
-			m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + 5);
-		}
-	}
-
 	//In the case of the enter key, we're going to poll an event.
 	//The reason for this is that we only want to toggle this once,
 	//and not have it rapidly be called every frame.
@@ -86,7 +76,22 @@ void ChatBox::getInput(sf::Event& _event) {
 	case sf::Event::KeyPressed: {
 			if(_event.key.code == Key::CHAT_SEND) {
 				m_enteringText = !m_enteringText;
+				snapToLatestMessage();
 				m_clock.restart();
+			}
+
+			else if(_event.key.code == Key::CHAT_UP) {
+                m_clock.restart();
+                if(!viewAtHighest()) {
+                    scrollUp();
+                }
+			}
+
+			else if(_event.key.code == Key::CHAT_DOWN) {
+                m_clock.restart();
+                if(!viewAtLowest()) {
+                    scrollDown();
+                }
 			}
 			break;
 		}
@@ -97,8 +102,8 @@ void ChatBox::getInput(sf::Event& _event) {
 }
 
 void ChatBox::update() {
-    updateShadedRectangleTransparency();
-    updateMessageTransparency();
+	updateShadedRectangleTransparency();
+	updateMessageTransparency();
 }
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -172,8 +177,8 @@ bool ChatBox::messagesTransparent() const {
 	}
 }
 
-void ChatBox::updateShadedRectangleTransparency(){
-    static int rectangleAlphaValue{0};
+void ChatBox::updateShadedRectangleTransparency() {
+	static int rectangleAlphaValue{0};
 
 	if(m_enteringText) {
 		rectangleAlphaValue = 100;
@@ -187,7 +192,7 @@ void ChatBox::updateShadedRectangleTransparency(){
 	m_shadedRectangle.setFillColor(sf::Color(0,0,0,rectangleAlphaValue));
 }
 
-void ChatBox::updateMessageTransparency(){
+void ChatBox::updateMessageTransparency() {
 	static int textAlphaValue{255};
 
 	if(m_enteringText) {
@@ -199,53 +204,63 @@ void ChatBox::updateMessageTransparency(){
 				textAlphaValue -= 1;
 			}
 		}
+		//The clock might have been reset due to the user scrolling
+		//up or down, despite m_enteringText being false.
+		//In this case, we still want the text to be visible.
+		else {
+			textAlphaValue = 255;
+		}
 	}
 
 	setTransparency(textAlphaValue);
 }
 
-
-void ChatBox::updateView() {
+//This function checks if the last message is "outside" (below) the view.
+//If so, it adjusts the view's center so that it is visible.
+void ChatBox::snapToLatestMessage() {
 	if(!m_messages.empty()) {
 		Message& message = m_messages.back();
+		float boundary{m_view.getSize().y - Y_OFFSET};
 
-		if(message.text.getPosition().y - message.text.getGlobalBounds().height * 2 > m_view.getSize().y) {
-			sf::Vector2f newCenter = m_view.getCenter();
-			newCenter.y += message.numberOfLines * (Y_OFFSET);
-			m_view.setCenter(newCenter);
+		if(message.text.getPosition().y < boundary) {
+			return;
 		}
+		std::string str = message.text.getString();
+        std::cout << str << std::endl;
+		sf::Vector2f newCenter {m_view.getCenter().x, message.text.getPosition().y};
+		newCenter.y -= (m_view.getSize().y / 2) - (Y_OFFSET * 1.3);
+
+		m_view.setCenter(newCenter);
 	}
 }
 
 bool ChatBox::viewAtHighest() const {
-	std::cout << "Up\t";
-	std::cout << m_view.getCenter().y - m_view.getSize().y / 2;
-	std::cout << " is ";
-
-	if(m_view.getCenter().y - m_view.getSize().y / 2 >= 0) {
-		std::cout << ">= 0; failure!" << std::endl;
+	if(m_view.getCenter().y - m_view.getSize().y / 2 <= 0) {
 		return true;
 	}
-
-	std::cout << "< 0; success" << std::endl;
 
 	return false;
 }
 
 bool ChatBox::viewAtLowest() const {
-	std::cout << "Down\t";
-	std::cout << m_view.getCenter().y + m_view.getSize().y / 2;
-	std::cout << " is ";
+	float lowestPoint{m_messages.back().text.getPosition().y};
+	//We're going to want to extend it in the vertical axis,
+	//since the origin is situated in the top left corner.
+	lowestPoint += Y_OFFSET * 1.3;
 
-	if(m_view.getCenter().y + m_view.getSize().y / 2 >= m_messages.back().text.getPosition().y) {
-		std::cout << ">= " << m_messages.back().text.getPosition().y <<"; failure!" << std::endl;
+	if(m_view.getCenter().y + m_view.getSize().y / 2 >= lowestPoint) {
 		return true;
 	}
-
-	std::cout << "< " << m_messages.back().text.getPosition().y <<"; success!" << std::endl;
 
 	return false;
 }
 
+void ChatBox::scrollUp() {
+    m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (Y_OFFSET / 5));
+}
+
+void ChatBox::scrollDown() {
+    m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (Y_OFFSET / 5));
+}
 
 

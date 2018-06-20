@@ -36,9 +36,11 @@ class ChatBox : public sf::Drawable {
 
 		//View-related
 		/////////////////////////////////////////
-		void updateView();
+		void snapToLatestMessage();
 		bool viewAtHighest() const;
 		bool viewAtLowest() const;
+		void scrollUp();
+		void scrollDown();
 		/////////////////////////////////////////
 
 	private:
