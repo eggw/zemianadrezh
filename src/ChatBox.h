@@ -25,8 +25,8 @@ class ChatBox : public sf::Drawable {
 
     	//Message-related
     	/////////////////////////////////////////
-    	const bool messageTooWide(Message& _message, float _widthRatio) const;
-    	void splitMessage(Message& _message, float _widthRatio);
+    	const bool messageTooWide(Message& _message) const;
+    	void splitMessage(Message& _message);
     	void positionMessage(Message& _message);
     	/////////////////////////////////////////
 

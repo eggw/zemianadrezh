@@ -6,16 +6,16 @@
 
 #include <iostream>
 
-const unsigned int CHARACTER_SIZE {20};
+const unsigned int CHARACTER_SIZE {19};
 const float Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
 
 ChatBox::ChatBox(sf::RenderWindow& _window)
     :m_window(_window),
-     m_view({sf::FloatRect({0}, {0}, m_window.getSize().x, m_window.getSize().y)}),
+     m_view({sf::FloatRect({0}, {0}, m_window.getSize().x * 0.4, m_window.getSize().y * 0.25)}),
      m_messages() {
 
 
-    m_view.setViewport({0, 0.75, 1, 1});
+    m_view.setViewport({0, 0.75, 0.4, 0.25});
     appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
     appendMessage("message1", "Test");
     appendMessage("message2", "Test");
@@ -42,14 +42,14 @@ void ChatBox::appendMessage(const std::string _message, const std::string _sende
 
     Message newMessage{newText};
 
-    if(messageTooWide(newMessage, 0.5)) {
-        splitMessage(newMessage, 0.5);
+    if(messageTooWide(newMessage)) {
+        splitMessage(newMessage);
     }
 
     positionMessage(newMessage);
 
     m_messages.push_back(newMessage);
-    updateView();
+    //updateView();
 }
 
 void ChatBox::getInput() {
@@ -81,14 +81,14 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.setView(previousView);
 }
 
-const bool ChatBox::messageTooWide(Message& _message, float _widthRatio) const {
-    return _message.text.getGlobalBounds().width >= _widthRatio * m_window.getSize().x;
+const bool ChatBox::messageTooWide(Message& _message) const {
+    return _message.text.getGlobalBounds().width >= m_view.getSize().x * 0.9;
 }
 
-void ChatBox::splitMessage(Message& _message, float _widthRatio) {
+void ChatBox::splitMessage(Message& _message) {
     std::string textStr = _message.text.getString();
     float charSize = _message.text.getGlobalBounds().width / textStr.size();
-    auto widthLimit = _widthRatio * m_window.getSize().x;
+    auto widthLimit = m_view.getSize().x * 0.9;
 
     float currentWidth{0};
 
