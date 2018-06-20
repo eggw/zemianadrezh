@@ -47,17 +47,19 @@ LoggerNetwork::LoggerNetwork() {
 
 
 void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
+    static bool init{false};
+
 	std::ofstream output;
 	output.open("log_network.txt", std::fstream::app);
 
-	if(!m_init) {
+	if(!init) {
 		output << "\n";
 		output << "--------------------------------------------------";
 		output << "\n";
 		output << "Log begin at " << currentDateTime() << "\n";
 		output << "--------------------------------------------------";
 		output << "\n";
-		m_init = true;
+		init = true;
 	}
 
 	output << currentDateTime() << " - ";
@@ -78,5 +80,5 @@ void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_MESSAGE _message) {
 
 void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_PACKET_DATATRANSFER _d, int _packetCode) {
 	auto type = Packet::toType(_packetCode);
-	//std::cout << senderMap[_sender] << ": " << packetMap[_d] << "\t" << packetTypeMap[type] << std::endl;
+	std::cout << senderMap[_sender] << ": " << packetMap[_d] << "\t" << packetTypeMap[type] << std::endl;
 }

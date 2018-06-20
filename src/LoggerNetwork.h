@@ -30,9 +30,6 @@ class LoggerNetwork: public Singleton<LoggerNetwork> {
 		void logConsole(LOG_SENDER _sender, LOG_MESSAGE _message);
 		void logConsole(LOG_SENDER _sender, LOG_PACKET_DATATRANSFER _d, int _packetCode);
 
-	private:
-		bool m_init{false};
-
 };
 
 #endif // LOGGERNETWORK_H_INCLUDED

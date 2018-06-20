@@ -28,6 +28,10 @@ class ChatBox : public sf::Drawable {
 		const bool messageTooWide(Message& _message) const;
 		void splitMessage(Message& _message);
 		void positionMessage(Message& _message);
+		void setTransparency(int _a);
+		bool messagesTransparent() const;
+		void updateShadedRectangleTransparency();
+		void updateMessageTransparency();
 		/////////////////////////////////////////
 
 		//View-related
@@ -45,6 +49,7 @@ class ChatBox : public sf::Drawable {
 		std::vector<Message> m_messages;
 
 		bool m_enteringText;
+		sf::Clock m_clock;
 };
 
 #endif // CHATBOX_H_INCLUDED

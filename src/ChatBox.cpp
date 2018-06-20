@@ -17,14 +17,15 @@ ChatBox::ChatBox(sf::RenderWindow& _window)
 	 m_view( {
 	sf::FloatRect({0}, {0}, m_window.getSize().x * X_WINDOW_RATIO, m_window.getSize().y * Y_WINDOW_RATIO)
 }),
-    m_shadedRectangleView(m_view),
+m_shadedRectangleView(m_view),
 m_shadedRectangle(),
 m_messages(),
-m_enteringText{false} {
+m_enteringText{false},
+m_clock() {
 
 	m_shadedRectangle.setSize(m_view.getSize());
 	m_view.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
-    m_shadedRectangleView.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
+	m_shadedRectangleView.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
 
 	appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
 	appendMessage("message1", "Test");
@@ -77,35 +78,27 @@ void ChatBox::getInput(sf::Event& _event) {
 		}
 	}
 
-    //In the case of the enter key, we're going to poll an event.
-    //The reason for this is that we only want to toggle this once,
-    //and not have it rapidly be called every frame.
+	//In the case of the enter key, we're going to poll an event.
+	//The reason for this is that we only want to toggle this once,
+	//and not have it rapidly be called every frame.
 
 	switch(_event.type) {
 	case sf::Event::KeyPressed: {
 			if(_event.key.code == Key::CHAT_SEND) {
 				m_enteringText = !m_enteringText;
+				m_clock.restart();
 			}
 			break;
 		}
-    default:
-        break;
+	default:
+		break;
 	}
 
 }
 
 void ChatBox::update() {
-	static int alphaValue{0};
-
-	if(m_enteringText) {
-		alphaValue = 100;
-	}
-	else if(alphaValue > 0) {
-		alphaValue -= 1;
-	}
-
-	m_shadedRectangle.setFillColor(sf::Color(0,0,0,alphaValue));
-
+    updateShadedRectangleTransparency();
+    updateMessageTransparency();
 }
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -113,9 +106,12 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.setView(m_shadedRectangleView);
 	target.draw(m_shadedRectangle, states);
 	target.setView(m_view);
-	for(auto& message : m_messages) {
-		target.draw(message.text, states);
+	if(!messagesTransparent()) {
+		for(auto& message : m_messages) {
+			target.draw(message.text, states);
+		}
 	}
+
 	target.setView(previousView);
 }
 
@@ -160,6 +156,52 @@ void ChatBox::positionMessage(Message& _message) {
 		newPosition.y += lastMessageLines * (Y_OFFSET);
 		_message.text.setPosition(newPosition);
 	}
+}
+
+void ChatBox::setTransparency(int _a) {
+	for(auto& message : m_messages) {
+		sf::Color color = message.text.getFillColor();
+		color.a = _a;
+		message.text.setFillColor(color);
+	}
+}
+
+bool ChatBox::messagesTransparent() const {
+	if(!m_messages.empty()) {
+		return m_messages.front().text.getColor().a == 0;
+	}
+}
+
+void ChatBox::updateShadedRectangleTransparency(){
+    static int rectangleAlphaValue{0};
+
+	if(m_enteringText) {
+		rectangleAlphaValue = 100;
+	}
+	else {
+		if(rectangleAlphaValue > 0) {
+			rectangleAlphaValue -= 1;
+		}
+	}
+
+	m_shadedRectangle.setFillColor(sf::Color(0,0,0,rectangleAlphaValue));
+}
+
+void ChatBox::updateMessageTransparency(){
+	static int textAlphaValue{255};
+
+	if(m_enteringText) {
+		textAlphaValue = 255;
+	}
+	else {
+		if(m_clock.getElapsedTime().asSeconds() > 3) {
+			if(textAlphaValue > 0) {
+				textAlphaValue -= 1;
+			}
+		}
+	}
+
+	setTransparency(textAlphaValue);
 }
 
 
