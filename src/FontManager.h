@@ -16,6 +16,7 @@ class FontManager : public Singleton<FontManager> {
         };
 
         const sf::Font& getFont(Type _type);
+        float getLineSpacing(Type _type, unsigned int _characterSize);
 
     private:
         std::map<Type, sf::Font> m_fonts;
