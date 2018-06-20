@@ -51,7 +51,7 @@ void ProgramState_Menu::draw() {
     }
 }
 
-void ProgramState_Menu::addTextItem(const std::string _string, void(Program::*f)()) {
+void ProgramState_Menu::addMenuItem(const std::string _string, void(Program::*f)()) {
     sf::Text menuItem;
     float verticalSpacing{40.0f};
 

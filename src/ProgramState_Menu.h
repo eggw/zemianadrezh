@@ -14,7 +14,7 @@ class ProgramState_Menu : public ProgramState {
         void update();
         void draw();
 
-        void addTextItem(const std::string _string, void(Program::*f)() = nullptr);
+        void addMenuItem(const std::string _string, void(Program::*f)() = nullptr);
 
     private:
         typedef std::tuple<bool, void(Program::*)(), sf::Text> MenuItem;

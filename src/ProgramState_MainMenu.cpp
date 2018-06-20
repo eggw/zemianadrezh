@@ -5,13 +5,13 @@
 ProgramState_MainMenu::ProgramState_MainMenu(Program& _program)
     :ProgramState_Menu(_program) {
 
-    addTextItem("Singleplayer",
+    addMenuItem("Single Player",
                 &m_program.pushState_Play);
 
-    addTextItem("Multiplayer");
+    addMenuItem("Multiplayer");
 
-    addTextItem("Options");
+    addMenuItem("Options");
 
-    addTextItem("Exit",
+    addMenuItem("Exit",
                 &m_program.closeWindow);
 }
