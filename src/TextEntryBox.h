@@ -14,8 +14,10 @@ class TextEntryBox : public sf::Drawable {
     private:
 		void onResize(sf::Vector2u _newSize);
 		void updateCaret();
+		void updateView();
     private:
-    	sf::View m_view;
+    	sf::View m_textView;
+    	sf::View m_rectangleView;
     	sf::RectangleShape m_rectangle;
     	sf::Text m_text;
     	sf::Text m_caret;

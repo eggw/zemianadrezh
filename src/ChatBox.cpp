@@ -26,7 +26,7 @@ ChatBox::ChatBox(sf::RenderWindow& _window)
 m_shadedRectangleView(m_view),
 m_shadedRectangle(),
 m_messages(),
-m_textEntry(m_window, CHARACTER_SIZE, X_WINDOW_RATIO, Y_OFFSET),
+m_textEntry(m_window, CHARACTER_SIZE - 4, X_WINDOW_RATIO, Y_OFFSET),
 m_clock() {
 
     onResize();
