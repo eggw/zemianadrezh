@@ -36,6 +36,7 @@ class ChatBox : public sf::Drawable {
 
 		//View-related
 		/////////////////////////////////////////
+		void onResize();
 		void snapToTop();
 		void snapToBottom();
 		float getUpperViewBound() const;
@@ -48,9 +49,14 @@ class ChatBox : public sf::Drawable {
 
 	private:
 		sf::RenderWindow& m_window;
+
 		sf::View m_view;
 		sf::View m_shadedRectangleView;
+		sf::View m_textEntryView;
+
 		sf::RectangleShape m_shadedRectangle;
+		sf::RectangleShape m_textEntryRectangle;
+
 		std::vector<Message> m_messages;
 
 		bool m_enteringText;

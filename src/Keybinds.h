@@ -11,6 +11,9 @@ namespace Key {
 	const sf::Keyboard::Key CHAT_UP 	= sf::Keyboard::PageUp;
 	const sf::Keyboard::Key CHAT_DOWN 	= sf::Keyboard::PageDown;
 	const sf::Keyboard::Key CHAT_SEND   = sf::Keyboard::Return;
+
+	const sf::Keyboard::Key CHAT_TOP   = sf::Keyboard::Home;
+	const sf::Keyboard::Key CHAT_BOTTOM   = sf::Keyboard::End;
 }
 
 

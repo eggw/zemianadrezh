@@ -11,9 +11,10 @@ constexpr float Y_WINDOW_RATIO{0.25};
 
 const unsigned int CHARACTER_SIZE {20};
 const float Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
+
 const float Y_BUFFERSPACE{2.3f * Y_OFFSET};
 
-//The value of 2.3 ABOVE is because the origin of the text's position is top
+//The value of 2.3 above is because the origin of the text's position is top
 //left; in order to get an empty row below, we're going to need to subtract
 //2 * Y_OFFSET. The .3 is for a little aesthetic extra buffer space below.
 
@@ -23,14 +24,15 @@ ChatBox::ChatBox(sf::RenderWindow& _window)
     sf::FloatRect({0}, {0}, m_window.getSize().x * X_WINDOW_RATIO, m_window.getSize().y * Y_WINDOW_RATIO)
 }),
 m_shadedRectangleView(m_view),
+m_textEntryView(),
 m_shadedRectangle(),
+m_textEntryRectangle(),
 m_messages(),
 m_enteringText{false},
 m_clock() {
 
-    m_shadedRectangle.setSize(m_view.getSize());
-    m_view.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
-    m_shadedRectangleView.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
+    onResize();
+    m_textEntryRectangle.setFillColor(sf::Color(0,0,0,120));
 
     appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
     appendMessage("message1", "Test");
@@ -95,6 +97,17 @@ void ChatBox::getInput(sf::Event& _event) {
                 m_clock.restart();
                 scrollDown();
             }
+
+            else if(_event.key.code == Key::CHAT_TOP) {
+                m_clock.restart();
+                snapToTop();
+            }
+
+            else if(_event.key.code == Key::CHAT_BOTTOM) {
+                m_clock.restart();
+                snapToBottom();
+            }
+
             break;
         }
         default:
@@ -110,13 +123,20 @@ void ChatBox::update() {
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     sf::View previousView = target.getView();
+
     target.setView(m_shadedRectangleView);
     target.draw(m_shadedRectangle, states);
+
     target.setView(m_view);
     if(!messagesTransparent()) {
         for(auto& message : m_messages) {
             target.draw(message.text, states);
         }
+    }
+
+    if(m_enteringText) {
+        target.setView(m_textEntryView);
+        target.draw(m_textEntryRectangle, states);
     }
 
     target.setView(previousView);
@@ -218,6 +238,31 @@ void ChatBox::updateMessageTransparency() {
 }
 
 
+void ChatBox::onResize() {
+    m_view.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
+
+    m_shadedRectangleView.setViewport(m_view.getViewport());
+    m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
+
+    float Y_TEXTENTRY   {((m_window.getSize().y - Y_OFFSET)
+                                /
+                        (m_window.getSize().y))};
+
+
+    m_textEntryView.reset(sf::FloatRect({0},
+                                        {0},
+                                        m_window.getSize().x * X_WINDOW_RATIO,
+                                        Y_OFFSET));
+
+    m_textEntryView.setViewport({0,
+                                Y_TEXTENTRY,
+                                X_WINDOW_RATIO,
+                                1 - Y_TEXTENTRY});
+
+    sf::Vector2f rectSize{m_textEntryView.getSize()};
+    m_textEntryRectangle.setSize(rectSize);
+}
+
 //This function checks if the last message is "outside" (below) the view.
 //If so, it adjusts the view's center so that the very first message is
 //on top.
@@ -285,18 +330,18 @@ bool ChatBox::viewAtLowest() const {
 
 void ChatBox::scrollUp() {
     if(!viewAtHighest()) {
-        m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (Y_OFFSET / 5));
+        m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (Y_OFFSET));
     }
-    if(viewAtHighest()){
+    if(viewAtHighest()) {
         snapToTop();
     }
 }
 
 void ChatBox::scrollDown() {
     if(!viewAtLowest()) {
-        m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (Y_OFFSET / 5));
+        m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (Y_OFFSET));
     }
-    if(viewAtLowest()){
+    if(viewAtLowest()) {
         snapToBottom();
     }
 }
