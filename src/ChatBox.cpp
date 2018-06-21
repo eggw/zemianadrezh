@@ -11,6 +11,11 @@ constexpr float Y_WINDOW_RATIO{0.25};
 
 const unsigned int CHARACTER_SIZE {20};
 const float Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
+const float Y_BUFFERSPACE{2.3f * Y_OFFSET};
+
+//The value of 2.3 ABOVE is because the origin of the text's position is top
+//left; in order to get an empty row below, we're going to need to subtract
+//2 * Y_OFFSET. The .3 is for a little aesthetic extra buffer space below.
 
 ChatBox::ChatBox(sf::RenderWindow& _window)
 	:m_window(_window),
@@ -65,6 +70,7 @@ void ChatBox::appendMessage(const std::string _message, const std::string _sende
 
 	m_messages.push_back(newMessage);
 	snapToLatestMessage();
+	m_clock.restart();
 }
 
 void ChatBox::getInput(sf::Event& _event) {
@@ -228,7 +234,8 @@ void ChatBox::snapToLatestMessage() {
 		std::string str = message.text.getString();
         std::cout << str << std::endl;
 		sf::Vector2f newCenter {m_view.getCenter().x, message.text.getPosition().y};
-		newCenter.y -= (m_view.getSize().y / 2) - (Y_OFFSET * 1.3);
+
+		newCenter.y -= (m_view.getSize().y / 2) - (Y_BUFFERSPACE);
 
 		m_view.setCenter(newCenter);
 	}
@@ -244,9 +251,7 @@ bool ChatBox::viewAtHighest() const {
 
 bool ChatBox::viewAtLowest() const {
 	float lowestPoint{m_messages.back().text.getPosition().y};
-	//We're going to want to extend it in the vertical axis,
-	//since the origin is situated in the top left corner.
-	lowestPoint += Y_OFFSET * 1.3;
+	lowestPoint += Y_BUFFERSPACE;
 
 	if(m_view.getCenter().y + m_view.getSize().y / 2 >= lowestPoint) {
 		return true;

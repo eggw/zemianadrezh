@@ -5,7 +5,7 @@
 
 Program::Program() {
 	m_window = std::unique_ptr<sf::RenderWindow>
-			   (new sf::RenderWindow(sf::VideoMode(1536,864),
+			   (new sf::RenderWindow(sf::VideoMode(800,600),
 									 "zemianadrezh"));
 	m_window->setFramerateLimit(60);
 
