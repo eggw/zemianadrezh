@@ -13,6 +13,7 @@ class TextEntryBox : public sf::Drawable {
         bool enteringText() const;
     private:
 		void onResize(sf::Vector2u _newSize);
+		void updateCaret();
     private:
     	sf::View m_view;
     	sf::RectangleShape m_rectangle;
@@ -20,6 +21,7 @@ class TextEntryBox : public sf::Drawable {
     	sf::Text m_caret;
     	bool m_enteringText;
 
+    	int m_charSize;
     	float m_xWindowRatio;
     	float m_height;
 };

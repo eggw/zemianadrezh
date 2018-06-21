@@ -6,12 +6,12 @@
 
 #include <iostream>
 
-constexpr float X_WINDOW_RATIO{0.3};
-constexpr float Y_WINDOW_RATIO{0.25};
+constexpr float X_WINDOW_RATIO              {0.3};
+constexpr float Y_WINDOW_RATIO              {0.25};
+constexpr float SECONDS_UNTIL_MESSAGES_FADE {5.0f};
+constexpr unsigned int CHARACTER_SIZE       {20};
 
-const unsigned int CHARACTER_SIZE {20};
 const float Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
-
 const float Y_BUFFERSPACE{2.3f * Y_OFFSET};
 
 //The value of 2.3 above is because the origin of the text's position is top
@@ -189,6 +189,9 @@ void ChatBox::setTransparency(int _a) {
 }
 
 bool ChatBox::messagesTransparent() const {
+    //Since all messages will have the same transparency,
+    //it's enough for us to get the alpha value of the first
+    //element
     if(!m_messages.empty()) {
         return m_messages.front().text.getColor().a == 0;
     }
@@ -216,7 +219,7 @@ void ChatBox::updateMessageTransparency() {
         textAlphaValue = 255;
     }
     else {
-        if(m_clock.getElapsedTime().asSeconds() > 3) {
+        if(m_clock.getElapsedTime().asSeconds() > SECONDS_UNTIL_MESSAGES_FADE) {
             if(textAlphaValue > 0) {
                 textAlphaValue -= 1;
             }
@@ -306,7 +309,7 @@ bool ChatBox::viewAtLowest() const {
 }
 
 void ChatBox::scrollUp() {
-    if(!viewAtHighest()) {
+    if(!viewAtHighest() && !m_textEntry.enteringText()) {
         m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (Y_OFFSET));
     }
     if(viewAtHighest()) {
@@ -315,7 +318,7 @@ void ChatBox::scrollUp() {
 }
 
 void ChatBox::scrollDown() {
-    if(!viewAtLowest()) {
+    if(!viewAtLowest() && !m_textEntry.enteringText()) {
         m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (Y_OFFSET));
     }
     if(viewAtLowest()) {

@@ -9,6 +9,7 @@ TextEntryBox::TextEntryBox(sf::Window& _window, int _charSize, float _xWindowRat
      m_rectangle(),
      m_text(),
      m_enteringText(false),
+     m_charSize{_charSize},
      m_xWindowRatio{_xWindowRatio},
      m_height{_height} {
 
@@ -16,8 +17,8 @@ TextEntryBox::TextEntryBox(sf::Window& _window, int _charSize, float _xWindowRat
 
     m_text.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
     m_caret.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
-    m_text.setCharacterSize(_charSize);
-    m_caret.setCharacterSize(_charSize);
+    m_text.setCharacterSize(m_charSize);
+    m_caret.setCharacterSize(m_charSize);
 
     m_caret.setString("|");
 
@@ -36,13 +37,15 @@ void TextEntryBox::getInput(sf::Event& _event) {
 }
 
 void TextEntryBox::update() {
-
+    updateCaret();
 }
 
 void TextEntryBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     if(m_enteringText) {
         target.setView(m_view);
         target.draw(m_rectangle, states);
+        target.draw(m_text, states);
+        target.draw(m_caret, states);
     }
 }
 
@@ -72,3 +75,29 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
 
 }
 
+void TextEntryBox::updateCaret(){
+    if(m_enteringText){
+        static bool caretAlphaDecreasing{true};
+        static int caretAlphaValue{255};
+
+        if(caretAlphaDecreasing){
+            caretAlphaValue -= 5;
+            if(caretAlphaValue <= 0){
+                caretAlphaDecreasing = false;
+            }
+        }
+        else{
+            caretAlphaValue += 5;
+            if(caretAlphaValue >= 255){
+                caretAlphaDecreasing = true;
+            }
+        }
+
+        sf::Color caretColor = m_caret.getColor();
+        caretColor.a = caretAlphaValue;
+        m_caret.setColor(caretColor);
+
+        float caret_x{m_text.getGlobalBounds().width};
+        m_caret.setPosition({caret_x, m_caret.getPosition().y});
+    }
+}
