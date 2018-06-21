@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "TextEntryBox.h"
+
 class ChatBox : public sf::Drawable {
 	public:
 		ChatBox(sf::RenderWindow& _window);
@@ -52,14 +54,12 @@ class ChatBox : public sf::Drawable {
 
 		sf::View m_view;
 		sf::View m_shadedRectangleView;
-		sf::View m_textEntryView;
 
 		sf::RectangleShape m_shadedRectangle;
-		sf::RectangleShape m_textEntryRectangle;
 
 		std::vector<Message> m_messages;
 
-		bool m_enteringText;
+		TextEntryBox m_textEntry;
 		sf::Clock m_clock;
 };
 

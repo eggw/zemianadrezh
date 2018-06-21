@@ -24,15 +24,12 @@ ChatBox::ChatBox(sf::RenderWindow& _window)
     sf::FloatRect({0}, {0}, m_window.getSize().x * X_WINDOW_RATIO, m_window.getSize().y * Y_WINDOW_RATIO)
 }),
 m_shadedRectangleView(m_view),
-m_textEntryView(),
 m_shadedRectangle(),
-m_textEntryRectangle(),
 m_messages(),
-m_enteringText{false},
+m_textEntry(m_window, CHARACTER_SIZE, X_WINDOW_RATIO, Y_OFFSET),
 m_clock() {
 
     onResize();
-    m_textEntryRectangle.setFillColor(sf::Color(0,0,0,120));
 
     appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
     appendMessage("message1", "Test");
@@ -79,11 +76,11 @@ void ChatBox::getInput(sf::Event& _event) {
     //In the case of the enter key, we're going to poll an event.
     //The reason for this is that we only want to toggle this once,
     //and not have it rapidly be called every frame.
+    m_textEntry.getInput(_event);
 
     switch(_event.type) {
         case sf::Event::KeyPressed: {
             if(_event.key.code == Key::CHAT_SEND) {
-                m_enteringText = !m_enteringText;
                 snapToBottom();
                 m_clock.restart();
             }
@@ -117,6 +114,7 @@ void ChatBox::getInput(sf::Event& _event) {
 }
 
 void ChatBox::update() {
+    m_textEntry.update();
     updateShadedRectangleTransparency();
     updateMessageTransparency();
 }
@@ -134,10 +132,7 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         }
     }
 
-    if(m_enteringText) {
-        target.setView(m_textEntryView);
-        target.draw(m_textEntryRectangle, states);
-    }
+    target.draw(m_textEntry, states);
 
     target.setView(previousView);
 }
@@ -202,7 +197,7 @@ bool ChatBox::messagesTransparent() const {
 void ChatBox::updateShadedRectangleTransparency() {
     static int rectangleAlphaValue{0};
 
-    if(m_enteringText) {
+    if(m_textEntry.enteringText()) {
         rectangleAlphaValue = 100;
     }
     else {
@@ -217,7 +212,7 @@ void ChatBox::updateShadedRectangleTransparency() {
 void ChatBox::updateMessageTransparency() {
     static int textAlphaValue{255};
 
-    if(m_enteringText) {
+    if(m_textEntry.enteringText()) {
         textAlphaValue = 255;
     }
     else {
@@ -243,24 +238,6 @@ void ChatBox::onResize() {
 
     m_shadedRectangleView.setViewport(m_view.getViewport());
     m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
-
-    float Y_TEXTENTRY   {((m_window.getSize().y - Y_OFFSET)
-                                /
-                        (m_window.getSize().y))};
-
-
-    m_textEntryView.reset(sf::FloatRect({0},
-                                        {0},
-                                        m_window.getSize().x * X_WINDOW_RATIO,
-                                        Y_OFFSET));
-
-    m_textEntryView.setViewport({0,
-                                Y_TEXTENTRY,
-                                X_WINDOW_RATIO,
-                                1 - Y_TEXTENTRY});
-
-    sf::Vector2f rectSize{m_textEntryView.getSize()};
-    m_textEntryRectangle.setSize(rectSize);
 }
 
 //This function checks if the last message is "outside" (below) the view.
