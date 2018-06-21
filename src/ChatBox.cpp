@@ -110,7 +110,7 @@ void ChatBox::getInput(sf::Event& _event) {
             break;
         }
 
-        case sf::Event::Resized:{
+        case sf::Event::Resized: {
             sf::Vector2u newSize{_event.size.width, _event.size.height};
             onResize(newSize);
             break;
@@ -152,8 +152,23 @@ const bool ChatBox::messageTooWide(Message& _message) const {
     return _message.text.getGlobalBounds().width >= m_view.getSize().x * 0.9;
 }
 
+void removeNewlines(std::string& _str) {
+    std::string newline{"\n"};
+    std::string::size_type i = _str.find(newline);
+    while(i != std::string::npos) {
+        _str.erase(i, newline.length());
+        i = _str.find(newline, i);
+        std::cout << "removed newline" << std::endl;
+    }
+}
+
 void ChatBox::splitMessage(Message& _message) {
+    //Before we recalculate everything, we'll remove
+    //all newline characters currently present
     std::string textStr = _message.text.getString();
+    removeNewlines(textStr);
+    _message.text.setString(textStr);
+
     float charSize = _message.text.getGlobalBounds().width / textStr.size();
     auto widthLimit = m_view.getSize().x * 0.9;
 
@@ -258,15 +273,14 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 
     m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
-    /*
-    TODO: proper resizing of messages (this doesn't work right)
 
     for(auto& message : m_messages){
         if(messageTooWide(message)){
             splitMessage(message);
+            std::cout << "splitting message!" << std::endl;
         }
     }
-    */
+
 }
 
 //This function checks if the last message is "outside" (below) the view.
