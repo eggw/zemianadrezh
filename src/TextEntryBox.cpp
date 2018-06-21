@@ -4,6 +4,7 @@
 
 #include "FontManager.h"
 #include <iostream>
+#include "InputLocker.h"
 
 TextEntryBox::TextEntryBox(sf::Window& _window, int _charSize, float _xWindowRatio, float _height)
     :m_textView(),
@@ -38,6 +39,13 @@ void TextEntryBox::getInput(sf::Event& _event) {
                     m_text.setString("");
                 }
                 m_enteringText = !m_enteringText;
+
+                if(m_enteringText){
+                    InputLocker::get_instance().lock();
+                }
+                else{
+                    InputLocker::get_instance().unlock();
+                }
             }
             break;
         }

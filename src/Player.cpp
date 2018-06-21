@@ -4,6 +4,7 @@
 
 #include "Keybinds.h"
 
+#include "InputLocker.h"
 
 Player::Player()
 	:m_sprite(),
@@ -71,6 +72,10 @@ const std::string& Player::getName() const {
 }
 
 void Player::getInput() {
+	if(InputLocker::get_instance().isLocked()){
+		return;
+	}
+
 	if(sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
 		m_facingLeft = true;
 		m_animationSheet.setAnimationRange(0, 10);
