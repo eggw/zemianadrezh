@@ -4,8 +4,6 @@
 
 #include "Keybinds.h"
 
-#include <iostream>
-
 constexpr float X_WINDOW_RATIO              {0.3};
 constexpr float Y_WINDOW_RATIO              {0.25};
 constexpr float SECONDS_UNTIL_MESSAGES_FADE {5.0f};
@@ -64,7 +62,7 @@ void ChatBox::appendMessage(const std::string _message, const std::string _sende
     Message newMessage{newText};
 
     if(messageTooWide(newMessage)) {
-        splitMessage(newMessage);
+        adjustMessage(newMessage);
     }
 
     positionMessage(newMessage);
@@ -152,22 +150,35 @@ const bool ChatBox::messageTooWide(Message& _message) const {
     return _message.text.getGlobalBounds().width >= m_view.getSize().x * 0.9;
 }
 
+const bool ChatBox::messageTooNarrow(Message& _message) const {
+    bool containsNewline{false};
+    auto i = _message.text.getString().find("\n");
+    if(i != std::string::npos){
+        containsNewline = true;
+    }
+
+    return (_message.text.getGlobalBounds().width < m_view.getSize().x * 0.9)
+            &&
+            containsNewline;
+}
+
 void removeNewlines(std::string& _str) {
     std::string newline{"\n"};
-    std::string::size_type i = _str.find(newline);
+    auto i = _str.find(newline);
     while(i != std::string::npos) {
         _str.erase(i, newline.length());
         i = _str.find(newline, i);
-        std::cout << "removed newline" << std::endl;
     }
 }
 
-void ChatBox::splitMessage(Message& _message) {
+void ChatBox::adjustMessage(Message& _message) {
     //Before we recalculate everything, we'll remove
-    //all newline characters currently present
+    //all newline characters currently present and
+    //set the message's numberOfLines to 1
     std::string textStr = _message.text.getString();
     removeNewlines(textStr);
     _message.text.setString(textStr);
+    _message.numberOfLines = 1;
 
     float charSize = _message.text.getGlobalBounds().width / textStr.size();
     auto widthLimit = m_view.getSize().x * 0.9;
@@ -197,6 +208,8 @@ void ChatBox::splitMessage(Message& _message) {
     _message.text.setString(textStr);
 }
 
+//This function sets the position of a new message, at the
+//very bottom of the box
 void ChatBox::positionMessage(Message& _message) {
     if(!m_messages.empty()) {
         sf::Vector2f newPosition{m_messages.back().text.getPosition()};
@@ -273,14 +286,13 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 
     m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
-
     for(auto& message : m_messages){
-        if(messageTooWide(message)){
-            splitMessage(message);
-            std::cout << "splitting message!" << std::endl;
+        if(messageTooWide(message) || messageTooNarrow(message)){
+            adjustMessage(message);
         }
     }
 
+    snapToBottom();
 }
 
 //This function checks if the last message is "outside" (below) the view.
