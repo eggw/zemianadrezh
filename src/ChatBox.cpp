@@ -46,6 +46,8 @@ m_clock() {
     appendMessage("message9", "Test");
     */
 
+    snapToBottom();
+
 }
 
 void ChatBox::appendMessage(const std::string _message, const std::string _sender) {
@@ -255,9 +257,14 @@ void ChatBox::onResize() {
 void ChatBox::snapToTop() {
     if(!m_messages.empty() && !m_textEntry.enteringText()) {
         Message& latestMessage = m_messages.back();
-        float boundary{m_view.getSize().y - Y_OFFSET};
 
-        if(latestMessage.text.getPosition().y < boundary) {
+        float lastLineYPosition{latestMessage.text.getPosition().y
+                                +
+                                (latestMessage.numberOfLines - 1) * Y_OFFSET};
+
+        float boundary{m_view.getSize().y - Y_BUFFERSPACE};
+
+        if(lastLineYPosition < boundary) {
             return;
         }
 
@@ -275,13 +282,17 @@ void ChatBox::snapToTop() {
 void ChatBox::snapToBottom() {
     if(!m_messages.empty()&& !m_textEntry.enteringText()) {
         Message& latestMessage = m_messages.back();
-        float boundary{m_view.getSize().y - Y_OFFSET};
+        float lastLineYPosition{latestMessage.text.getPosition().y
+                                +
+                                (latestMessage.numberOfLines - 1) * Y_OFFSET};
 
-        if(latestMessage.text.getPosition().y < boundary) {
+        float boundary{m_view.getSize().y - Y_BUFFERSPACE};
+
+        if(lastLineYPosition < boundary) {
             return;
         }
 
-        sf::Vector2f newCenter {m_view.getCenter().x, latestMessage.text.getPosition().y};
+        sf::Vector2f newCenter {m_view.getCenter().x, lastLineYPosition};
 
         newCenter.y -= (m_view.getSize().y / 2) - (Y_BUFFERSPACE);
 
