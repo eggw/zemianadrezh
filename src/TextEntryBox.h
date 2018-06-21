@@ -11,10 +11,14 @@ class TextEntryBox : public sf::Drawable {
         void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
         bool enteringText() const;
+        bool inputComplete();
+
+        std::string getLastString() const;
     private:
 		void onResize(sf::Vector2u _newSize);
 		void updateCaret();
 		void updateView();
+		bool stringEmpty() const;
     private:
     	sf::View m_textView;
     	sf::View m_rectangleView;
@@ -22,6 +26,9 @@ class TextEntryBox : public sf::Drawable {
     	sf::Text m_text;
     	sf::Text m_caret;
     	bool m_enteringText;
+    	bool m_inputComplete;
+
+    	std::string m_lastString;
 
     	int m_charSize;
     	float m_xWindowRatio;

@@ -7,7 +7,8 @@
 
 class ChatBox : public sf::Drawable {
 	public:
-		ChatBox(sf::RenderWindow& _window);
+		ChatBox(sf::RenderWindow& _window,
+				const std::string& _name);
 
 		void appendMessage(const std::string _message, const std::string _sender = "");
 		void getInput(sf::Event& _event);
@@ -51,6 +52,7 @@ class ChatBox : public sf::Drawable {
 
 	private:
 		sf::RenderWindow& m_window;
+		const std::string& m_name;
 
 		sf::View m_view;
 		sf::View m_shadedRectangleView;

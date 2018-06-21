@@ -18,8 +18,9 @@ const float Y_BUFFERSPACE{2.3f * Y_OFFSET};
 //left; in order to get an empty row below, we're going to need to subtract
 //2 * Y_OFFSET. The .3 is for a little aesthetic extra buffer space below.
 
-ChatBox::ChatBox(sf::RenderWindow& _window)
+ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
     :m_window(_window),
+     m_name(_name),
      m_view( {
     sf::FloatRect({0}, {0}, m_window.getSize().x * X_WINDOW_RATIO, m_window.getSize().y * Y_WINDOW_RATIO)
 }),
@@ -31,6 +32,7 @@ m_clock() {
 
     onResize();
 
+    /*
     appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
     appendMessage("message1", "Test");
     appendMessage("message2", "Test");
@@ -42,6 +44,7 @@ m_clock() {
     appendMessage("message7", "Test");
     appendMessage("message8", "Test");
     appendMessage("message9", "Test");
+    */
 
 }
 
@@ -115,6 +118,9 @@ void ChatBox::getInput(sf::Event& _event) {
 
 void ChatBox::update() {
     m_textEntry.update();
+    if(m_textEntry.inputComplete()) {
+        appendMessage(m_textEntry.getLastString(), m_name);
+    }
     updateShadedRectangleTransparency();
     updateMessageTransparency();
 }

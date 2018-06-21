@@ -10,7 +10,8 @@ TextEntryBox::TextEntryBox(sf::Window& _window, int _charSize, float _xWindowRat
      m_rectangleView(),
      m_rectangle(),
      m_text(),
-     m_enteringText(false),
+     m_enteringText{false},
+     m_inputComplete{false},
      m_charSize{_charSize},
      m_xWindowRatio{_xWindowRatio},
      m_height{_height} {
@@ -31,6 +32,11 @@ void TextEntryBox::getInput(sf::Event& _event) {
     switch(_event.type) {
         case sf::Event::KeyPressed: {
             if(_event.key.code == Key::CHAT_SEND) {
+                if(m_enteringText && !stringEmpty()){
+                    m_inputComplete = true;
+                    m_lastString = m_text.getString();
+                    m_text.setString("");
+                }
                 m_enteringText = !m_enteringText;
             }
             break;
@@ -43,7 +49,7 @@ void TextEntryBox::getInput(sf::Event& _event) {
 
             std::string newString{m_text.getString()};
 
-            if(_event.text.unicode == 8 && !m_text.getString().isEmpty()) {
+            if(_event.text.unicode == 8 && !stringEmpty()) {
                 newString.erase(newString.size()-1);
             }
             else if(_event.text.unicode >= 32
@@ -87,6 +93,18 @@ void TextEntryBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 bool TextEntryBox::enteringText() const {
     return m_enteringText;
+}
+
+bool TextEntryBox::inputComplete() {
+    if(m_inputComplete){
+        m_inputComplete = false;
+        return true;
+    }
+    return false;
+}
+
+std::string TextEntryBox::getLastString() const {
+    return m_lastString;
 }
 
 void TextEntryBox::onResize(sf::Vector2u _newSize) {
@@ -155,4 +173,8 @@ void TextEntryBox::updateView() {
                                     m_textView.getCenter().y};
         m_textView.setCenter(originalCenter);
     }
+}
+
+bool TextEntryBox::stringEmpty() const{
+    return m_text.getString().isEmpty();
 }
