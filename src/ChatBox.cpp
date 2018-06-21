@@ -247,7 +247,7 @@ void ChatBox::onResize() {
 //If so, it adjusts the view's center so that the very first message is
 //on top.
 void ChatBox::snapToTop() {
-    if(!m_messages.empty()) {
+    if(!m_messages.empty() && !m_textEntry.enteringText()) {
         Message& latestMessage = m_messages.back();
         float boundary{m_view.getSize().y - Y_OFFSET};
 
@@ -267,7 +267,7 @@ void ChatBox::snapToTop() {
 //This function checks if the last message is "outside" (below) the view.
 //If so, it adjusts the view's center so that it is visible.
 void ChatBox::snapToBottom() {
-    if(!m_messages.empty()) {
+    if(!m_messages.empty()&& !m_textEntry.enteringText()) {
         Message& latestMessage = m_messages.back();
         float boundary{m_view.getSize().y - Y_OFFSET};
 

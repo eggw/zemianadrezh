@@ -31,7 +31,34 @@ void TextEntryBox::getInput(sf::Event& _event) {
             if(_event.key.code == Key::CHAT_SEND) {
                 m_enteringText = !m_enteringText;
             }
+            break;
         }
+
+        case sf::Event::TextEntered: {
+            if(!m_enteringText){
+                break;
+            }
+
+            std::string newString{m_text.getString()};
+
+            if(_event.text.unicode == 8 && !m_text.getString().isEmpty()){
+                newString.erase(newString.size()-1);
+            }
+            else if(_event.text.unicode >= 32
+                    &&
+                    _event.text.unicode <= 255){
+
+                newString += static_cast<char>(_event.text.unicode);
+            }
+
+            m_text.setString(newString);
+            break;
+        }
+
+
+        default:
+            break;
+
     }
 
 }
