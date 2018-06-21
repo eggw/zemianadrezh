@@ -19,18 +19,15 @@ const float Y_BUFFERSPACE{2.3f * Y_OFFSET};
 //2 * Y_OFFSET. The .3 is for a little aesthetic extra buffer space below.
 
 ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
-    :m_window(_window),
-     m_name(_name),
-     m_view( {
-    sf::FloatRect({0}, {0}, m_window.getSize().x * X_WINDOW_RATIO, m_window.getSize().y * Y_WINDOW_RATIO)
-}),
-m_shadedRectangleView(m_view),
-m_shadedRectangle(),
-m_messages(),
-m_textEntry(m_window, CHARACTER_SIZE - 4, X_WINDOW_RATIO, Y_OFFSET),
-m_clock() {
+    :m_name(_name),
+     m_view(),
+     m_shadedRectangleView(),
+     m_shadedRectangle(),
+     m_messages(),
+     m_textEntry(_window, CHARACTER_SIZE - 4, X_WINDOW_RATIO, Y_OFFSET),
+     m_clock() {
 
-    onResize();
+    onResize(_window.getSize());
 
     /*
     appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
@@ -110,6 +107,12 @@ void ChatBox::getInput(sf::Event& _event) {
                 snapToBottom();
             }
 
+            break;
+        }
+
+        case sf::Event::Resized:{
+            sf::Vector2u newSize{_event.size.width, _event.size.height};
+            onResize(newSize);
             break;
         }
         default:
@@ -244,11 +247,26 @@ void ChatBox::updateMessageTransparency() {
 }
 
 
-void ChatBox::onResize() {
+void ChatBox::onResize(sf::Vector2u _newSize) {
+    sf::FloatRect viewRect({0}, {0}, _newSize.x * X_WINDOW_RATIO, _newSize.y * Y_WINDOW_RATIO);
+
+    m_view.reset(viewRect);
     m_view.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
 
-    m_shadedRectangleView.setViewport(m_view.getViewport());
+    m_shadedRectangleView.reset(viewRect);
+    m_shadedRectangleView.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
+
     m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
+
+    /*
+    TODO: proper resizing of messages (this doesn't work right)
+
+    for(auto& message : m_messages){
+        if(messageTooWide(message)){
+            splitMessage(message);
+        }
+    }
+    */
 }
 
 //This function checks if the last message is "outside" (below) the view.

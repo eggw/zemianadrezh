@@ -73,6 +73,11 @@ void TextEntryBox::getInput(sf::Event& _event) {
             break;
         }
 
+        case sf::Event::Resized:{
+            sf::Vector2u newSize{_event.size.width, _event.size.height};
+            onResize(newSize);
+            break;
+        }
 
         default:
             break;
