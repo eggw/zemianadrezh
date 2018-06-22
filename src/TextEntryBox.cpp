@@ -6,10 +6,8 @@
 #include <iostream>
 #include "InputLocker.h"
 
-TextEntryBox::TextEntryBox(sf::Window& _window,
+TextEntryBox::TextEntryBox(Util::WindowInfo _windowInfo,
                            int _charSize,
-                           float _xWindowRatio,
-                           float _height,
                            unsigned int _maxChars)
     :m_textView(),
      m_rectangleView(),
@@ -17,9 +15,8 @@ TextEntryBox::TextEntryBox(sf::Window& _window,
      m_text(),
      m_enteringText{false},
      m_inputComplete{false},
+     m_windowInfo{_windowInfo},
      m_charSize{_charSize},
-     m_xWindowRatio{_xWindowRatio},
-     m_height{_height},
      m_maxChars{_maxChars} {
 
     m_rectangle.setFillColor(sf::Color(0,0,0,120));
@@ -31,7 +28,7 @@ TextEntryBox::TextEntryBox(sf::Window& _window,
 
     m_caret.setString("|");
 
-    onResize(_window.getSize());
+    onResize(m_windowInfo.size);
 }
 
 void TextEntryBox::getInput(sf::Event& _event) {
@@ -126,6 +123,7 @@ std::string TextEntryBox::getLastString() const {
 }
 
 void TextEntryBox::onResize(sf::Vector2u _newSize) {
+    /*
     float yPos   {((_newSize.y - m_height)
                    /
                    (_newSize.y))};
@@ -140,6 +138,25 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
                             yPos,
                             m_xWindowRatio,
                             1 - yPos
+                           });
+
+    sf::Vector2f rectSize{m_textView.getSize()};
+    m_rectangle.setSize(rectSize);
+
+    m_rectangleView = m_textView;
+    */
+
+    m_textView.reset({0,
+                      0,
+                      _newSize.x * m_windowInfo.ratio.x,
+                      _newSize.y * m_windowInfo.ratio.y
+                     });
+
+
+    m_textView.setViewport({m_windowInfo.position.x / m_windowInfo.size.x,
+                            m_windowInfo.position.y / m_windowInfo.size.y,
+                            m_windowInfo.ratio.x,
+                            m_windowInfo.ratio.y
                            });
 
     sf::Vector2f rectSize{m_textView.getSize()};

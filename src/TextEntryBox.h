@@ -3,12 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Util.h"
+
 class TextEntryBox : public sf::Drawable {
     public:
-        TextEntryBox(sf::Window& _window,
+        TextEntryBox(Util::WindowInfo _windowInfo,
 					int _charSize,
-					float _xWindowRatio,
-					float _height,
 					unsigned int _maxChars = 255);
 
         void getInput(sf::Event& _event);
@@ -35,9 +35,8 @@ class TextEntryBox : public sf::Drawable {
 
     	std::string m_lastString;
 
+		Util::WindowInfo m_windowInfo;
     	int m_charSize;
-    	float m_xWindowRatio;
-    	float m_height;
     	unsigned int m_maxChars;
 };
 
