@@ -6,7 +6,11 @@
 #include <iostream>
 #include "InputLocker.h"
 
-TextEntryBox::TextEntryBox(sf::Window& _window, int _charSize, float _xWindowRatio, float _height)
+TextEntryBox::TextEntryBox(sf::Window& _window,
+                           int _charSize,
+                           float _xWindowRatio,
+                           float _height,
+                           unsigned int _maxChars)
     :m_textView(),
      m_rectangleView(),
      m_rectangle(),
@@ -15,7 +19,8 @@ TextEntryBox::TextEntryBox(sf::Window& _window, int _charSize, float _xWindowRat
      m_inputComplete{false},
      m_charSize{_charSize},
      m_xWindowRatio{_xWindowRatio},
-     m_height{_height} {
+     m_height{_height},
+     m_maxChars{_maxChars} {
 
     m_rectangle.setFillColor(sf::Color(0,0,0,120));
 
@@ -64,7 +69,7 @@ void TextEntryBox::getInput(sf::Event& _event) {
                     &&
                     _event.text.unicode <= 255
                     &&
-                    newString.length() < 80) {
+                    newString.length() < m_maxChars) {
 
                 newString += static_cast<char>(_event.text.unicode);
             }

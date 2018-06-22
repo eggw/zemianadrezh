@@ -5,7 +5,12 @@
 
 class TextEntryBox : public sf::Drawable {
     public:
-        TextEntryBox(sf::Window& _window, int _charSize, float _xWindowRatio, float _height);
+        TextEntryBox(sf::Window& _window,
+					int _charSize,
+					float _xWindowRatio,
+					float _height,
+					unsigned int _maxChars = 255);
+
         void getInput(sf::Event& _event);
         void update();
         void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -33,6 +38,7 @@ class TextEntryBox : public sf::Drawable {
     	int m_charSize;
     	float m_xWindowRatio;
     	float m_height;
+    	unsigned int m_maxChars;
 };
 
 #endif // TEXTENTRYBOX_H_INCLUDED
