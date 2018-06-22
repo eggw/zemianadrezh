@@ -5,11 +5,12 @@
 #include "LoggerNetwork.h"
 
 #include <iostream>
-Client::Client(Server* _localServer)
+Client::Client(sf::RenderWindow& _window, Server* _localServer)
 	:GameInstance(),
 	 m_networkManager(*this),
 	 m_localServer(_localServer),
-	 m_player() {
+	 m_player(),
+	 m_chatBox(_window, m_player.getName()) {
 
 	if(m_localServer != nullptr) {
 		m_world = m_localServer->getWorld();
@@ -21,12 +22,14 @@ Client::Client(Server* _localServer)
 
 }
 
-void Client::getInput() {
+void Client::getInput(sf::Event& _event) {
 	m_player.getInput();
+	m_chatBox.getInput(_event);
 }
 
 void Client::update() {
 	m_player.update();
+	m_chatBox.update();
 
 	if(!isLocal()) {
 		GameInstance::update();
@@ -73,6 +76,10 @@ void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
 
 const Player* Client::getPlayer() const {
 	return &m_player;
+}
+
+const ChatBox* Client::getChatBox() const{
+    return &m_chatBox;
 }
 
 bool Client::isLocal() const {

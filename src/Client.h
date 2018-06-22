@@ -4,6 +4,7 @@
 #include "NetworkManagerClient.h"
 
 #include "GameInstance.h"
+#include "ChatBox.h"
 
 /*
 The client class takes an optional pointer to a server.
@@ -16,9 +17,9 @@ class Server;
 
 class Client : public GameInstance {
 	public:
-		Client(Server* _localServer = nullptr);
+		Client(sf::RenderWindow& _window, Server* _localServer = nullptr);
 
-		void getInput();
+		void getInput(sf::Event& _event);
 		void update();
 		void updateOtherPlayers(Player::EncodedPlayerData _data);
 
@@ -28,6 +29,7 @@ class Client : public GameInstance {
 		void respawnPlayer();
 
 		const Player* getPlayer() const;
+		const ChatBox* getChatBox() const;
 
 		bool isLocal() const;
 	public:
@@ -35,6 +37,7 @@ class Client : public GameInstance {
 	private:
 		Server* m_localServer;
 		Player m_player;
+		ChatBox m_chatBox;
 };
 
 #endif // CLIENT_H_INCLUDED

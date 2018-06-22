@@ -7,7 +7,6 @@
 #include "Client.h"
 #include "RendererChunk.h"
 #include "RendererDrawable.h"
-#include "ChatBox.h"
 
 class ProgramState_Play : public ProgramState {
 	public:
@@ -24,7 +23,6 @@ class ProgramState_Play : public ProgramState {
 	private:
 		Server m_localServer;
 		Client m_client;
-		ChatBox m_chatBox;
 		RendererChunk m_rendererChunk;
 		RendererDrawable<Player> m_rendererPlayer;
 		RendererDrawable<ChatBox> m_rendererChatbox;

@@ -5,8 +5,7 @@
 ProgramState_Play::ProgramState_Play(Program& _program)
     : 	ProgramState(_program),
        m_localServer(),
-       m_client(),
-       m_chatBox(*m_program.m_window, m_client.getPlayer()->getName()),
+       m_client(*m_program.m_window),
        m_rendererChunk(*m_program.m_window),
        m_rendererPlayer(*m_program.m_window),
        m_rendererChatbox(*m_program.m_window),
@@ -29,7 +28,7 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     }
 
     m_rendererPlayer.addObject(m_client.getPlayer());
-    m_rendererChatbox.addObject(&m_chatBox);
+    m_rendererChatbox.addObject(m_client.getChatBox());
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -43,8 +42,7 @@ void ProgramState_Play::getInput(sf::Event& _event) {
         m_program.popState();
     }
 
-    m_client.getInput();
-    m_chatBox.getInput(_event);
+    m_client.getInput(_event);
 }
 
 void ProgramState_Play::update() {
@@ -55,7 +53,6 @@ void ProgramState_Play::update() {
     m_client.receivePackets();
 
     m_client.update();
-    m_chatBox.update();
     m_localServer.update();
 }
 
