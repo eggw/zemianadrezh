@@ -6,7 +6,7 @@
 #include "Server.h"
 #include "Client.h"
 #include "RendererChunk.h"
-#include "RendererPlayer.h"
+#include "RendererDrawable.h"
 #include "ChatBox.h"
 
 class ProgramState_Play : public ProgramState {
@@ -18,12 +18,17 @@ class ProgramState_Play : public ProgramState {
 		void update();
 		void draw();
 
+    private:
+        void onResize(sf::Vector2u _newSize);
+
 	private:
 		Server m_localServer;
 		Client m_client;
 		RendererChunk m_rendererChunk;
-		RendererPlayer m_rendererPlayer;
+		RendererDrawable<Player> m_rendererPlayer;
 		ChatBox m_chatBox;
+
+		sf::View m_view;
 };
 
 #endif // PROGRAMSTATE_PLAY_H_INCLUDED

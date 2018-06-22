@@ -5,20 +5,42 @@
 
 template <class T>
 class RendererDrawable : public RendererBase<T> {
-    public:
-        RendererDrawable(sf::RenderWindow& _window);
-        ~RendererDrawable();
+	public:
+		RendererDrawable(sf::RenderWindow& _window)
+			:RendererBase<T>(_window) {
+		};
 
-        void addObject(const T* _obj) const;
+		~RendererDrawable() {
+		};
 
-        void getInput(sf::Event& _event);
-        void update();
-        void draw() const;
+		void addObject(const T* _obj) const {
+			auto it = std::find(m_objects.begin(), m_objects.end(), _obj);
 
-    private:
-        void onResize(sf::Vector2f _newSize);
-    private:
-        mutable std::vector<const T*> m_objects;
+			if(it == m_objects.end()) {
+				m_objects.push_back(_obj);
+			}
+		};
+
+		void getInput(sf::Event& _event) {
+
+		};
+
+		void update() {
+
+		}
+		;
+		void draw() const {
+			for(auto& object : m_objects) {
+				RendererBase<T>::m_window.draw(*object);
+			}
+		};
+
+	private:
+		void onResize(sf::Vector2f _newSize) {
+
+		};
+	private:
+		mutable std::vector<const T*> m_objects;
 };
 
 #endif // RENDERERDRAWABLE_H_INCLUDED

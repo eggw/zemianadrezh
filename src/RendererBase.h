@@ -8,8 +8,12 @@
 template <class T>
 class RendererBase {
     public:
-        RendererBase(sf::RenderWindow& _window);
-        ~RendererBase()                                 = 0;
+        RendererBase(sf::RenderWindow& _window)
+            :m_window(_window){
+        };
+
+        virtual ~RendererBase(){
+        };
 
         virtual void addObject(const T* _obj) const     = 0;
 

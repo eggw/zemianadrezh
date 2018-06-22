@@ -8,7 +8,10 @@ ProgramState_Play::ProgramState_Play(Program& _program)
        m_client(),
        m_rendererChunk(*m_program.m_window),
        m_rendererPlayer(*m_program.m_window),
-       m_chatBox(*m_program.m_window, m_client.getPlayer()->getName()) {
+       m_chatBox(*m_program.m_window, m_client.getPlayer()->getName()),
+       m_view{sf::FloatRect(0, 0,
+                            float(m_program.m_window->getSize().x),
+                            float(m_program.m_window->getSize().y))} {
 
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
     m_localServer.m_networkManager.accept();
@@ -24,7 +27,7 @@ ProgramState_Play::ProgramState_Play(Program& _program)
         m_rendererChunk.update(&chunk);
     }
 
-    m_rendererPlayer.addPlayer(m_client.getPlayer());
+    m_rendererPlayer.addObject(m_client.getPlayer());
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -44,6 +47,8 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 }
 
 void ProgramState_Play::update() {
+    m_view.setCenter(m_client.getPlayer()->getPosition());
+
     m_client.sendPackets();
     m_localServer.receivePackets();
     m_client.receivePackets();
@@ -55,16 +60,14 @@ void ProgramState_Play::update() {
 }
 
 void ProgramState_Play::draw() {
-    //Note that RendererPlayer changes the view to the
-    //player's view and doesn't change it back.
-    //
-    //That's fine as RendererChunk doesn't have a view of
-    //its own and needs to use the player view.
-    //
-    //ChatBox's draw function does, however, restore
-    //the view that was being used before calling it.
-
+    m_program.m_window->setView(m_view);
     m_rendererPlayer.draw();
     m_rendererChunk.draw();
     m_program.m_window->draw(m_chatBox);
+}
+
+void ProgramState_Play::onResize(sf::Vector2u _newSize){
+    ProgramState_Play::onResize(_newSize);
+    sf::Vector2f newSizeF{float(_newSize.x), float(_newSize.y)};
+    m_view.setSize(newSizeF);
 }
