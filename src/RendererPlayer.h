@@ -12,9 +12,12 @@ class RendererPlayer {
 		RendererPlayer(sf::RenderWindow& _window);
 		void addPlayer(const Player* _player) const;
 
+		void getInput(sf::Event& _event);
 		void update();
 		void draw() const;
 
+	private:
+		void onResize(sf::Vector2f _newSize);
 	private:
 		sf::RenderWindow& m_window;
 		mutable std::vector<const Player*> m_players;

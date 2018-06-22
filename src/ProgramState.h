@@ -11,11 +11,19 @@ class ProgramState {
 		ProgramState(Program& _p);
 		virtual ~ProgramState() = 0;
 
-		virtual void getInput(sf::Event& _event) = 0;
+		virtual void getInput(sf::Event& _event);
 		virtual void update() = 0;
 		virtual void draw() = 0;
 
+		//onStateSwitch() is called by the new current state
+		//when a state is popped from the states stack.
+		//By default, all it does is call the onResize() function,
+		//ensuring the views aren't all messed up
+		virtual void onStateSwitch();
+
 	protected:
+		virtual void onResize(sf::Vector2u _newSize);
+
 		Program& m_program;
 };
 
