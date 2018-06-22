@@ -24,9 +24,10 @@ class ProgramState_Play : public ProgramState {
 	private:
 		Server m_localServer;
 		Client m_client;
+		ChatBox m_chatBox;
 		RendererChunk m_rendererChunk;
 		RendererDrawable<Player> m_rendererPlayer;
-		ChatBox m_chatBox;
+		RendererDrawable<ChatBox> m_rendererChatbox;
 
 		sf::View m_view;
 };

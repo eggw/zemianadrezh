@@ -6,9 +6,10 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     : 	ProgramState(_program),
        m_localServer(),
        m_client(),
+       m_chatBox(*m_program.m_window, m_client.getPlayer()->getName()),
        m_rendererChunk(*m_program.m_window),
        m_rendererPlayer(*m_program.m_window),
-       m_chatBox(*m_program.m_window, m_client.getPlayer()->getName()),
+       m_rendererChatbox(*m_program.m_window),
        m_view{sf::FloatRect(0, 0,
                             float(m_program.m_window->getSize().x),
                             float(m_program.m_window->getSize().y))} {
@@ -28,6 +29,7 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     }
 
     m_rendererPlayer.addObject(m_client.getPlayer());
+    m_rendererChatbox.addObject(&m_chatBox);
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -61,7 +63,7 @@ void ProgramState_Play::draw() {
     m_program.m_window->setView(m_view);
     m_rendererPlayer.draw();
     m_rendererChunk.draw();
-    m_program.m_window->draw(m_chatBox);
+    m_rendererChatbox.draw();
 }
 
 void ProgramState_Play::onResize(sf::Vector2u _newSize){
