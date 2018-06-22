@@ -15,14 +15,8 @@ class RendererBase {
         virtual ~RendererBase(){
         };
 
-        virtual void addObject(const T* _obj) const     = 0;
-
-        virtual void getInput(sf::Event& _event)        = 0;
-        virtual void update()                           = 0;
         virtual void draw() const = 0;
 
-    protected:
-        virtual void onResize(sf::Vector2f _newSize)    = 0;
     protected:
         sf::RenderWindow& m_window;
 };

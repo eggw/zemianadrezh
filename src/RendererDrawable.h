@@ -21,24 +21,12 @@ class RendererDrawable : public RendererBase<T> {
 			}
 		};
 
-		void getInput(sf::Event& _event) {
-
-		};
-
-		void update() {
-
-		}
-		;
 		void draw() const {
 			for(auto& object : m_objects) {
 				RendererBase<T>::m_window.draw(*object);
 			}
 		};
 
-	private:
-		void onResize(sf::Vector2f _newSize) {
-
-		};
 	private:
 		mutable std::vector<const T*> m_objects;
 };

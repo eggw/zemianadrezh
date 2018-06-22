@@ -42,7 +42,6 @@ void ProgramState_Play::getInput(sf::Event& _event) {
     }
 
     m_client.getInput();
-    m_rendererPlayer.getInput(_event);
     m_chatBox.getInput(_event);
 }
 
@@ -56,7 +55,6 @@ void ProgramState_Play::update() {
     m_client.update();
     m_chatBox.update();
     m_localServer.update();
-    m_rendererPlayer.update();
 }
 
 void ProgramState_Play::draw() {
@@ -67,7 +65,7 @@ void ProgramState_Play::draw() {
 }
 
 void ProgramState_Play::onResize(sf::Vector2u _newSize){
-    ProgramState_Play::onResize(_newSize);
+    ProgramState::onResize(_newSize);
     sf::Vector2f newSizeF{float(_newSize.x), float(_newSize.y)};
     m_view.setSize(newSizeF);
 }
