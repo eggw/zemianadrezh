@@ -123,28 +123,6 @@ std::string TextEntryBox::getLastString() const {
 }
 
 void TextEntryBox::onResize(sf::Vector2u _newSize) {
-    /*
-    float yPos   {((_newSize.y - m_height)
-                   /
-                   (_newSize.y))};
-
-    m_textView.reset({0,
-                      0,
-                      _newSize.x * m_xWindowRatio,
-                      m_height
-                     });
-
-    m_textView.setViewport({0,
-                            yPos,
-                            m_xWindowRatio,
-                            1 - yPos
-                           });
-
-    sf::Vector2f rectSize{m_textView.getSize()};
-    m_rectangle.setSize(rectSize);
-
-    m_rectangleView = m_textView;
-    */
 
     m_textView.reset({0,
                       0,
