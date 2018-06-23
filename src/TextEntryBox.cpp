@@ -10,7 +10,6 @@ TextEntryBox::TextEntryBox(Util::WindowInfo _windowInfo,
                            int _charSize,
                            unsigned int _maxChars)
     :m_textView(),
-     m_rectangleView(),
      m_rectangle(),
      m_text(),
      m_enteringText{false},
@@ -97,10 +96,8 @@ void TextEntryBox::update() {
 
 void TextEntryBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     if(m_enteringText) {
-        target.setView(m_rectangleView);
-        target.draw(m_rectangle, states);
-
         target.setView(m_textView);
+        target.draw(m_rectangle, states);
         target.draw(m_text, states);
         target.draw(m_caret, states);
     }
@@ -139,9 +136,6 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
 
     sf::Vector2f rectSize{m_textView.getSize()};
     m_rectangle.setSize(rectSize);
-
-    m_rectangleView = m_textView;
-
 }
 
 void TextEntryBox::updateCaret() {
@@ -172,20 +166,28 @@ void TextEntryBox::updateCaret() {
 }
 
 void TextEntryBox::updateView() {
+    sf::Vector2f newRectangleSize{m_rectangle.getSize()};
+
     if(m_text.getGlobalBounds().width > m_textView.getSize().x) {
-        //std::cout << "wide" << std::endl;
-        //set to position of caret minus half the view width minus charsize
         sf::Vector2f newCenter{m_textView.getCenter()};
         newCenter.x = m_text.getGlobalBounds().width;
         newCenter.x -= m_textView.getSize().x / 2;
         newCenter.x += m_caret.getGlobalBounds().width * 2;
         m_textView.setCenter(newCenter);
+
+        newRectangleSize.x +=   m_text.getGlobalBounds().width +
+                                m_caret.getGlobalBounds().width;
     }
     else {
         sf::Vector2f originalCenter{m_textView.getSize().x / 2,
                                     m_textView.getCenter().y};
         m_textView.setCenter(originalCenter);
+
+        newRectangleSize.x = m_textView.getSize().x;
     }
+
+    m_rectangle.setSize(newRectangleSize);
+
 }
 
 bool TextEntryBox::stringEmpty() const{

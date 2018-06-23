@@ -26,7 +26,6 @@ class TextEntryBox : public sf::Drawable {
 		bool stringEmpty() const;
     private:
     	sf::View m_textView;
-    	sf::View m_rectangleView;
     	sf::RectangleShape m_rectangle;
     	sf::Text m_text;
     	sf::Text m_caret;
