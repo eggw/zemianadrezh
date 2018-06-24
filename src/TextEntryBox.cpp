@@ -3,7 +3,6 @@
 #include "Keybinds.h"
 
 #include "FontManager.h"
-#include <iostream>
 #include "InputLocker.h"
 
 constexpr int MAX_CHAR_SIZE{20};
@@ -140,6 +139,17 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
 
 	m_text.setCharacterSize(m_charSize);
 	m_caret.setCharacterSize(m_charSize);
+
+	float lineSpacing {FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, m_charSize)};
+	double textHeight{m_text.getPosition().y + lineSpacing};
+	double rectangleHeight{m_rectangle.getGlobalBounds().height * 0.8};
+
+    if(textHeight > rectangleHeight){
+        double difference{textHeight - rectangleHeight};
+        sf::Vector2f newTextPosition{m_text.getPosition()};
+        newTextPosition.y -= difference;
+        m_text.setPosition(newTextPosition);
+    }
 }
 
 void TextEntryBox::updateCaret() {
