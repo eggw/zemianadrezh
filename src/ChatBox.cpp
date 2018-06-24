@@ -22,9 +22,14 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
      m_shadedRectangleView(),
      m_shadedRectangle(),
      m_messages(),
-     m_textEntry(Util::WindowInfo(_window.getSize(),
-                                  {0, _window.getSize().y - Y_OFFSET},
-                                  {X_WINDOW_RATIO, float(Y_OFFSET/_window.getSize().y)}),
+     m_textEntry(_window.getSize(),
+                {
+                    0,
+                    (_window.getSize().y - Y_OFFSET) / _window.getSize().y,
+                    X_WINDOW_RATIO,
+                    1 - (_window.getSize().y - Y_OFFSET) / _window.getSize().y
+                },
+
                  CHARACTER_SIZE - 4),
      m_clock() {
 

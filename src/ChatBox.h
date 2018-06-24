@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Util.h"
 #include "TextEntryBox.h"
 
 class ChatBox : public sf::Drawable {
