@@ -4,8 +4,7 @@
 
 #include "Keybinds.h"
 
-constexpr float X_WINDOW_RATIO              {0.3};
-constexpr float Y_WINDOW_RATIO              {0.25};
+const sf::FloatRect VIEWPORT                {0, 0.75, 0.3, 0.25};
 constexpr float SECONDS_UNTIL_MESSAGES_FADE {5.0f};
 constexpr unsigned int CHARACTER_SIZE       {20};
 
@@ -26,13 +25,14 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
                 {
                     0,
                     (_window.getSize().y - Y_OFFSET) / _window.getSize().y,
-                    X_WINDOW_RATIO,
+                    VIEWPORT.width,
                     1 - (_window.getSize().y - Y_OFFSET) / _window.getSize().y
                 },
 
                  CHARACTER_SIZE - 4),
      m_clock() {
 
+    m_shadedRectangleView.setViewport(VIEWPORT);
     onResize(_window.getSize());
 
     /*
@@ -284,14 +284,15 @@ void ChatBox::updateMessageTransparency() {
 
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
-    sf::FloatRect viewRect({0}, {0}, _newSize.x * X_WINDOW_RATIO, _newSize.y * Y_WINDOW_RATIO);
+    sf::FloatRect viewRect({0,
+                           0,
+                           _newSize.x * VIEWPORT.width,
+                           _newSize.y * VIEWPORT.height});
 
     m_view.reset(viewRect);
-    m_view.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
+    m_view.setViewport({0, 0.75, VIEWPORT.width, VIEWPORT.height});
 
     m_shadedRectangleView.reset(viewRect);
-    m_shadedRectangleView.setViewport({0, 0.75, X_WINDOW_RATIO, Y_WINDOW_RATIO});
-
     m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
     for(auto& message : m_messages){
