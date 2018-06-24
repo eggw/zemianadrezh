@@ -6,24 +6,23 @@
 #include <iostream>
 #include "InputLocker.h"
 
+constexpr int MAX_CHAR_SIZE{20};
+
 TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
 						   sf::FloatRect _viewPort,
-						   int _charSize,
 						   unsigned int _maxChars)
 	:m_textView(),
 	 m_rectangle(),
 	 m_text(),
 	 m_enteringText{false},
 	 m_inputComplete{false},
-	 m_charSize{_charSize},
+	 m_charSize{0},
 	 m_maxChars{_maxChars} {
 
 	m_rectangle.setFillColor(sf::Color(0,0,0,120));
 
 	m_text.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_caret.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
-	m_text.setCharacterSize(m_charSize);
-	m_caret.setCharacterSize(m_charSize);
 
 	m_caret.setString("|");
 
@@ -133,6 +132,14 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
 
 	sf::Vector2f rectSize{m_textView.getSize()};
 	m_rectangle.setSize(rectSize);
+
+	m_charSize = m_rectangle.getSize().y - 4;
+	if(m_charSize > MAX_CHAR_SIZE){
+        m_charSize = MAX_CHAR_SIZE;
+	}
+
+	m_text.setCharacterSize(m_charSize);
+	m_caret.setCharacterSize(m_charSize);
 }
 
 void TextEntryBox::updateCaret() {

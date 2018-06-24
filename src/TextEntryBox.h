@@ -7,7 +7,6 @@ class TextEntryBox : public sf::Drawable {
     public:
         TextEntryBox(sf::Vector2u _windowSize,
                      sf::FloatRect _viewPort,
-					int _charSize,
 					unsigned int _maxChars = 255);
 
         void getInput(sf::Event& _event);

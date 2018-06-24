@@ -27,9 +27,7 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
                     (_window.getSize().y - Y_OFFSET) / _window.getSize().y,
                     VIEWPORT.width,
                     1 - (_window.getSize().y - Y_OFFSET) / _window.getSize().y
-                },
-
-                 CHARACTER_SIZE - 4),
+                }),
      m_clock() {
 
     m_shadedRectangleView.setViewport(VIEWPORT);
