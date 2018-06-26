@@ -1,7 +1,8 @@
 #include "ProgramState.h"
 
-ProgramState::ProgramState(Program& _p)
-    : m_program{_p} {
+ProgramState::ProgramState(Program& _p, bool _visibleOverPreviousState)
+    : m_program{_p},
+      m_visibleOverPreviousState{_visibleOverPreviousState} {
 }
 
 ProgramState::~ProgramState() {
@@ -16,6 +17,10 @@ void ProgramState::getInput(sf::Event& _event) {
             break;
         }
     }
+}
+
+bool ProgramState::isVisibleOverPreviousState() const {
+    return m_visibleOverPreviousState;
 }
 
 void ProgramState::onStateSwitch() {

@@ -8,12 +8,14 @@
 class ProgramState {
 
 	public:
-		ProgramState(Program& _p);
+		ProgramState(Program& _p, bool _visibleOverPreviousState = false);
 		virtual ~ProgramState() = 0;
 
 		virtual void getInput(sf::Event& _event);
 		virtual void update() = 0;
 		virtual void draw() = 0;
+
+		bool isVisibleOverPreviousState() const;
 
 		//onStateSwitch() is called by the new current state
 		//when a state is popped from the states stack.
@@ -25,6 +27,7 @@ class ProgramState {
 		virtual void onResize(sf::Vector2u _newSize);
 
 		Program& m_program;
+		bool m_visibleOverPreviousState;
 };
 
 #endif // PROGRAMSTATE_H_INCLUDED

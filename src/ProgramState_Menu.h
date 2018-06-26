@@ -7,7 +7,7 @@
 
 class ProgramState_Menu : public ProgramState {
     public:
-        ProgramState_Menu(Program& _program);
+        ProgramState_Menu(Program& _program, bool _visibleOverPreviousState = false);
         ~ProgramState_Menu();
 
         void getInput(sf::Event& _event);

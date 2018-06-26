@@ -1,6 +1,7 @@
 #include "Program.h"
 
 #include "ProgramState_Play.h"
+#include "ProgramState_Pause.h"
 #include "ProgramState_MainMenu.h"
 
 Program::Program() {
@@ -10,7 +11,7 @@ Program::Program() {
     m_window->setFramerateLimit(60);
 
     //m_states.push(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
-    m_states.push(std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
+    m_states.push_back(std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
 
     gameLoop();
 }
@@ -35,26 +36,35 @@ void Program::gameLoop() {
                 m_window->close();
             }
 
-            m_states.top()->getInput(event);
+            m_states.back()->getInput(event);
         }
         /////////////////////////////////////////////////////
 
-        m_states.top()->update();
-        m_states.top()->draw();
+        m_states.back()->update();
+
+        if(m_states.back()->isVisibleOverPreviousState()){
+            m_states.end()[-2]->draw();
+        }
+        m_states.back()->draw();
 
         m_window->display();
     }
 }
 
 void Program::pushState_Play() {
-    m_states.push(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+}
+
+void Program::pushState_Pause(){
+    m_states.push_back(std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
 }
 
 void Program::popState() {
-    m_states.pop();
     if(!m_states.empty()) {
-        m_states.top()->onStateSwitch();
+        m_states.back()->onStateSwitch();
     }
+
+    m_states.pop_back();
 }
 
 void Program::closeWindow() {

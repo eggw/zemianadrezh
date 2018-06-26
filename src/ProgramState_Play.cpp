@@ -39,7 +39,7 @@ void ProgramState_Play::getInput(sf::Event& _event) {
     ProgramState::getInput(_event);
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        m_program.popState();
+        m_program.pushState_Pause();
     }
 
     m_client.getInput(_event);

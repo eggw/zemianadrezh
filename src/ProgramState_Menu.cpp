@@ -2,9 +2,8 @@
 
 #include "FontManager.h"
 
-#include <iostream>
-ProgramState_Menu::ProgramState_Menu(Program& _program)
-    :ProgramState(_program),
+ProgramState_Menu::ProgramState_Menu(Program& _program, bool _visibleOverPreviousState)
+    :ProgramState(_program, _visibleOverPreviousState),
      m_view(m_program.m_window->getDefaultView()) {
 
     m_program.m_window->setView(m_view);
