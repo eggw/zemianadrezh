@@ -31,7 +31,7 @@ class ChatBox : public sf::Drawable {
 		const bool messageTooWide(Message& _message) const;
 		const bool messageTooNarrow(Message& _message) const;
 		void adjustMessage(Message& _message);
-		void positionMessage(Message& _message);
+		void positionMessage(int _index);
 		void setTransparency(int _a);
 		bool messagesTransparent() const;
 		void updateShadedRectangleTransparency();

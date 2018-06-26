@@ -71,9 +71,8 @@ void ChatBox::appendMessage(const std::string _message, const std::string _sende
         adjustMessage(newMessage);
     }
 
-    positionMessage(newMessage);
-
     m_messages.push_back(newMessage);
+    positionMessage(m_messages.size() - 1);
     snapToBottom();
     m_clock.restart();
 }
@@ -216,12 +215,13 @@ void ChatBox::adjustMessage(Message& _message) {
 
 //This function sets the position of a new message, at the
 //very bottom of the box
-void ChatBox::positionMessage(Message& _message) {
-    if(!m_messages.empty()) {
-        sf::Vector2f newPosition{m_messages.back().text.getPosition()};
-        unsigned int lastMessageLines{m_messages.back().numberOfLines};
+void ChatBox::positionMessage(int _index) {
+    if(!m_messages.empty() && _index > 0) {
+        Message& message = m_messages[_index];
+        sf::Vector2f newPosition{m_messages[_index-1].text.getPosition()};
+        unsigned int lastMessageLines{m_messages[_index-1].numberOfLines};
         newPosition.y += lastMessageLines * (Y_OFFSET);
-        _message.text.setPosition(newPosition);
+        message.text.setPosition(newPosition);
     }
 }
 
@@ -293,9 +293,12 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
     m_shadedRectangleView.reset(viewRect);
     m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
-    for(auto& message : m_messages){
+    for(int i{0}; i < m_messages.size(); i++){
+        Message& message = m_messages[i];
+
         if(messageTooWide(message) || messageTooNarrow(message)){
             adjustMessage(message);
+            positionMessage(i);
         }
     }
 
