@@ -1,5 +1,7 @@
 #include "ProgramState_Menu.h"
 
+#include <cmath>
+
 #include "FontManager.h"
 
 ProgramState_Menu::ProgramState_Menu(Program& _program, bool _visibleOverPreviousState)
