@@ -1,5 +1,5 @@
-#ifndef RENDERERVERTEXARRAY_H_INCLUDED
-#define RENDERERVERTEXARRAY_H_INCLUDED
+#ifndef RENDERERCHUNK_H_INCLUDED
+#define RENDERERCHUNK_H_INCLUDED
 
 #include <map>
 
@@ -101,4 +101,4 @@ class RendererChunk : public RendererBase<WorldChunk> {
 		mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
 };
 
-#endif // RENDERERVERTEXARRAY_H_INCLUDED
+#endif // RENDERERCHUNK_H_INCLUDED

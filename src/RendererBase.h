@@ -1,5 +1,5 @@
-#ifndef RENDERER_H_INCLUDED
-#define RENDERER_H_INCLUDED
+#ifndef RENDERERBASE_H_INCLUDED
+#define RENDERERBASE_H_INCLUDED
 
 #include <map>
 
@@ -21,4 +21,4 @@ class RendererBase {
         sf::RenderWindow& m_window;
 };
 
-#endif // RENDERER_H_INCLUDED
+#endif // RENDERERBASE_H_INCLUDED
