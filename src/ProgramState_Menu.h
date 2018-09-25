@@ -15,6 +15,7 @@ class ProgramState_Menu : public ProgramState {
         void draw();
 
         void addMenuItem(const std::string _string, void(Program::*f)() = nullptr);
+        void addGap();
 
     private:
         void onResize(sf::Vector2u _newSize);

@@ -6,6 +6,10 @@ ProgramState_Pause::ProgramState_Pause(Program& _program)
 	addMenuItem("Resume",
 				&Program::popState);
 
+	addMenuItem("Back to Main Menu",
+				&Program::returnToMainMenu);
+
+	addGap();
 	addMenuItem("Exit",
 				&Program::closeWindow);
 }

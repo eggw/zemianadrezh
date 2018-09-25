@@ -3,6 +3,7 @@
 #include "ProgramState_Play.h"
 #include "ProgramState_Pause.h"
 #include "ProgramState_MainMenu.h"
+#include "ProgramState_MPMenu.h"
 
 Program::Program() {
     m_window = std::unique_ptr<sf::RenderWindow>
@@ -10,7 +11,6 @@ Program::Program() {
                                      "zemianadrezh"));
     m_window->setFramerateLimit(60);
 
-    //m_states.push(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
     m_states.push_back(std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
 
     gameLoop();
@@ -59,12 +59,28 @@ void Program::pushState_Pause(){
     m_states.push_back(std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
 }
 
+void Program::pushState_MPMenu(){
+    m_states.push_back(std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
+}
+
+bool Program::isAtMainMenu(){
+    ProgramState_MainMenu* ptrTest = dynamic_cast<ProgramState_MainMenu*> (m_states.back().get());
+    return (ptrTest != nullptr);
+}
+
+//This function simply keeps popping the state until it's the main menu state.
+void Program::returnToMainMenu(){
+    while(!isAtMainMenu()){
+        popState();
+      }
+}
+
 void Program::popState() {
+    m_states.pop_back();
+
     if(!m_states.empty()) {
         m_states.back()->onStateSwitch();
     }
-
-    m_states.pop_back();
 }
 
 void Program::closeWindow() {

@@ -3,11 +3,15 @@
 ProgramState_MainMenu::ProgramState_MainMenu(Program& _program)
 	:ProgramState_Menu(_program) {
 
-	addMenuItem("Play",
+	addMenuItem("Singleplayer",
 				&Program::pushState_Play);
+
+	addMenuItem("Multiplayer",
+				&Program::pushState_MPMenu);
 
 	addMenuItem("Options");
 
+	addGap();
 	addMenuItem("Exit",
 				&Program::closeWindow);
 }

@@ -29,6 +29,7 @@ void ProgramState_Menu::getInput(sf::Event& _event) {
         for(auto& menuItem : m_menuItems) {
             if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
                 (m_program.*std::get<1>(menuItem))();
+                return;
             }
         }
     }
@@ -108,7 +109,10 @@ void ProgramState_Menu::addMenuItem(const std::string _string, void(Program::*f)
         it++;
         std::get<2>(*it).setPosition(lastPosition.x, lastPosition.y + verticalSpacing);
     }
+}
 
+void ProgramState_Menu::addGap(){
+    addMenuItem("");
 }
 
 void ProgramState_Menu::onResize(sf::Vector2u _newSize) {

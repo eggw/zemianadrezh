@@ -20,12 +20,19 @@ class Program : public Singleton<Program> {
 
 		void pushState_Play();
 		void pushState_Pause();
+		void pushState_MPMenu();
+
+		void returnToMainMenu();
+
 		void popState();
 
 		void closeWindow();
 
 		std::vector<std::unique_ptr<ProgramState>> m_states;
 		std::unique_ptr<sf::RenderWindow> m_window;
+
+	private:
+		bool isAtMainMenu();
 };
 
 #endif // PROGRAM_H_INCLUDED
