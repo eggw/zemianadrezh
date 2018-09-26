@@ -7,6 +7,7 @@ ProgramState_MPMenu::ProgramState_MPMenu(Program& _program)
 
 	addMenuItem("Join");
 
+	addGap();
 	addMenuItem("Back",
 				&Program::popState);
 

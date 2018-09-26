@@ -16,6 +16,16 @@ ProgramState_Menu::~ProgramState_Menu() {
 
 }
 
+bool lmbPressed(sf::Event& _event){
+    if(_event.type == sf::Event::MouseButtonPressed
+       &&
+       _event.mouseButton.button == sf::Mouse::Left){
+            return true;
+       }
+    else{
+        return false;
+    }
+}
 
 /*
 When a left click is registered, this function checks if any
@@ -25,7 +35,7 @@ calls the function pointer, if it's not null.
 void ProgramState_Menu::getInput(sf::Event& _event) {
     ProgramState::getInput(_event);
 
-    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    if(lmbPressed(_event)){
         for(auto& menuItem : m_menuItems) {
             if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
                 (m_program.*std::get<1>(menuItem))();

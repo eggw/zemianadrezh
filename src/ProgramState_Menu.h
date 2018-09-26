@@ -10,7 +10,7 @@ class ProgramState_Menu : public ProgramState {
         ProgramState_Menu(Program& _program, bool _visibleOverPreviousState = false);
         ~ProgramState_Menu();
 
-        void getInput(sf::Event& _event);
+        virtual void getInput(sf::Event& _event);
         void update();
         void draw();
 

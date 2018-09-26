@@ -9,6 +9,7 @@
 
 class Server : public GameInstance {
 	public:
+		//todo: pass world settings to constructor
 		Server();
 
 		void updateOtherPlayers(Player::EncodedPlayerData _data);

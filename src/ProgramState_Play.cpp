@@ -1,5 +1,6 @@
 #include "ProgramState_Play.h"
 
+#include "Keybinds.h"
 #include "LoggerNetwork.h"
 
 ProgramState_Play::ProgramState_Play(Program& _program)
@@ -38,9 +39,12 @@ ProgramState_Play::~ProgramState_Play() {
 void ProgramState_Play::getInput(sf::Event& _event) {
     ProgramState::getInput(_event);
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        m_program.pushState_Pause();
-    }
+    if(_event.type == sf::Event::KeyPressed) {
+		if(_event.key.code == Key::PAUSE_KEY){
+			m_program.pushState_Pause();
+			return;
+		}
+	}
 
     m_client.getInput(_event);
 }

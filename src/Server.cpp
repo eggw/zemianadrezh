@@ -5,7 +5,6 @@ Server::Server()
 	 m_networkManager(*this) {
 
 	m_world.addChunk(5);
-
 }
 
 void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
