@@ -4,7 +4,7 @@ ProgramState_MainMenu::ProgramState_MainMenu(Program& _program)
 	:ProgramState_Menu(_program) {
 
 	addMenuItem("Singleplayer",
-				&Program::pushState_Play);
+				&Program::pushState_SPPlay);
 
 	addMenuItem("Multiplayer",
 				&Program::pushState_MPMenu);

@@ -18,9 +18,10 @@ class Program : public Singleton<Program> {
 		void init();
 		void gameLoop();
 
-		void pushState_Play();
+		void pushState_SPPlay();
 		void pushState_Pause();
 		void pushState_MPMenu();
+		void pushState_MPHostMenu();
 
 		void returnToMainMenu();
 

@@ -1,9 +1,10 @@
 #include "Program.h"
 
-#include "ProgramState_Play.h"
+#include "ProgramState_SPPlay.h"
 #include "ProgramState_Pause.h"
 #include "ProgramState_MainMenu.h"
 #include "ProgramState_MPMenu.h"
+#include "ProgramState_MPHostMenu.h"
 
 Program::Program() {
     m_window = std::unique_ptr<sf::RenderWindow>
@@ -51,8 +52,8 @@ void Program::gameLoop() {
     }
 }
 
-void Program::pushState_Play() {
-    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+void Program::pushState_SPPlay() {
+    m_states.push_back(std::unique_ptr<ProgramState_SPPlay>(new ProgramState_SPPlay(*this)));
 }
 
 void Program::pushState_Pause(){
@@ -61,6 +62,10 @@ void Program::pushState_Pause(){
 
 void Program::pushState_MPMenu(){
     m_states.push_back(std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
+}
+
+void Program::pushState_MPHostMenu(){
+    m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(new ProgramState_MPHostMenu(*this)));
 }
 
 bool Program::isAtMainMenu(){

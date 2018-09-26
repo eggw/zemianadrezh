@@ -3,7 +3,8 @@
 ProgramState_MPMenu::ProgramState_MPMenu(Program& _program)
 	:ProgramState_Menu(_program) {
 
-	addMenuItem("Host");
+	addMenuItem("Host",
+				&Program::pushState_MPHostMenu);
 
 	addMenuItem("Join");
 

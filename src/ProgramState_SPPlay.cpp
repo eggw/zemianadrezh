@@ -1,11 +1,11 @@
-#include "ProgramState_Play.h"
+#include "ProgramState_SPPlay.h"
 
 #include "Keybinds.h"
 #include "LoggerNetwork.h"
 
-ProgramState_Play::ProgramState_Play(Program& _program)
+ProgramState_SPPlay::ProgramState_SPPlay(Program& _program)
     : 	ProgramState(_program),
-       m_localServer(),
+       m_localServer(false),
        m_client(*m_program.m_window),
        m_rendererChunk(*m_program.m_window),
        m_rendererPlayer(*m_program.m_window),
@@ -46,11 +46,11 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     m_rendererChatbox.addObject(m_client.getChatBox());
 }
 
-ProgramState_Play::~ProgramState_Play() {
+ProgramState_SPPlay::~ProgramState_SPPlay() {
 
 }
 
-void ProgramState_Play::getInput(sf::Event& _event) {
+void ProgramState_SPPlay::getInput(sf::Event& _event) {
     ProgramState::getInput(_event);
 
     if(_event.type == sf::Event::KeyPressed) {
@@ -63,7 +63,7 @@ void ProgramState_Play::getInput(sf::Event& _event) {
     m_client.getInput(_event);
 }
 
-void ProgramState_Play::update() {
+void ProgramState_SPPlay::update() {
     m_view.setCenter(m_client.getPlayer()->getPosition());
 
     m_client.sendPackets();
@@ -74,14 +74,14 @@ void ProgramState_Play::update() {
     m_localServer.update();
 }
 
-void ProgramState_Play::draw() {
+void ProgramState_SPPlay::draw() {
     m_program.m_window->setView(m_view);
     m_rendererPlayer.draw();
     m_rendererChunk.draw();
     m_rendererChatbox.draw();
 }
 
-void ProgramState_Play::onResize(sf::Vector2u _newSize){
+void ProgramState_SPPlay::onResize(sf::Vector2u _newSize){
     ProgramState::onResize(_newSize);
     sf::Vector2f newSizeF{float(_newSize.x), float(_newSize.y)};
     m_view.setSize(newSizeF);

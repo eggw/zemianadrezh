@@ -1,5 +1,5 @@
-#ifndef PROGRAMSTATE_PLAY_H_INCLUDED
-#define PROGRAMSTATE_PLAY_H_INCLUDED
+#ifndef PROGRAMSTATE_SPPLAY_H_INCLUDED
+#define PROGRAMSTATE_SPPLAY_H_INCLUDED
 
 #include "ProgramState.h"
 
@@ -8,10 +8,10 @@
 #include "RendererChunk.h"
 #include "RendererDrawable.h"
 
-class ProgramState_Play : public ProgramState {
+class ProgramState_SPPlay : public ProgramState {
 	public:
-		ProgramState_Play(Program& _program);
-		~ProgramState_Play();
+		ProgramState_SPPlay(Program& _program);
+		~ProgramState_SPPlay();
 
 		void getInput(sf::Event& _event);
 		void update();
@@ -30,4 +30,4 @@ class ProgramState_Play : public ProgramState {
 		sf::View m_view;
 };
 
-#endif // PROGRAMSTATE_PLAY_H_INCLUDED
+#endif // PROGRAMSTATE_SPPLAY_H_INCLUDED

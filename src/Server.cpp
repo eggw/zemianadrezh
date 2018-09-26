@@ -1,8 +1,9 @@
 #include "Server.h"
 
-Server::Server()
+Server::Server(bool _allowConnections)
 	:GameInstance(),
-	 m_networkManager(*this) {
+	 m_networkManager(*this),
+	 m_allowConnections(_allowConnections) {
 
 	m_world.addChunk(5);
 }
@@ -31,4 +32,8 @@ void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
 
 void Server::receivePackets() {
 	m_networkManager.receivePacket();
+}
+
+bool Server::connectionsAllowed() {
+	return m_allowConnections;
 }
