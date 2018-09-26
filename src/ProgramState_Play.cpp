@@ -14,8 +14,22 @@ ProgramState_Play::ProgramState_Play(Program& _program)
                             float(m_program.m_window->getSize().x),
                             float(m_program.m_window->getSize().y))} {
 
+    /*
+    The reason the client calls connect() twice is because of the way
+    SFML connection statuses work: the client won't return
+    sf::Socket::Done unless it's called AFTER a connection with the server
+    has been estalished.
+
+    Therefore, we'll call connect the first time in order for the log entry
+    to register "awaiting response...", then a second time after the
+    connection is established for "connection established!"
+
+    See: https://en.sfml-dev.org/forums/index.php?topic=7118.0
+    */
+
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
     m_localServer.m_networkManager.accept();
+    m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
 
     m_client.m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
     m_localServer.m_networkManager.receivePacket();

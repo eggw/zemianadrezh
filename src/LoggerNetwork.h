@@ -14,6 +14,7 @@ class LoggerNetwork: public Singleton<LoggerNetwork> {
 		};
 
 		enum class LOG_MESSAGE {
+			CONNECTION_WAITING,
 			CONNECTION_SUCCESS,
 			CONNECTION_FAILURE,
 			LISTEN_PORT_SUCCESS,

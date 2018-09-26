@@ -37,6 +37,7 @@ LoggerNetwork::LoggerNetwork() {
 	packetTypeMap.emplace(Packet::Type::REQUEST_WORLD, "REQUEST_WORLD");
 	packetTypeMap.emplace(Packet::Type::DATA_PLAYER, "DATA_PLAYER");
 
+	messageMap.emplace(LOG_MESSAGE::CONNECTION_WAITING, "awaiting response...");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_SUCCESS, "connection established!");
 	messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_FAILURE, "failed to listen to port 7777");

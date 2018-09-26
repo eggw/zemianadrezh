@@ -108,7 +108,7 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
 
 	if(status != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
-										  LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE);
+										  LoggerNetwork::LOG_MESSAGE::CONNECTION_WAITING);
 	}
 	else {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
