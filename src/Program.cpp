@@ -5,6 +5,7 @@
 #include "ProgramState_MainMenu.h"
 #include "ProgramState_MPMenu.h"
 #include "ProgramState_MPHostMenu.h"
+#include "ProgramState_MPJoinMenu.h"
 
 Program::Program() {
     m_window = std::unique_ptr<sf::RenderWindow>
@@ -62,6 +63,16 @@ void Program::pushState_Play_SP() {
     m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
 }
 
+void Program::pushState_Play_MP_Host() {
+    initialiseLocalServer(true);
+    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+}
+
+void Program::pushState_Play_MP_Join() {
+    //initialiseLocalServer(false);
+    //m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+}
+
 void Program::pushState_Pause(){
     m_states.push_back(std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
 }
@@ -72,6 +83,10 @@ void Program::pushState_MPMenu(){
 
 void Program::pushState_MPHostMenu(){
     m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(new ProgramState_MPHostMenu(*this)));
+}
+
+void Program::pushState_MPJoinMenu(){
+    m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(new ProgramState_MPJoinMenu(*this)));
 }
 
 bool Program::localServerInitialised(){

@@ -6,7 +6,8 @@ ProgramState_MPMenu::ProgramState_MPMenu(Program& _program)
 	addMenuItem("Host",
 				&Program::pushState_MPHostMenu);
 
-	addMenuItem("Join");
+	addMenuItem("Join",
+				&Program::pushState_MPJoinMenu);
 
 	addGap();
 	addMenuItem("Back",
