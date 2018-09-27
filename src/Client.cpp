@@ -4,10 +4,12 @@
 
 #include "LoggerNetwork.h"
 
-#include <iostream>
-Client::Client(sf::RenderWindow& _window, Server* _localServer)
+Client::Client(	sf::RenderWindow& _window,
+				sf::IpAddress _serverIP,
+				Server* _localServer)
 	:GameInstance(),
 	 m_networkManager(*this),
+	 m_serverIP(_serverIP),
 	 m_localServer(_localServer),
 	 m_player(),
 	 m_chatBox(_window, m_player.getName()) {
@@ -42,6 +44,10 @@ void Client::sendPackets() {
 
 void Client::receivePackets() {
 	m_networkManager.receivePacket();
+}
+
+void Client::requestWorldChunks(){
+	m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
 }
 
 void Client::respawnPlayer() {

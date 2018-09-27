@@ -17,7 +17,9 @@ class Server;
 
 class Client : public GameInstance {
 	public:
-		Client(sf::RenderWindow& _window, Server* _localServer = nullptr);
+		Client(	sf::RenderWindow& _window,
+				sf::IpAddress _serverIP,
+				Server* _localServer = nullptr);
 
 		void getInput(sf::Event& _event);
 		void update();
@@ -25,6 +27,8 @@ class Client : public GameInstance {
 
 		void sendPackets();
 		void receivePackets();
+
+		void requestWorldChunks();
 
 		void respawnPlayer();
 
@@ -35,6 +39,7 @@ class Client : public GameInstance {
 	public:
 		NetworkManagerClient m_networkManager;
 	private:
+		sf::IpAddress m_serverIP;
 		Server* m_localServer;
 		Player m_player;
 		ChatBox m_chatBox;

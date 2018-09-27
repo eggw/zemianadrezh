@@ -6,7 +6,9 @@
 ProgramState_SPPlay::ProgramState_SPPlay(Program& _program)
     : 	ProgramState(_program),
        m_localServer(false),
-       m_client(*m_program.m_window),
+       m_client(*m_program.m_window,
+                sf::IpAddress::LocalHost,
+                nullptr),
        m_rendererChunk(*m_program.m_window),
        m_rendererPlayer(*m_program.m_window),
        m_rendererChatbox(*m_program.m_window),
