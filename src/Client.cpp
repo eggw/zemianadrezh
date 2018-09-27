@@ -88,6 +88,10 @@ const ChatBox* Client::getChatBox() const{
     return &m_chatBox;
 }
 
+bool Client::isConnected() const {
+    return m_networkManager.connectionActive();
+}
+
 bool Client::isLocal() const {
 	return m_localServer != nullptr;
 }

@@ -40,6 +40,7 @@ LoggerNetwork::LoggerNetwork() {
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_WAITING, "awaiting response...");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_SUCCESS, "connection established!");
+	messageMap.emplace(LOG_MESSAGE::CONNECTION_BLOCKED, "unauthorised connection blocked!");
 	messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_FAILURE, "failed to listen to port 7777");
 	messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_SUCCESS, "listening on port 7777...");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_LOCALHOST, "connected to local server!");

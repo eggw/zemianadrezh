@@ -5,7 +5,7 @@ Server::Server(bool _allowConnections)
 	 m_networkManager(*this),
 	 m_allowConnections(_allowConnections) {
 
-	m_world.addChunk(5);
+	m_world.addChunk(1);
 }
 
 void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
@@ -32,6 +32,10 @@ void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
 
 void Server::receivePackets() {
 	m_networkManager.receivePacket();
+}
+
+void Server::update(){
+    m_networkManager.accept();
 }
 
 bool Server::connectionsAllowed() {

@@ -15,6 +15,8 @@ class Server : public GameInstance {
 		void updateOtherPlayers(Player::EncodedPlayerData _data);
 		void receivePackets();
 
+		void update();
+
 		bool connectionsAllowed();
 	public:
 		NetworkManagerServer m_networkManager;

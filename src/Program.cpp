@@ -1,6 +1,6 @@
 #include "Program.h"
 
-#include "ProgramState_SPPlay.h"
+#include "ProgramState_Play.h"
 #include "ProgramState_Pause.h"
 #include "ProgramState_MainMenu.h"
 #include "ProgramState_MPMenu.h"
@@ -41,6 +41,11 @@ void Program::gameLoop() {
         }
         /////////////////////////////////////////////////////
 
+        if(localServerInitialised()){
+            m_localServer->receivePackets();
+            m_localServer->update();
+        }
+
         m_states.back()->update();
 
         if(m_states.back()->isVisibleOverPreviousState()){
@@ -52,8 +57,9 @@ void Program::gameLoop() {
     }
 }
 
-void Program::pushState_SPPlay() {
-    m_states.push_back(std::unique_ptr<ProgramState_SPPlay>(new ProgramState_SPPlay(*this)));
+void Program::pushState_Play_SP() {
+    initialiseLocalServer(false);
+    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
 }
 
 void Program::pushState_Pause(){
@@ -66,6 +72,18 @@ void Program::pushState_MPMenu(){
 
 void Program::pushState_MPHostMenu(){
     m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(new ProgramState_MPHostMenu(*this)));
+}
+
+bool Program::localServerInitialised(){
+    return m_localServer != nullptr;
+}
+
+void Program::initialiseLocalServer(bool _joinable){
+    m_localServer = std::unique_ptr<Server>(new Server(_joinable));
+}
+
+void Program::terminateLocalServer(){
+    m_localServer = nullptr;
 }
 
 bool Program::isAtMainMenu(){

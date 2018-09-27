@@ -1,5 +1,7 @@
 #include "NetworkManagerClient.h"
 
+#include <sstream>
+
 #include "LoggerNetwork.h"
 
 #include "Client.h"
@@ -79,6 +81,9 @@ void NetworkManagerClient::receivePacket() {
 			packet >> worldData.invisibleBlocks;
 
 			m_client.parseWorldData(worldData);
+
+			stringIDsToVector(worldData.chunkIDs);
+			setChunkDataProcessed(false);
 			break;
 		}
 		//////////////////////////////////////////////////////////////////////////////
@@ -113,5 +118,34 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
 	else {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
+
+		m_client.requestWorldChunks();
 	}
+}
+
+bool NetworkManagerClient::connectionActive() const{
+	return m_serverConnection.getRemoteAddress() != sf::IpAddress::None;
+}
+
+bool NetworkManagerClient::chunkDataReceived(std::vector<int>* _ids) const {
+	if(_ids != nullptr){
+        *_ids = m_lastReceivedChunks;
+	}
+
+	return m_chunkDataReceived;
+}
+
+void NetworkManagerClient::setChunkDataProcessed(bool _val) {
+	m_chunkDataReceived = !_val;
+}
+
+void NetworkManagerClient::stringIDsToVector(std::string _ids){
+	m_lastReceivedChunks.clear();
+
+    std::replace(_ids.begin(), _ids.end(), '%', ' ' );
+
+	std::stringstream ss(_ids);
+	std::copy(	std::istream_iterator<int>(ss),
+				std::istream_iterator<int>(),
+				back_inserter(m_lastReceivedChunks));
 }

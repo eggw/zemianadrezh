@@ -35,7 +35,10 @@ class Client : public GameInstance {
 		const Player* getPlayer() const;
 		const ChatBox* getChatBox() const;
 
+		bool isConnected() const;
 		bool isLocal() const;
+
+
 	public:
 		NetworkManagerClient m_networkManager;
 	private:

@@ -162,11 +162,22 @@ void NetworkManagerServer::accept() {
 
 	sf::Socket::Status status = m_listener.accept(*m_clientConnections.back());
 	if(status != sf::Socket::Done) {
-		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
-										  LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE);
+		//LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
+										  //LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE);
 		m_clientConnections.pop_back();
-	} else {
+	}
+	else {
+		if (m_clientConnections.back()->getRemoteAddress() != sf::IpAddress::LocalHost
+			&&
+			!m_server.connectionsAllowed()){
+				LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
+										  LoggerNetwork::LOG_MESSAGE::CONNECTION_BLOCKED);
+				m_clientConnections.pop_back();
+				return;
+			}
+
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
+
 	}
 }

@@ -1,11 +1,12 @@
-#include "ProgramState_SPPlay.h"
+#include "ProgramState_Play.h"
 
 #include "Keybinds.h"
 #include "LoggerNetwork.h"
 
-ProgramState_SPPlay::ProgramState_SPPlay(Program& _program)
+#include <iostream>
+ProgramState_Play::ProgramState_Play(Program& _program)
     : 	ProgramState(_program),
-       m_localServer(false),
+       //m_localServer(false),
        m_client(*m_program.m_window,
                 sf::IpAddress::LocalHost,
                 nullptr),
@@ -30,29 +31,24 @@ ProgramState_SPPlay::ProgramState_SPPlay(Program& _program)
     */
 
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
-    m_localServer.m_networkManager.accept();
+    //m_localServer.m_networkManager.accept();
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
 
-    m_client.m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
-    m_localServer.m_networkManager.receivePacket();
-    m_client.m_networkManager.receivePacket();
+    //m_client.m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
+    //m_localServer.m_networkManager.receivePacket();
+    //m_client.m_networkManager.receivePacket();
 
     m_client.respawnPlayer();
-
-    auto worldData = m_client.getWorld().getChunks();
-    for(auto& chunk : worldData) {
-        m_rendererChunk.update(&chunk);
-    }
 
     m_rendererPlayer.addObject(m_client.getPlayer());
     m_rendererChatbox.addObject(m_client.getChatBox());
 }
 
-ProgramState_SPPlay::~ProgramState_SPPlay() {
+ProgramState_Play::~ProgramState_Play() {
 
 }
 
-void ProgramState_SPPlay::getInput(sf::Event& _event) {
+void ProgramState_Play::getInput(sf::Event& _event) {
     ProgramState::getInput(_event);
 
     if(_event.type == sf::Event::KeyPressed) {
@@ -65,26 +61,50 @@ void ProgramState_SPPlay::getInput(sf::Event& _event) {
     m_client.getInput(_event);
 }
 
-void ProgramState_SPPlay::update() {
+void ProgramState_Play::update() {
+    if(!m_client.isConnected()){
+        std::cout << "Not connected!"  << std::endl;
+        return;
+    }
+
     m_view.setCenter(m_client.getPlayer()->getPosition());
 
-    m_client.sendPackets();
-    m_localServer.receivePackets();
     m_client.receivePackets();
 
+    updateNewChunks();
+
     m_client.update();
-    m_localServer.update();
+    m_client.sendPackets();
 }
 
-void ProgramState_SPPlay::draw() {
+void ProgramState_Play::draw() {
     m_program.m_window->setView(m_view);
     m_rendererPlayer.draw();
     m_rendererChunk.draw();
     m_rendererChatbox.draw();
 }
 
-void ProgramState_SPPlay::onResize(sf::Vector2u _newSize){
+void ProgramState_Play::onResize(sf::Vector2u _newSize){
     ProgramState::onResize(_newSize);
     sf::Vector2f newSizeF{float(_newSize.x), float(_newSize.y)};
     m_view.setSize(newSizeF);
+}
+
+void ProgramState_Play::updateNewChunks(){
+    std::unique_ptr<std::vector<int>> ptr(new std::vector<int>);
+
+    if(m_client.m_networkManager.chunkDataReceived(ptr.get())){
+        auto worldData = m_client.getWorld().getChunks();
+        for(auto& chunk : worldData) {
+            auto result = std::find(std::begin(*ptr),
+                                    std::end(*ptr),
+                                    chunk.getID());
+
+            if(result != std::end(*ptr)){
+                m_rendererChunk.update(&chunk);
+            }
+        }
+
+        m_client.m_networkManager.setChunkDataProcessed(true);
+    }
 }

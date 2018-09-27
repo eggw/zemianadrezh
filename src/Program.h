@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Server.h"
 #include "Singleton.h"
 
 class ProgramState;
@@ -18,12 +19,16 @@ class Program : public Singleton<Program> {
 		void init();
 		void gameLoop();
 
-		void pushState_SPPlay();
+		void pushState_Play_SP();
 		void pushState_Pause();
 		void pushState_MPMenu();
 		void pushState_MPHostMenu();
 
 		void returnToMainMenu();
+
+		bool localServerInitialised();
+		void initialiseLocalServer(bool _joinable);
+		void terminateLocalServer();
 
 		void popState();
 
@@ -34,6 +39,7 @@ class Program : public Singleton<Program> {
 
 	private:
 		bool isAtMainMenu();
+		std::unique_ptr<Server> m_localServer{nullptr};
 };
 
 #endif // PROGRAM_H_INCLUDED
