@@ -32,19 +32,10 @@ void Client::getInput(sf::Event& _event) {
 void Client::update() {
 	m_player.update();
 
-	//Here, we check to see if any new messages have been received from our
-	//network manager. If so, we'll add it to the chatbox and clear it from
-	//the network manager.
-
-	std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
-	if(m_networkManager.receivedMessage(ptr.get())){
-		m_chatBox.appendMessage(ptr->first, ptr->second);
-		m_networkManager.clearLastReceivedMessage();
-	}
+	handleIncomingMessages();
+	handleOutgoingMessages();
 
 	m_chatBox.update();
-
-	handlePendingMessages();
 
 	if(!isLocal()) {
 		GameInstance::update();
@@ -109,9 +100,38 @@ bool Client::isLocal() const {
 	return m_localServer != nullptr;
 }
 
+std::pair<std::string, std::string> Client::getPendingMessage() const {
+    return m_pendingMessage;
+}
+
+//We check to see if any new messages have been received from our
+//network manager. If so, we'll add it to the chatbox and clear it from
+//the network manager.
+void Client::handleIncomingMessages(){
+    std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
+	if(m_networkManager.receivedMessage(ptr.get())){
+		m_chatBox.appendMessage(ptr->first, ptr->second);
+		m_networkManager.clearLastReceivedMessage();
+	}
+}
+
+//We check to see if there is any new outgoing message from the chatbox,
+//and if so, we'll set it as our latest m_pendingMessage, then send it
+//to the server
+void Client::handleOutgoingMessages(){
+    std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
+	if(m_chatBox.completedMessage(ptr.get())){
+		m_pendingMessage = *ptr;
+		m_networkManager.sendPacket(Packet::Type::CHAT_MESSAGE);
+	}
+}
+
+
+/*
 std::vector<std::pair<bool,std::pair<std::string, std::string>>>& Client::getPendingMessages(){
 	return m_pendingMessages;
 }
+
 
 //See Client.h and ChatBox.h for an explanation of
 //m_pendingMessages and ChatBox::getPendingMessage() respectively.
@@ -145,3 +165,4 @@ void Client::handlePendingMessages(){
 							return m.first;
 						}), m_pendingMessages.end());
 }
+*/

@@ -129,8 +129,8 @@ void ChatBox::update() {
     m_textEntry.update();
     if(m_textEntry.inputComplete()) {
         //appendMessage(m_textEntry.getLastString(), m_name);
-        m_pendingMessage = std::make_pair(   m_textEntry.getLastString(),
-                                                m_name);
+        m_lastMessage = std::make_pair( m_textEntry.getLastString(),
+                                        m_name);
     }
     updateShadedRectangleTransparency();
     updateMessageTransparency();
@@ -154,13 +154,17 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.setView(previousView);
 }
 
-std::pair<std::string, std::string> ChatBox::getPendingMessage(){
-    return m_pendingMessage;
-}
 
-void ChatBox::clearPendingMessage(){
-    m_pendingMessage.first = "";
-    m_pendingMessage.second = "";
+bool ChatBox::completedMessage(std::pair<std::string, std::string>* _ptr){
+    if(m_lastMessage.first == "" && m_lastMessage.second == ""){
+        return false;
+    }
+
+    *_ptr = m_lastMessage;
+    m_lastMessage.first = "";
+    m_lastMessage.second = "";
+
+    return true;
 }
 
 const bool ChatBox::messageTooWide(Message& _message) const {

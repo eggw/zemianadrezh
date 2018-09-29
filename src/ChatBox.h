@@ -16,13 +16,7 @@ class ChatBox : public sf::Drawable {
 		void update();
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-		//When a new message is typed, it is not instantly appended. Rather,
-		//it is saved into m_pendingMessage, which Client will be constantly
-		//checking. When a new message is detected, Client takes it and then
-		//calls clearPendingMessage(). See Client for information on what
-		//happens next.
-		std::pair<std::string, std::string> getPendingMessage();
-		void clearPendingMessage();
+		bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
 	private:
 		struct Message {
 			Message(sf::Text& _text, unsigned int _numberOfLines = 1)
@@ -68,7 +62,7 @@ class ChatBox : public sf::Drawable {
 		sf::RectangleShape m_shadedRectangle;
 
 		std::vector<Message> m_messages;
-		std::pair<std::string, std::string> m_pendingMessage;
+		std::pair<std::string, std::string> m_lastMessage;
 
 		TextEntryBox m_textEntry;
 		sf::Clock m_clock;

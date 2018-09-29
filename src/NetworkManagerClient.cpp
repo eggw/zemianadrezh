@@ -46,21 +46,16 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
+    case Packet::Type::CHAT_MESSAGE: {
+        auto message = m_client.getPendingMessage();
 
-	//See the implementation of Client::handlePendingMessages() for detailed comments
-	//on how this whole thing works
+        packet << message.first;
+        packet << message.second;
 
-		case Packet::Type::CHAT_MESSAGE: {
-			for(auto& message : m_client.getPendingMessages()){
-				packet << message.second.first;
-				packet << message.second.second;
+        m_serverConnection.send(packet);
 
-				if(m_serverConnection.send(packet) == sf::Socket::Status::Done){
-					message.first = true;
-				}
-			}
-			break;
-		}
+        break;
+    }
 	//////////////////////////////////////////////////////////////////////////////
 
 	default:
