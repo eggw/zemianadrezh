@@ -25,6 +25,9 @@ class NetworkManagerServer {
 
 		void receivePacket();
 
+		//Sends a message to all connected players
+		void sendMessage(std::string _message, std::string _sender);
+
 		const std::vector<std::unique_ptr<sf::TcpSocket>>& getClients();
 
 		void listen();
@@ -34,6 +37,7 @@ class NetworkManagerServer {
 		sf::TcpListener m_listener;
 		std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
 		std::map<std::string, sf::TcpSocket*> m_clientNames;
+		std::vector<std::pair<std::string, std::string>> m_messages;
 };
 
 

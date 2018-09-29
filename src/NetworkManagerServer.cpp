@@ -94,6 +94,25 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 		break;
 	}
 		//////////////////////////////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////////////////////////////
+	case Packet::Type::CHAT_MESSAGE: {
+		std::string message = m_messages.back().first;
+		std::string sender = m_messages.back().second;
+		packet << message;
+		packet << sender;
+
+		for(auto& recipient : recipients){
+			recipient->send(packet);
+		}
+
+		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+						LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+						packetCode);
+
+		break;
+	}
+		//////////////////////////////////////////////////////////////////////////////
 	}
 }
 
@@ -137,9 +156,31 @@ void NetworkManagerServer::receivePacket() {
 			//////////////////////////////////////////////////////////////////////////////
 			default:
 				break;
+
+			//////////////////////////////////////////////////////////////////////////////
+			case Packet::Type::CHAT_MESSAGE: {
+				std::string message;
+				std::string sender;
+				packet >> message;
+				packet >> sender;
+				m_messages.push_back(std::make_pair(message, sender));
+
+				sendPacket(Packet::Type::CHAT_MESSAGE);
+				break;
+			}
+			//////////////////////////////////////////////////////////////////////////////
 			}
 		}
 	}
+}
+
+void NetworkManagerServer::sendMessage(std::string _message, std::string _sender){
+    if(m_messages.size() == 50){
+		m_messages.clear();
+    }
+
+    m_messages.push_back(std::make_pair(_message, _sender));
+	sendPacket(Packet::Type::CHAT_MESSAGE);
 }
 
 const std::vector<std::unique_ptr<sf::TcpSocket>>& NetworkManagerServer::getClients() {
@@ -179,5 +220,6 @@ void NetworkManagerServer::accept() {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
 
+		sendMessage("Welcome!", "Server");
 	}
 }

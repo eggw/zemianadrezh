@@ -33,6 +33,7 @@ LoggerNetwork::LoggerNetwork() {
 	packetMap.emplace(LOG_PACKET_DATATRANSFER::PACKET_RECEIVED, "Packet received");
 	packetMap.emplace(LOG_PACKET_DATATRANSFER::PACKET_SENT, "Packet sent");
 
+	packetTypeMap.emplace(Packet::Type::CHAT_MESSAGE, "CHAT_MESSAGE");
 	packetTypeMap.emplace(Packet::Type::DATA_WORLD, "DATA_WORLD");
 	packetTypeMap.emplace(Packet::Type::REQUEST_WORLD, "REQUEST_WORLD");
 	packetTypeMap.emplace(Packet::Type::DATA_PLAYER, "DATA_PLAYER");

@@ -5,6 +5,7 @@ namespace Packet {
 
 	enum class Type
 	{
+		CHAT_MESSAGE,
 		REQUEST_WORLD,
 		DATA_WORLD,
 		DATA_PLAYER

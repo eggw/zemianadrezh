@@ -38,7 +38,7 @@ class Client : public GameInstance {
 		bool isConnected() const;
 		bool isLocal() const;
 
-
+		std::vector<std::pair<bool,std::pair<std::string, std::string>>>& getPendingMessages();
 	public:
 		NetworkManagerClient m_networkManager;
 	private:
@@ -46,6 +46,16 @@ class Client : public GameInstance {
 		Server* m_localServer;
 		Player m_player;
 		ChatBox m_chatBox;
+
+		//A vector containing a pair of bool and another pair.
+		//The bool is false if the message hasn't been verified to have been sent, by
+		//checking sf::Socket::Status, and true if it has been sent. See function
+		//handlePendingMessages() for more information.
+
+		//The inner pair is the message itself: first the message, then the sender
+		std::vector<std::pair<bool,std::pair<std::string, std::string>>> m_pendingMessages;
+
+		void handlePendingMessages();
 };
 
 #endif // CLIENT_H_INCLUDED

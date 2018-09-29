@@ -17,6 +17,12 @@ class NetworkManagerClient {
 
 		bool connectionActive() const;
 
+		//This function returns a bool that specifies whether new message
+		//was received over the network or not. An optional pointer can be
+		//passed that will be assigned the new message.
+		bool receivedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
+		void clearLastReceivedMessage();
+
 		//See explanation below for details
 		//Note: chunkDataReceived can optionally take a pointer to a
 		//vector of ints. If it does, the IDs of the chunks that were
@@ -42,6 +48,9 @@ class NetworkManagerClient {
 		//will do the work of converting it into a vector of ints and setting
 		//m_lastReceivedChunks
 		void stringIDsToVector(std::string _ids);
+
+
+		std::pair<std::string, std::string> m_lastReceivedMessage;
 };
 
 #endif // NETWORKMANAGERCLIENT_H_INCLUDED

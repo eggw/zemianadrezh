@@ -45,6 +45,24 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 	}
 	//////////////////////////////////////////////////////////////////////////////
 
+	//////////////////////////////////////////////////////////////////////////////
+
+	//See the implementation of Client::handlePendingMessages() for detailed comments
+	//on how this whole thing works
+
+		case Packet::Type::CHAT_MESSAGE: {
+			for(auto& message : m_client.getPendingMessages()){
+				packet << message.second.first;
+				packet << message.second.second;
+
+				if(m_serverConnection.send(packet) == sf::Socket::Status::Done){
+					message.first = true;
+				}
+			}
+			break;
+		}
+	//////////////////////////////////////////////////////////////////////////////
+
 	default:
 		break;
 	}
@@ -102,6 +120,20 @@ void NetworkManagerClient::receivePacket() {
 			break;
 		}
 		//////////////////////////////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////////////////////////////
+		case Packet::Type::CHAT_MESSAGE: {
+			std::string message;
+			std::string sender;
+			packet >> message;
+			packet >> sender;
+
+			m_lastReceivedMessage = std::make_pair(message, sender);
+			break;
+		}
+		//////////////////////////////////////////////////////////////////////////////
+
+
 		default:
 			break;
 		}
@@ -126,6 +158,22 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
 bool NetworkManagerClient::connectionActive() const{
 	return m_serverConnection.getRemoteAddress() != sf::IpAddress::None;
 }
+
+bool NetworkManagerClient::receivedMessage(std::pair<std::string, std::string>* _ptr) {
+	bool valid {m_lastReceivedMessage.first != ""};
+
+	if(_ptr != nullptr){
+        *_ptr = m_lastReceivedMessage;
+	}
+
+	return valid;
+}
+
+void NetworkManagerClient::clearLastReceivedMessage(){
+	m_lastReceivedMessage.first = "";
+	m_lastReceivedMessage.second = "";
+}
+
 
 bool NetworkManagerClient::chunkDataReceived(std::vector<int>* _ids) const {
 	if(_ids != nullptr){
