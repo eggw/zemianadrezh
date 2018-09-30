@@ -6,6 +6,17 @@
 
 #include "Singleton.h"
 
+/*
+When using non-binding TcpSockets, it is important to send
+the same packet object over again if TcpSocket.send() returns
+sf::Socket::Status::Partial. We'll use this class as a wrapper
+around all packet sending operations to ensure that packets
+are being sent properly.
+
+See the footnote on the following page for a detailed explanation:
+https://www.sfml-dev.org/tutorials/2.5/network-socket.php
+*/
+
 typedef std::unique_ptr<sf::Packet> PacketUPtr;
 
 class PacketSender : public Singleton<PacketSender> {

@@ -34,6 +34,7 @@ void Client::update() {
 
 	handleIncomingMessages();
 	handleOutgoingMessages();
+	m_networkManager.update();
 
 	m_chatBox.update();
 
@@ -125,44 +126,3 @@ void Client::handleOutgoingMessages(){
 		m_networkManager.sendPacket(Packet::Type::CHAT_MESSAGE);
 	}
 }
-
-
-/*
-std::vector<std::pair<bool,std::pair<std::string, std::string>>>& Client::getPendingMessages(){
-	return m_pendingMessages;
-}
-
-
-//See Client.h and ChatBox.h for an explanation of
-//m_pendingMessages and ChatBox::getPendingMessage() respectively.
-void Client::handlePendingMessages(){
-
-	//First, we check if ChatBox has a pending message available for us
-	//to insert into m_pendingMessages. We set the bool to false, since
-	//it hasn't been sent over the network yet, and call ChatBox::clearPendingMessage()
-	//since we don't need that there anymore.
-
-	auto pendingMessage = m_chatBox.getPendingMessage();
-	if(pendingMessage.first != "" && pendingMessage.second != ""){
-        m_pendingMessages.push_back(std::make_pair(false,pendingMessage));
-        m_chatBox.clearPendingMessage();
-	}
-
-    //See the CHAT_MESSAGE section of NetworkManagerClient::sendPacket() for
-    //details on how the function works. It iterates through m_pendingMessages,
-    //and attempts to send each one over the network. If it succeeds, it sets
-    //the outer pair's boolean to true
-	if(!m_pendingMessages.empty()){
-        m_networkManager.sendPacket(Packet::Type::CHAT_MESSAGE);
-	}
-
-	//Finally, we'll cull all the messages - that have already been verified to
-	//have been sent - from m_pendingMessages
-	m_pendingMessages.erase(std::remove_if(
-						m_pendingMessages.begin(),
-						m_pendingMessages.end(),
-						[](const std::pair<bool,std::pair<std::string, std::string>>& m){
-							return m.first;
-						}), m_pendingMessages.end());
-}
-*/

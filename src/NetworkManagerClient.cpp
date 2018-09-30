@@ -25,7 +25,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::Type::REQUEST_WORLD: {
-		m_serverConnection.send(*packet);
+	    PacketSender::get_instance().send(&m_serverConnection, packet.get());
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 		*packet << playerData.positionX;
 		*packet << playerData.positionY;
 
-		m_serverConnection.send(*packet);
+		PacketSender::get_instance().send(&m_serverConnection, packet.get());
 
 		break;
 	}
@@ -52,7 +52,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
         *packet << message.first;
         *packet << message.second;
 
-        m_serverConnection.send(*packet);
+        PacketSender::get_instance().send(&m_serverConnection, packet.get());
 
         break;
     }
@@ -181,6 +181,11 @@ bool NetworkManagerClient::chunkDataReceived(std::vector<int>* _ids) const {
 void NetworkManagerClient::setChunkDataProcessed(bool _val) {
 	m_chunkDataReceived = !_val;
 }
+
+void NetworkManagerClient::update() {
+    PacketSender::get_instance().update();
+}
+
 
 void NetworkManagerClient::stringIDsToVector(std::string _ids){
 	m_lastReceivedChunks.clear();

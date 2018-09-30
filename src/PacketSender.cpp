@@ -14,12 +14,16 @@ void PacketSender::send(sf::TcpSocket* _socket, sf::Packet* _packet) {
     }
 }
 
+//Loops through m_packetData, attempts to send the packets,
+//and removes them from the vector if the attempt was successful
+
 void PacketSender::update() {
-    for(auto& packetData : m_packetData){
-        auto status = packetData.m_socket->send(*(packetData.m_packet));
-        if(status == sf::Socket::Status::Done){
-            //TODO::
-            //Remove this element from the vector
-        }
-    }
+    m_packetData.erase(std::remove_if(
+                m_packetData.begin(),
+                m_packetData.end(),
+                [](const PacketData& p){
+                    //return true to have it removed
+                    auto status = p.m_socket->send(*(p.m_packet));
+                    return (status == sf::Socket::Status::Done);
+                }), m_packetData.end());
 }

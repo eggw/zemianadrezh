@@ -33,6 +33,7 @@ class NetworkManagerServer {
 
 		void listen();
 		void accept();
+		void update();
 	private:
 		Server& m_server;
 		sf::TcpListener m_listener;

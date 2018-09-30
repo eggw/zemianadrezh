@@ -49,7 +49,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 		for(auto& recipient : recipients) {
 			*packet << worldData.chunkIDs;
 			*packet << worldData.invisibleBlocks;
-			recipient->send(*packet);
+			PacketSender::get_instance().send(recipient, packet.get());
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
 					packetCode);
@@ -84,7 +84,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 				*packet << playerData.positionX;
 				*packet << playerData.positionY;
 
-				recipient->send(*packet);
+				PacketSender::get_instance().send(recipient, packet.get());
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 						LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
 						packetCode);
@@ -95,7 +95,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 	}
 		//////////////////////////////////////////////////////////////////////////////
 
-		//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
 	case Packet::Type::CHAT_MESSAGE: {
 		std::string message = m_messages.back().first;
 		std::string sender = m_messages.back().second;
@@ -103,7 +103,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 		*packet << sender;
 
 		for(auto& recipient : recipients){
-			recipient->send(*packet);
+			PacketSender::get_instance().send(recipient, packet.get());
 		}
 
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
@@ -112,7 +112,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
 		break;
 	}
-		//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
 	}
 }
 
@@ -222,4 +222,8 @@ void NetworkManagerServer::accept() {
 
 		sendMessage("Welcome!", "Server");
 	}
+}
+
+void NetworkManagerServer::update() {
+    PacketSender::get_instance().update();
 }

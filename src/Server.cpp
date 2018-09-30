@@ -36,6 +36,7 @@ void Server::receivePackets() {
 
 void Server::update(){
     m_networkManager.accept();
+    m_networkManager.update();
 }
 
 bool Server::connectionsAllowed() {

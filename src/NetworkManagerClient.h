@@ -31,6 +31,7 @@ class NetworkManagerClient {
 		//need to be updated whenever one changes.
 		bool chunkDataReceived(std::vector<int>* _ids = nullptr) const;
 		void setChunkDataProcessed(bool _val);
+		void update();
 	private:
 		Client& m_client;
 		sf::TcpSocket m_serverConnection;
