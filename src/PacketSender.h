@@ -1,10 +1,12 @@
 #ifndef PACKETSENDER_H_INCLUDED
 #define PACKETSENDER_H_INCLUDED
 
+#include <memory>
 #include <SFML/Network.hpp>
 
 #include "Singleton.h"
 
+typedef std::unique_ptr<sf::Packet> PacketUPtr;
 
 class PacketSender : public Singleton<PacketSender> {
     public:

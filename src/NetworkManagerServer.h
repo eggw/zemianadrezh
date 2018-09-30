@@ -7,6 +7,7 @@
 #include "SFML/Network.hpp"
 
 #include "PacketTypes.h"
+#include "PacketSender.h"
 
 class Server;
 

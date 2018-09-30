@@ -37,8 +37,8 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 		}
 	}
 
-	sf::Packet packet;
-	packet << packetCode;
+	PacketUPtr packet(new sf::Packet());
+	*packet << packetCode;
 
 	switch(_type) {
 	//////////////////////////////////////////////////////////////////////////////
@@ -47,9 +47,9 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 		World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
 		for(auto& recipient : recipients) {
-			packet << worldData.chunkIDs;
-			packet << worldData.invisibleBlocks;
-			recipient->send(packet);
+			*packet << worldData.chunkIDs;
+			*packet << worldData.invisibleBlocks;
+			recipient->send(*packet);
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
 					packetCode);
@@ -67,7 +67,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 			for(auto& player : *m_server.getOtherPlayers()) {
 				Player::EncodedPlayerData playerData = player->encodeData();
 
-				packet << playerData.playerName;
+				*packet << playerData.playerName;
 
 				//Here we do a quick check to see if the playerdata generated
 				//belongs to the recipient's player; if it does, we'll cancel
@@ -79,12 +79,12 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 					}
 				}
 
-				packet << playerData.facingLeft;
-				packet << playerData.speed;
-				packet << playerData.positionX;
-				packet << playerData.positionY;
+				*packet << playerData.facingLeft;
+				*packet << playerData.speed;
+				*packet << playerData.positionX;
+				*packet << playerData.positionY;
 
-				recipient->send(packet);
+				recipient->send(*packet);
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 						LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
 						packetCode);
@@ -99,11 +99,11 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 	case Packet::Type::CHAT_MESSAGE: {
 		std::string message = m_messages.back().first;
 		std::string sender = m_messages.back().second;
-		packet << message;
-		packet << sender;
+		*packet << message;
+		*packet << sender;
 
 		for(auto& recipient : recipients){
-			recipient->send(packet);
+			recipient->send(*packet);
 		}
 
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
@@ -118,11 +118,11 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
 void NetworkManagerServer::receivePacket() {
 	int packetCode;
-	sf::Packet packet;
+	PacketUPtr packet(new sf::Packet());
 
 	for(auto& connection : m_clientConnections) {
-		if(connection->receive(packet) == sf::Socket::Status::Done) {
-			packet >> packetCode;
+		if(connection->receive(*packet) == sf::Socket::Status::Done) {
+			*packet >> packetCode;
 			Packet::Type packetType{Packet::toType(packetCode)};
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
@@ -140,11 +140,11 @@ void NetworkManagerServer::receivePacket() {
 			case Packet::Type::DATA_PLAYER: {
 				Player::EncodedPlayerData playerData;
 
-				packet >> playerData.playerName;
-				packet >> playerData.facingLeft;
-				packet >> playerData.speed;
-				packet >> playerData.positionX;
-				packet >> playerData.positionY;
+				*packet >> playerData.playerName;
+				*packet >> playerData.facingLeft;
+				*packet >> playerData.speed;
+				*packet >> playerData.positionX;
+				*packet >> playerData.positionY;
 
 				m_clientNames.insert(std::make_pair(playerData.playerName, connection.get()));
 
@@ -161,8 +161,8 @@ void NetworkManagerServer::receivePacket() {
 			case Packet::Type::CHAT_MESSAGE: {
 				std::string message;
 				std::string sender;
-				packet >> message;
-				packet >> sender;
+				*packet >> message;
+				*packet >> sender;
 				m_messages.push_back(std::make_pair(message, sender));
 
 				sendPacket(Packet::Type::CHAT_MESSAGE);

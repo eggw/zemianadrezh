@@ -18,14 +18,14 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 	}
 
 	int packetCode = Packet::toInt(_type);
-	sf::Packet packet;
-	packet << packetCode;
+	PacketUPtr packet(new sf::Packet());
+	*packet << packetCode;
 
 	switch(_type) {
 
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::Type::REQUEST_WORLD: {
-		m_serverConnection.send(packet);
+		m_serverConnection.send(*packet);
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
@@ -33,13 +33,13 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::Type::DATA_PLAYER: {
 		Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
-		packet << playerData.playerName;
-		packet << playerData.facingLeft;
-		packet << playerData.speed;
-		packet << playerData.positionX;
-		packet << playerData.positionY;
+		*packet << playerData.playerName;
+		*packet << playerData.facingLeft;
+		*packet << playerData.speed;
+		*packet << playerData.positionX;
+		*packet << playerData.positionY;
 
-		m_serverConnection.send(packet);
+		m_serverConnection.send(*packet);
 
 		break;
 	}
@@ -49,10 +49,10 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
     case Packet::Type::CHAT_MESSAGE: {
         auto message = m_client.getPendingMessage();
 
-        packet << message.first;
-        packet << message.second;
+        *packet << message.first;
+        *packet << message.second;
 
-        m_serverConnection.send(packet);
+        m_serverConnection.send(*packet);
 
         break;
     }
@@ -75,10 +75,10 @@ void NetworkManagerClient::receivePacket() {
 	}
 
 	int packetCode;
-	sf::Packet packet;
+	PacketUPtr packet(new sf::Packet());
 
-	if(m_serverConnection.receive(packet) == sf::Socket::Status::Done) {
-		packet >> packetCode;
+	if(m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
+		*packet >> packetCode;
 		Packet::Type packetType{Packet::toType(packetCode)};
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
 				LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
@@ -90,8 +90,8 @@ void NetworkManagerClient::receivePacket() {
 
 			World::EncodedWorldData worldData;
 
-			packet >> worldData.chunkIDs;
-			packet >> worldData.invisibleBlocks;
+			*packet >> worldData.chunkIDs;
+			*packet >> worldData.invisibleBlocks;
 
 			m_client.parseWorldData(worldData);
 
@@ -105,11 +105,11 @@ void NetworkManagerClient::receivePacket() {
 		case Packet::Type::DATA_PLAYER: {
 			Player::EncodedPlayerData playerData;
 
-			packet >> playerData.playerName;
-			packet >> playerData.facingLeft;
-			packet >> playerData.speed;
-			packet >> playerData.positionX;
-			packet >> playerData.positionY;
+			*packet >> playerData.playerName;
+			*packet >> playerData.facingLeft;
+			*packet >> playerData.speed;
+			*packet >> playerData.positionX;
+			*packet >> playerData.positionY;
 
 			m_client.updateOtherPlayers(playerData);
 			break;
@@ -120,8 +120,8 @@ void NetworkManagerClient::receivePacket() {
 		case Packet::Type::CHAT_MESSAGE: {
 			std::string message;
 			std::string sender;
-			packet >> message;
-			packet >> sender;
+			*packet >> message;
+			*packet >> sender;
 
 			m_lastReceivedMessage = std::make_pair(message, sender);
 			break;
