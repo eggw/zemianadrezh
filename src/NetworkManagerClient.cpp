@@ -25,7 +25,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::Type::REQUEST_WORLD: {
-	    PacketSender::get_instance().send(&m_serverConnection, packet.get());
+	    PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 		*packet << playerData.positionX;
 		*packet << playerData.positionY;
 
-		PacketSender::get_instance().send(&m_serverConnection, packet.get());
+		PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
 
 		break;
 	}
@@ -52,7 +52,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
         *packet << message.first;
         *packet << message.second;
 
-        PacketSender::get_instance().send(&m_serverConnection, packet.get());
+        PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
 
         break;
     }
