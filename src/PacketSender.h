@@ -24,8 +24,8 @@ class PacketSender : public Singleton<PacketSender> {
     public:
         struct PacketData {
             PacketData(sf::TcpSocket* _socket, PacketUPtr _packet)
-            :   m_socket{_socket},
-                m_packet{std::move(_packet)}{}
+                :   m_socket{_socket},
+                    m_packet{std::move(_packet)} {}
 
             sf::TcpSocket* m_socket;
             PacketUPtr m_packet;

@@ -20,7 +20,7 @@ class InputLocker : public Singleton<InputLocker> {
         void lock();
         void unlock();
     private:
-    	bool m_locked;
+        bool m_locked;
 };
 
 

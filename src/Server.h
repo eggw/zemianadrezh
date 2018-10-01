@@ -8,19 +8,19 @@
 #include "GameInstance.h"
 
 class Server : public GameInstance {
-	public:
-		//todo: pass world settings to constructor
-		Server(bool _allowConnections);
+    public:
+        //todo: pass world settings to constructor
+        Server(bool _allowConnections);
 
-		void updateOtherPlayers(Player::EncodedPlayerData _data);
-		void receivePackets();
+        void updateOtherPlayers(Player::EncodedPlayerData _data);
+        void receivePackets();
 
-		void update();
+        void update();
 
-		bool connectionsAllowed();
-	public:
-		NetworkManagerServer m_networkManager;
-		bool m_allowConnections;
+        bool connectionsAllowed();
+    public:
+        NetworkManagerServer m_networkManager;
+        bool m_allowConnections;
 };
 
 #endif // SERVER_H_INCLUDED

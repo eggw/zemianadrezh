@@ -8,17 +8,17 @@
 #include "Player.h"
 
 class RendererPlayer {
-	public:
-		RendererPlayer(sf::RenderWindow& _window);
-		void addPlayer(const Player* _player) const;
+    public:
+        RendererPlayer(sf::RenderWindow& _window);
+        void addPlayer(const Player* _player) const;
 
-		void update();
-		void draw() const;
+        void update();
+        void draw() const;
 
-	private:
-		sf::RenderWindow& m_window;
-		mutable std::vector<const Player*> m_players;
-		sf::View m_view;
+    private:
+        sf::RenderWindow& m_window;
+        mutable std::vector<const Player*> m_players;
+        sf::View m_view;
 };
 
 

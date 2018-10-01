@@ -16,13 +16,13 @@ ProgramState_Menu::~ProgramState_Menu() {
 
 }
 
-bool lmbPressed(sf::Event& _event){
+bool lmbPressed(sf::Event& _event) {
     if(_event.type == sf::Event::MouseButtonPressed
-       &&
-       _event.mouseButton.button == sf::Mouse::Left){
-            return true;
-       }
-    else{
+            &&
+            _event.mouseButton.button == sf::Mouse::Left) {
+        return true;
+    }
+    else {
         return false;
     }
 }
@@ -35,7 +35,7 @@ calls the function pointer, if it's not null.
 void ProgramState_Menu::getInput(sf::Event& _event) {
     ProgramState::getInput(_event);
 
-    if(lmbPressed(_event)){
+    if(lmbPressed(_event)) {
         for(auto& menuItem : m_menuItems) {
             if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
                 (m_program.*std::get<1>(menuItem))();
@@ -50,9 +50,10 @@ bool ProgramState_Menu::isMousedOver(ProgramState_Menu::MenuItem _menuItem) {
     sf::Vector2f pixelPos{m_program.m_window->mapPixelToCoords(mousePos)};
 
     return std::get<2>(_menuItem).getGlobalBounds().intersects({pixelPos.x,
-																pixelPos.y,
-																1,
-																1});
+            pixelPos.y,
+            1,
+            1
+                                                               });
 }
 
 bool ProgramState_Menu::isFunctionNull(ProgramState_Menu::MenuItem _menuItem) {
@@ -121,7 +122,7 @@ void ProgramState_Menu::addMenuItem(const std::string _string, void(Program::*f)
     }
 }
 
-void ProgramState_Menu::addGap(){
+void ProgramState_Menu::addGap() {
     addMenuItem("");
 }
 

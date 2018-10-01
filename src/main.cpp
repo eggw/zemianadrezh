@@ -6,6 +6,6 @@ PacketSender
 */
 
 int main() {
-	Program program;
-	return 0;
+    Program program;
+    return 0;
 }

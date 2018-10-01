@@ -12,39 +12,39 @@ class ProgramState;
 
 class Program : public Singleton<Program> {
 
-	public:
-		Program();
-		~Program();
+    public:
+        Program();
+        ~Program();
 
-		void init();
-		void gameLoop();
+        void init();
+        void gameLoop();
 
-		void pushState_Play_SP();
-		void pushState_Play_MP_Host();
-		void pushState_Play_MP_Join();
+        void pushState_Play_SP();
+        void pushState_Play_MP_Host();
+        void pushState_Play_MP_Join();
 
 
-		void pushState_Pause();
-		void pushState_MPMenu();
-		void pushState_MPHostMenu();
-		void pushState_MPJoinMenu();
+        void pushState_Pause();
+        void pushState_MPMenu();
+        void pushState_MPHostMenu();
+        void pushState_MPJoinMenu();
 
-		void returnToMainMenu();
+        void returnToMainMenu();
 
-		bool localServerInitialised();
-		void initialiseLocalServer(bool _joinable);
-		void terminateLocalServer();
+        bool localServerInitialised();
+        void initialiseLocalServer(bool _joinable);
+        void terminateLocalServer();
 
-		void popState();
+        void popState();
 
-		void closeWindow();
+        void closeWindow();
 
-		std::vector<std::unique_ptr<ProgramState>> m_states;
-		std::unique_ptr<sf::RenderWindow> m_window;
+        std::vector<std::unique_ptr<ProgramState>> m_states;
+        std::unique_ptr<sf::RenderWindow> m_window;
 
-	private:
-		bool isAtMainMenu();
-		std::unique_ptr<Server> m_localServer{nullptr};
+    private:
+        bool isAtMainMenu();
+        std::unique_ptr<Server> m_localServer{nullptr};
 };
 
 #endif // PROGRAM_H_INCLUDED

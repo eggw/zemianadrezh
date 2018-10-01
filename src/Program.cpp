@@ -42,14 +42,14 @@ void Program::gameLoop() {
         }
         /////////////////////////////////////////////////////
 
-        if(localServerInitialised()){
+        if(localServerInitialised()) {
             m_localServer->receivePackets();
             m_localServer->update();
         }
 
         m_states.back()->update();
 
-        if(m_states.back()->isVisibleOverPreviousState()){
+        if(m_states.back()->isVisibleOverPreviousState()) {
             m_states.end()[-2]->draw();
         }
         m_states.back()->draw();
@@ -73,44 +73,44 @@ void Program::pushState_Play_MP_Join() {
     //m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
 }
 
-void Program::pushState_Pause(){
+void Program::pushState_Pause() {
     m_states.push_back(std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
 }
 
-void Program::pushState_MPMenu(){
+void Program::pushState_MPMenu() {
     m_states.push_back(std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
 }
 
-void Program::pushState_MPHostMenu(){
+void Program::pushState_MPHostMenu() {
     m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(new ProgramState_MPHostMenu(*this)));
 }
 
-void Program::pushState_MPJoinMenu(){
+void Program::pushState_MPJoinMenu() {
     m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(new ProgramState_MPJoinMenu(*this)));
 }
 
-bool Program::localServerInitialised(){
+bool Program::localServerInitialised() {
     return m_localServer != nullptr;
 }
 
-void Program::initialiseLocalServer(bool _joinable){
+void Program::initialiseLocalServer(bool _joinable) {
     m_localServer = std::unique_ptr<Server>(new Server(_joinable));
 }
 
-void Program::terminateLocalServer(){
+void Program::terminateLocalServer() {
     m_localServer = nullptr;
 }
 
-bool Program::isAtMainMenu(){
+bool Program::isAtMainMenu() {
     ProgramState_MainMenu* ptrTest = dynamic_cast<ProgramState_MainMenu*> (m_states.back().get());
     return (ptrTest != nullptr);
 }
 
 //This function simply keeps popping the state until it's the main menu state.
-void Program::returnToMainMenu(){
-    while(!isAtMainMenu()){
+void Program::returnToMainMenu() {
+    while(!isAtMainMenu()) {
         popState();
-      }
+    }
 }
 
 void Program::popState() {

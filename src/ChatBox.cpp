@@ -4,7 +4,9 @@
 
 #include "Keybinds.h"
 
-const sf::FloatRect VIEWPORT                {0, 0.75, 0.3, 0.25};
+const sf::FloatRect VIEWPORT                {
+    0, 0.75, 0.3, 0.25
+};
 constexpr float SECONDS_UNTIL_MESSAGES_FADE {5.0f};
 constexpr unsigned int CHARACTER_SIZE       {20};
 
@@ -22,13 +24,13 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
      m_shadedRectangle(),
      m_messages(),
      m_textEntry(_window.getSize(),
-                {
-                    0,
-                    (_window.getSize().y - Y_OFFSET) / _window.getSize().y,
-                    VIEWPORT.width,
-                    1 - (_window.getSize().y - Y_OFFSET) / _window.getSize().y
-                }),
-     m_clock() {
+{
+    0,
+    (_window.getSize().y - Y_OFFSET) / _window.getSize().y,
+    VIEWPORT.width,
+    1 - (_window.getSize().y - Y_OFFSET) / _window.getSize().y
+}),
+m_clock() {
 
     m_shadedRectangleView.setViewport(VIEWPORT);
     onResize(_window.getSize());
@@ -155,8 +157,8 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 
-bool ChatBox::completedMessage(std::pair<std::string, std::string>* _ptr){
-    if(m_lastMessage.first == "" && m_lastMessage.second == ""){
+bool ChatBox::completedMessage(std::pair<std::string, std::string>* _ptr) {
+    if(m_lastMessage.first == "" && m_lastMessage.second == "") {
         return false;
     }
 
@@ -174,13 +176,13 @@ const bool ChatBox::messageTooWide(Message& _message) const {
 const bool ChatBox::messageTooNarrow(Message& _message) const {
     bool containsNewline{false};
     auto i = _message.text.getString().find("\n");
-    if(i != std::string::npos){
+    if(i != std::string::npos) {
         containsNewline = true;
     }
 
     return (_message.text.getGlobalBounds().width < m_view.getSize().x * 0.9)
-            &&
-            containsNewline;
+           &&
+           containsNewline;
 }
 
 void removeNewlines(std::string& _str) {
@@ -299,9 +301,10 @@ void ChatBox::updateMessageTransparency() {
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
     sf::FloatRect viewRect({0,
-                           0,
-                           _newSize.x * VIEWPORT.width,
-                           _newSize.y * VIEWPORT.height});
+                            0,
+                            _newSize.x * VIEWPORT.width,
+                            _newSize.y * VIEWPORT.height
+                           });
 
     m_view.reset(viewRect);
     m_view.setViewport({0, 0.75, VIEWPORT.width, VIEWPORT.height});
@@ -309,10 +312,10 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
     m_shadedRectangleView.reset(viewRect);
     m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
-    for(int i{0}; i < m_messages.size(); i++){
+    for(int i{0}; i < m_messages.size(); i++) {
         Message& message = m_messages[i];
 
-        if(messageTooWide(message) || messageTooNarrow(message)){
+        if(messageTooWide(message) || messageTooNarrow(message)) {
             adjustMessage(message);
             positionMessage(i);
         }

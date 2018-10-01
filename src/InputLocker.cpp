@@ -6,7 +6,7 @@ InputLocker::InputLocker()
 }
 
 bool InputLocker::isLocked() const {
-	return m_locked;
+    return m_locked;
 }
 
 void InputLocker::lock() {

@@ -9,10 +9,10 @@ template <class T>
 class RendererBase {
     public:
         RendererBase(sf::RenderWindow& _window)
-            :m_window(_window){
+            :m_window(_window) {
         };
 
-        virtual ~RendererBase(){
+        virtual ~RendererBase() {
         };
 
         virtual void draw() const = 0;

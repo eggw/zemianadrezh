@@ -52,17 +52,17 @@ void ProgramState_Play::getInput(sf::Event& _event) {
     ProgramState::getInput(_event);
 
     if(_event.type == sf::Event::KeyPressed) {
-		if(_event.key.code == Key::PAUSE_KEY){
-			m_program.pushState_Pause();
-			return;
-		}
-	}
+        if(_event.key.code == Key::PAUSE_KEY) {
+            m_program.pushState_Pause();
+            return;
+        }
+    }
 
     m_client.getInput(_event);
 }
 
 void ProgramState_Play::update() {
-    if(!m_client.isConnected()){
+    if(!m_client.isConnected()) {
         std::cout << "Not connected!"  << std::endl;
         return;
     }
@@ -84,23 +84,23 @@ void ProgramState_Play::draw() {
     m_rendererChatbox.draw();
 }
 
-void ProgramState_Play::onResize(sf::Vector2u _newSize){
+void ProgramState_Play::onResize(sf::Vector2u _newSize) {
     ProgramState::onResize(_newSize);
     sf::Vector2f newSizeF{float(_newSize.x), float(_newSize.y)};
     m_view.setSize(newSizeF);
 }
 
-void ProgramState_Play::updateNewChunks(){
+void ProgramState_Play::updateNewChunks() {
     std::unique_ptr<std::vector<int>> ptr(new std::vector<int>);
 
-    if(m_client.m_networkManager.chunkDataReceived(ptr.get())){
+    if(m_client.m_networkManager.chunkDataReceived(ptr.get())) {
         auto worldData = m_client.getWorld().getChunks();
         for(auto& chunk : worldData) {
             auto result = std::find(std::begin(*ptr),
                                     std::end(*ptr),
                                     chunk.getID());
 
-            if(result != std::end(*ptr)){
+            if(result != std::end(*ptr)) {
                 m_rendererChunk.update(&chunk);
             }
         }
