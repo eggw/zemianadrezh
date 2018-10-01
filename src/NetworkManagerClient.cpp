@@ -13,10 +13,6 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 }
 
 void NetworkManagerClient::sendPacket(Packet::Type _type) {
-    if(m_client.isLocal()) {
-        return;
-    }
-
     int packetCode = Packet::toInt(_type);
     PacketUPtr packet(new sf::Packet());
     *packet << packetCode;
@@ -70,10 +66,6 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 
 
 void NetworkManagerClient::receivePacket() {
-    if(m_client.isLocal()) {
-        return;
-    }
-
     int packetCode;
     PacketUPtr packet(new sf::Packet());
 

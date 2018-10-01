@@ -1,8 +1,10 @@
 #include "Program.h"
 
 /*
-TODO: convert all packets to uptrs and send them through
-PacketSender
+TODO:
+When a player connects for the first time, AFTER the world
+data has been received, call Client::respawnPlayer() to spawn
+them in the middle of the world
 */
 
 int main() {

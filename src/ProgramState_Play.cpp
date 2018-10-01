@@ -6,10 +6,12 @@
 #include <iostream>
 ProgramState_Play::ProgramState_Play(Program& _program)
     : 	ProgramState(_program),
-       //m_localServer(false),
+       //set the last argument of m_client's constructor
+       //to nullptr to test a non-local (non-resource sharing)
+       //instance of Server and Client
        m_client(*m_program.m_window,
                 sf::IpAddress::LocalHost,
-                nullptr),
+                m_program.getServer()),
        m_rendererChunk(*m_program.m_window),
        m_rendererPlayer(*m_program.m_window),
        m_rendererChatbox(*m_program.m_window),
@@ -31,12 +33,7 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     */
 
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
-    //m_localServer.m_networkManager.accept();
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
-
-    //m_client.m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
-    //m_localServer.m_networkManager.receivePacket();
-    //m_client.m_networkManager.receivePacket();
 
     m_client.respawnPlayer();
 

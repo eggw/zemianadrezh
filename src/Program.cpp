@@ -125,6 +125,11 @@ void Program::closeWindow() {
     m_window->close();
 }
 
-
+Server* Program::getServer() const {
+    if(m_localServer == nullptr) {
+        return nullptr;
+    }
+    return m_localServer.get();
+}
 
 

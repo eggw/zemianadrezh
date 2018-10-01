@@ -39,9 +39,10 @@ class Program : public Singleton<Program> {
 
         void closeWindow();
 
+        Server* getServer() const;
+
         std::vector<std::unique_ptr<ProgramState>> m_states;
         std::unique_ptr<sf::RenderWindow> m_window;
-
     private:
         bool isAtMainMenu();
         std::unique_ptr<Server> m_localServer{nullptr};
