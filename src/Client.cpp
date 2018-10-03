@@ -51,12 +51,8 @@ void Client::receivePackets() {
     m_networkManager.receivePacket();
 }
 
-void Client::requestWorldChunks() {
-    m_networkManager.sendPacket(Packet::Type::REQUEST_WORLD);
-}
-
-void Client::respawnPlayer() {
-    m_player.setPosition({m_world.getCenter().x, 0});
+void Client::respawnPlayer(sf::Vector2f _pos) {
+    m_player.setPosition(_pos);
 }
 
 void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {

@@ -28,6 +28,7 @@ class Player : public EntityMoving, public sf::Drawable {
         sf::Sprite m_sprite;
         Animation m_animationSheet;
         std::string m_playerName;
+        bool m_spawned{false};
 };
 
 

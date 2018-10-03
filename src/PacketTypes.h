@@ -5,9 +5,22 @@ namespace Packet {
 
     enum class Type
     {
+        //Used when sending messages
         CHAT_MESSAGE,
+        //Used by the client to send
+        //a request for the world data
         REQUEST_WORLD,
+        //Used by the client to send
+        //a request for the world data
+        REQUEST_RESPAWN_POSITION,
+        //Used by the server to send the
+        //world data
         DATA_WORLD,
+        //Used by the server to send the
+        //default spawn coordinates
+        DATA_RESPAWN_POSITION,
+        //Used by the client to send its
+        //position to the server
         DATA_PLAYER
     };
 

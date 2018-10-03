@@ -28,9 +28,7 @@ class Client : public GameInstance {
         void sendPackets();
         void receivePackets();
 
-        void requestWorldChunks();
-
-        void respawnPlayer();
+        void respawnPlayer(sf::Vector2f _pos);
 
         const Player* getPlayer() const;
         const ChatBox* getChatBox() const;

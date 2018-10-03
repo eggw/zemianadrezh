@@ -61,6 +61,26 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
         //////////////////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////////////////
+        case Packet::Type::DATA_RESPAWN_POSITION: {
+
+            const sf::Vector2f position = m_server.getWorld().getCenter();
+
+            for(auto& recipient : recipients) {
+                *packet << position.x;
+                //*packet << position.y;
+                *packet << 0;
+                PacketSender::get_instance().send(recipient, std::move(packet));
+                LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+                        LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+                        packetCode);
+
+            }
+
+            break;
+        }
+        //////////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////////////
         case Packet::Type::DATA_PLAYER: {
 
             for(auto& recipient : recipients) {
@@ -132,6 +152,13 @@ void NetworkManagerServer::receivePacket() {
                 //////////////////////////////////////////////////////////////////////////////
                 case Packet::Type::REQUEST_WORLD: {
                     sendPacket(Packet::Type::DATA_WORLD, connection.get());
+                    break;
+                }
+                //////////////////////////////////////////////////////////////////////////////
+
+                //////////////////////////////////////////////////////////////////////////////
+                case Packet::Type::REQUEST_RESPAWN_POSITION: {
+                    sendPacket(Packet::Type::DATA_RESPAWN_POSITION, connection.get());
                     break;
                 }
                 //////////////////////////////////////////////////////////////////////////////

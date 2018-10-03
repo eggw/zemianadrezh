@@ -35,8 +35,6 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
     m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
 
-    m_client.respawnPlayer();
-
     m_rendererPlayer.addObject(m_client.getPlayer());
     m_rendererChatbox.addObject(m_client.getChatBox());
 }

@@ -27,6 +27,13 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
         //////////////////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////////////////
+        case Packet::Type::REQUEST_RESPAWN_POSITION: {
+            PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
+            break;
+        }
+        //////////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////////////
         case Packet::Type::DATA_PLAYER: {
             Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
             *packet << playerData.playerName;
@@ -94,6 +101,19 @@ void NetworkManagerClient::receivePacket() {
             //////////////////////////////////////////////////////////////////////////////
 
             //////////////////////////////////////////////////////////////////////////////
+            case Packet::Type::DATA_RESPAWN_POSITION: {
+
+                sf::Vector2f position{0, 0};
+
+                *packet >> position.x;
+                *packet >> position.y;
+
+                m_client.respawnPlayer(position);
+                break;
+            }
+            //////////////////////////////////////////////////////////////////////////////
+
+            //////////////////////////////////////////////////////////////////////////////
             case Packet::Type::DATA_PLAYER: {
                 Player::EncodedPlayerData playerData;
 
@@ -138,7 +158,8 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
         LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
                                           LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
 
-        m_client.requestWorldChunks();
+        sendPacket(Packet::Type::REQUEST_WORLD);
+        sendPacket(Packet::Type::REQUEST_RESPAWN_POSITION);
     }
 }
 
