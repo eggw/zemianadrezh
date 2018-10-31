@@ -10,7 +10,8 @@
 
 class ProgramState_Play : public ProgramState {
     public:
-        ProgramState_Play(Program& _program);
+        ProgramState_Play(Program& _program,
+                          sf::IpAddress _ipAddress);
         ~ProgramState_Play();
 
         void getInput(sf::Event& _event);

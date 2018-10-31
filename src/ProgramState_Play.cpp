@@ -4,13 +4,14 @@
 #include "LoggerNetwork.h"
 
 #include <iostream>
-ProgramState_Play::ProgramState_Play(Program& _program)
+ProgramState_Play::ProgramState_Play(Program& _program,
+                                     sf::IpAddress _ipAddress)
     : 	ProgramState(_program),
        //set the last argument of m_client's constructor
        //to nullptr to test a non-local (non-resource sharing)
        //instance of Server and Client
        m_client(*m_program.m_window,
-                sf::IpAddress::LocalHost,
+                _ipAddress,
                 m_program.getServer()),
        m_rendererChunk(*m_program.m_window),
        m_rendererPlayer(*m_program.m_window),
@@ -32,8 +33,10 @@ ProgramState_Play::ProgramState_Play(Program& _program)
     See: https://en.sfml-dev.org/forums/index.php?topic=7118.0
     */
 
-    m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
-    m_client.m_networkManager.connect(sf::IpAddress::LocalHost, 7777);
+    if(m_client.isLocal()){
+        m_client.m_networkManager.connect(_ipAddress, 7777);
+        m_client.m_networkManager.connect(_ipAddress, 7777);
+    }
 
     m_rendererPlayer.addObject(m_client.getPlayer());
     m_rendererChatbox.addObject(m_client.getChatBox());

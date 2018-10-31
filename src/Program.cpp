@@ -60,17 +60,20 @@ void Program::gameLoop() {
 
 void Program::pushState_Play_SP() {
     initialiseLocalServer(false);
-    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
+                                                                                sf::IpAddress::LocalHost)));
 }
 
 void Program::pushState_Play_MP_Host() {
     initialiseLocalServer(true);
-    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
+                                                                                sf::IpAddress::LocalHost)));
 }
 
 void Program::pushState_Play_MP_Join() {
-    //initialiseLocalServer(false);
-    //m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this)));
+    initialiseLocalServer(false);
+    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
+                                                                                m_ipAddress)));
 }
 
 void Program::pushState_Pause() {
@@ -123,6 +126,10 @@ void Program::popState() {
 
 void Program::closeWindow() {
     m_window->close();
+}
+
+void Program::setIpAddress(const std::string _ipStr){
+    m_ipAddress = sf::IpAddress(_ipStr);
 }
 
 Server* Program::getServer() const {

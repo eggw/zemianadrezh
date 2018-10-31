@@ -39,6 +39,8 @@ class Program : public Singleton<Program> {
 
         void closeWindow();
 
+        void setIpAddress(std::string _ipStr);
+
         Server* getServer() const;
 
         std::vector<std::unique_ptr<ProgramState>> m_states;
@@ -46,6 +48,13 @@ class Program : public Singleton<Program> {
     private:
         bool isAtMainMenu();
         std::unique_ptr<Server> m_localServer{nullptr};
+        //Due to the way menu items work (ProgramState_Menu),
+        //they can call Program functions, but they can't pass
+        //parameters. Therefore, when a player wants to join
+        //a server, we'll set m_ipAddress to the IP they type,
+        //so that we can initialise the client with
+        //pushState_Play_MP_Join()
+        sf::IpAddress m_ipAddress{sf::IpAddress::LocalHost};
 };
 
 #endif // PROGRAM_H_INCLUDED
