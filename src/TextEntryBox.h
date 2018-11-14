@@ -21,22 +21,39 @@ class TextEntryBox : public sf::Drawable {
         void onResize(sf::Vector2u _newSize);
         void updateCaret();
         void updateView();
+        void updateHighlight();
         bool stringEmpty() const;
         void selectAll();
         void unselectAll();
 
+        void moveLeft();
+        void moveRight();
+
+        void selectLeft();
+        void selectRight();
+
+        bool sequenceSelected() const;
+
+        void deleteSelection();
+        void insert(std::string& _str);
+        void insert(char _char);
+
         void clearText();
+
+        float textXAtPosition(size_t _index);
     private:
         sf::View m_textView;
         sf::RectangleShape m_rectangle;
         sf::RectangleShape m_highlightedRectangle;
 
-        size_t m_currentStringIndexPosition;
+        size_t m_selectionBegin;
+        size_t m_selectionEnd;
+        int m_selectionDirection;
+
         sf::Text m_text;
         sf::Text m_caret;
         bool m_enteringText;
         bool m_inputComplete;
-        bool m_allSelected;
 
         std::string m_lastString;
 

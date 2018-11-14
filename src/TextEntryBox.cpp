@@ -23,11 +23,12 @@ TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
                            unsigned int _maxChars)
     :m_textView(),
      m_rectangle(),
-     m_currentStringIndexPosition(0),
+     m_selectionBegin(0),
+     m_selectionEnd(0),
+     m_selectionDirection(0),
      m_text(),
      m_enteringText{false},
      m_inputComplete{false},
-     m_allSelected{false},
      m_charSize{0},
      m_maxChars{_maxChars} {
 
@@ -36,7 +37,7 @@ TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
 
     m_text.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
     m_caret.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
-
+    m_caret.setColor(sf::Color(230,230,230));
     m_caret.setString("|");
 
     m_textView.setViewport(_viewPort);
@@ -52,6 +53,7 @@ void TextEntryBox::getInput(sf::Event& _event) {
                     m_lastString = m_text.getString();
                     clearText();
                 }
+
                 m_enteringText = !m_enteringText;
 
                 if(m_enteringText) {
@@ -62,22 +64,48 @@ void TextEntryBox::getInput(sf::Event& _event) {
                 }
             }
 
-            else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVELEFT)){
-                if(m_currentStringIndexPosition > 0){
-                    --m_currentStringIndexPosition;
-                }
+            else if(keysPressedTogether({Key::TEXT_SELECTLEFT_A,
+                                         Key::TEXT_SELECTLEFT_B})){
+                selectLeft();
             }
 
-            else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVERIGHT)){
-                if(m_currentStringIndexPosition < m_text.getString().getSize()){
-                    ++m_currentStringIndexPosition;
-                }
+            else if(keysPressedTogether({Key::TEXT_SELECTRIGHT_A,
+                                         Key::TEXT_SELECTRIGHT_B})){
+                selectRight();
             }
 
             else if(keysPressedTogether({Key::TEXT_SELECTALL_A,
                                          Key::TEXT_SELECTALL_B})){
                 selectAll();
             }
+
+            else if(keysPressedTogether({Key::TEXT_COPY_A,
+                                         Key::TEXT_COPY_B})){
+                //TODO: implement COPY functionality
+                //requires SFML 2.5+
+            }
+
+            else if(keysPressedTogether({Key::TEXT_CUT_A,
+                                         Key::TEXT_CUT_B})){
+                //TODO: implement CUT functionality
+                //requires SFML 2.5+
+            }
+
+            else if(keysPressedTogether({Key::TEXT_PASTE_A,
+                                         Key::TEXT_PASTE_B})){
+                //TODO: implement PASTE functionality
+                //requires SFML 2.5+
+            }
+
+            else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVELEFT)){
+                moveLeft();
+            }
+
+            else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVERIGHT)){
+                moveRight();
+            }
+
+
 
             break;
         }
@@ -87,18 +115,18 @@ void TextEntryBox::getInput(sf::Event& _event) {
                 break;
             }
 
-            //Since typing "A" counts as text entry, we're going to make sure
-            //unselectAll() is called if A is pressed without CTRL being held
-            if(m_allSelected && !sf::Keyboard::isKeyPressed(Key::TEXT_SELECTALL_A)){
-                unselectAll();
-                clearText();
-            }
+            //Since typing "A" counts as text entry, we'll see if
+            //CTRL is held too and not treat it as such if that's the
+            //case. If it isn't, we'll delete the selection.
+            if(sequenceSelected() &&
+               !sf::Keyboard::isKeyPressed(Key::TEXT_SELECTALL_A)){
+                    deleteSelection();
+               }
 
             std::string newString{m_text.getString()};
 
             if(_event.text.unicode == 8 && !stringEmpty()) {
-                newString.erase(m_currentStringIndexPosition - 1, 1);
-                --m_currentStringIndexPosition;
+                deleteSelection();
             }
             else if(_event.text.unicode >= 32
                     &&
@@ -106,14 +134,16 @@ void TextEntryBox::getInput(sf::Event& _event) {
                     &&
                     newString.length() < m_maxChars) {
 
-                newString.insert(m_currentStringIndexPosition,
-                                 1,
-                                 static_cast<char>(_event.text.unicode));
+                if(sequenceSelected()){
+                    deleteSelection();
+                }
 
-                ++m_currentStringIndexPosition;
+                insert(static_cast<char>(_event.text.unicode));
+
+                ++m_selectionBegin;
+                m_selectionEnd = m_selectionBegin;
             }
 
-            m_text.setString(newString);
             break;
         }
 
@@ -132,11 +162,9 @@ void TextEntryBox::getInput(sf::Event& _event) {
 
 void TextEntryBox::update() {
     if(m_enteringText) {
+        updateHighlight();
         updateCaret();
         updateView();
-        if(m_allSelected){
-            selectAll();
-        }
     }
 }
 
@@ -145,8 +173,10 @@ void TextEntryBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
         target.setView(m_textView);
         target.draw(m_rectangle, states);
         target.draw(m_text, states);
-        target.draw(m_caret, states);
         target.draw(m_highlightedRectangle, states);
+        if(!sequenceSelected()){
+            target.draw(m_caret, states);
+        }
     }
 }
 
@@ -198,10 +228,6 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
         newTextPosition.y -= difference;
         m_text.setPosition(newTextPosition);
     }
-
-    if(m_allSelected){
-        selectAll();
-    }
 }
 
 void TextEntryBox::updateCaret() {
@@ -229,11 +255,8 @@ void TextEntryBox::updateCaret() {
         //float caret_x{m_text.getGlobalBounds().width};
         //float caret_x{float(m_currentStringIndexPosition * m_charSize)};
 
-        float averageCharWidth{ m_text.getGlobalBounds().width /
-                                m_text.getString().getSize()};
-        float caret_x{float(m_currentStringIndexPosition
-                            * averageCharWidth)};
-        m_caret.setPosition({caret_x, m_caret.getPosition().y});
+
+        m_caret.setPosition({textXAtPosition(m_selectionBegin), m_caret.getPosition().y});
     }
 }
 
@@ -262,26 +285,136 @@ void TextEntryBox::updateView() {
 
 }
 
+void TextEntryBox::updateHighlight(){
+    if(sequenceSelected()){
+        float startPos{textXAtPosition(m_selectionBegin)};
+        float endPos{textXAtPosition(m_selectionEnd)};
+
+        m_highlightedRectangle.setSize({endPos - startPos,
+                                       m_rectangle.getGlobalBounds().height});
+
+        m_highlightedRectangle.setPosition(startPos,
+                                           m_text.getPosition().y);
+    }
+    else{
+        m_highlightedRectangle.setSize({});
+    }
+}
+
 bool TextEntryBox::stringEmpty() const {
     return m_text.getString().isEmpty();
 }
 
 void TextEntryBox::selectAll(){
-    m_allSelected = true;
-    sf::Vector2f size{  m_text.getGlobalBounds().width + m_caret.getGlobalBounds().width,
-                        m_rectangle.getGlobalBounds().height};
-    m_highlightedRectangle.setSize(size);
-    m_highlightedRectangle.setPosition(m_text.getPosition());
-    m_text.setColor(sf::Color::Yellow);
+    m_selectionBegin = 0;
+    m_selectionEnd = m_text.getString().getSize();
+    m_selectionDirection = 0;
 }
 
 void TextEntryBox::unselectAll(){
-    m_allSelected = false;
-    m_highlightedRectangle.setSize({});
-    m_text.setColor(sf::Color::White);
+    m_selectionEnd = m_selectionBegin;
+    m_selectionDirection = 0;
+}
+
+void TextEntryBox::selectLeft(){
+    if(m_selectionDirection <= 0){
+        if(m_selectionBegin <= 0){
+            return;
+        }
+        --m_selectionBegin;
+    }
+    else{
+        --m_selectionEnd;
+    }
+
+    --m_selectionDirection;
+}
+
+void TextEntryBox::selectRight(){
+    if(m_selectionDirection >= 0){
+        if(m_selectionEnd >= m_text.getString().getSize()){
+            return;
+        }
+        ++m_selectionEnd;
+    }
+    else{
+        ++m_selectionBegin;
+    }
+
+    ++m_selectionDirection;
+}
+
+void TextEntryBox::moveLeft(){
+    if(m_selectionBegin > 0){
+        --m_selectionBegin;
+        m_selectionEnd = m_selectionBegin;
+        m_selectionDirection = 0;
+    }
+}
+
+void TextEntryBox::moveRight(){
+    if(m_selectionBegin < m_text.getString().getSize()){
+        ++m_selectionBegin;
+        m_selectionEnd = m_selectionBegin;
+        m_selectionDirection = 0;
+    }
+}
+
+bool TextEntryBox::sequenceSelected() const{
+    return (m_selectionBegin != m_selectionEnd);
+    return (m_selectionBegin != m_selectionEnd);
+}
+
+void TextEntryBox::deleteSelection(){
+    std::string newString{m_text.getString()};
+
+    if(sequenceSelected()){
+        newString.erase(m_selectionBegin,
+                        m_selectionEnd - m_selectionBegin);
+    }
+    else{
+        selectLeft();
+        newString.erase(m_selectionBegin, 1);
+
+    }
+
+    m_selectionEnd = m_selectionBegin;
+    m_selectionDirection = 0;
+    m_text.setString(newString);
+}
+
+void TextEntryBox::insert(std::string& _str){
+    std::string newString{m_text.getString()};
+    newString.insert(m_selectionBegin,
+                     _str);
+    m_text.setString(newString);
+
+    m_selectionBegin = m_selectionEnd;
+    m_selectionDirection = 0;
+}
+
+void TextEntryBox::insert(char _char){
+    std::string newString{m_text.getString()};
+    newString.insert(m_selectionBegin,
+                     1,
+                     _char);
+    m_text.setString(newString);
+
+    m_selectionBegin = m_selectionEnd;
+    m_selectionDirection = 0;
 }
 
 void TextEntryBox::clearText(){
-    m_currentStringIndexPosition = 0;
+    m_selectionBegin = 0;
+    m_selectionEnd = 0;
+    m_selectionDirection = 0;
     m_text.setString("");
+}
+
+float TextEntryBox::textXAtPosition(size_t _index){
+    float averageCharWidth{ m_text.getGlobalBounds().width /
+                            m_text.getString().getSize()};
+
+    return {float(_index
+            * averageCharWidth)};
 }
