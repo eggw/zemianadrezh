@@ -24,11 +24,14 @@ class TextEntryBox : public sf::Drawable {
         bool stringEmpty() const;
         void selectAll();
         void unselectAll();
+
+        void clearText();
     private:
         sf::View m_textView;
         sf::RectangleShape m_rectangle;
         sf::RectangleShape m_highlightedRectangle;
 
+        size_t m_currentStringIndexPosition;
         sf::Text m_text;
         sf::Text m_caret;
         bool m_enteringText;

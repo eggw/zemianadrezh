@@ -19,6 +19,8 @@ namespace Key {
 
     const sf::Keyboard::Key 	TEXT_SELECTALL_A 	= sf::Keyboard::LControl;
     const sf::Keyboard::Key 	TEXT_SELECTALL_B 	= sf::Keyboard::A;
+    const sf::Keyboard::Key 	TEXT_MOVELEFT    	= sf::Keyboard::Left;
+    const sf::Keyboard::Key 	TEXT_MOVERIGHT   	= sf::Keyboard::Right;
 
     const sf::Keyboard::Key 	PAUSE_KEY 			= sf::Keyboard::Escape;
 }

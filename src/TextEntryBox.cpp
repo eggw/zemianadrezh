@@ -23,6 +23,7 @@ TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
                            unsigned int _maxChars)
     :m_textView(),
      m_rectangle(),
+     m_currentStringIndexPosition(0),
      m_text(),
      m_enteringText{false},
      m_inputComplete{false},
@@ -49,7 +50,7 @@ void TextEntryBox::getInput(sf::Event& _event) {
                 if(m_enteringText && !stringEmpty()) {
                     m_inputComplete = true;
                     m_lastString = m_text.getString();
-                    m_text.setString("");
+                    clearText();
                 }
                 m_enteringText = !m_enteringText;
 
@@ -61,8 +62,20 @@ void TextEntryBox::getInput(sf::Event& _event) {
                 }
             }
 
+            else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVELEFT)){
+                if(m_currentStringIndexPosition > 0){
+                    --m_currentStringIndexPosition;
+                }
+            }
+
+            else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVERIGHT)){
+                if(m_currentStringIndexPosition < m_text.getString().getSize()){
+                    ++m_currentStringIndexPosition;
+                }
+            }
+
             else if(keysPressedTogether({Key::TEXT_SELECTALL_A,
-                                         Key::TEXT_SELECTALL_A})){
+                                         Key::TEXT_SELECTALL_B})){
                 selectAll();
             }
 
@@ -74,15 +87,18 @@ void TextEntryBox::getInput(sf::Event& _event) {
                 break;
             }
 
+            //Since typing "A" counts as text entry, we're going to make sure
+            //unselectAll() is called if A is pressed without CTRL being held
             if(m_allSelected && !sf::Keyboard::isKeyPressed(Key::TEXT_SELECTALL_A)){
                 unselectAll();
-                m_text.setString("");
+                clearText();
             }
 
             std::string newString{m_text.getString()};
 
             if(_event.text.unicode == 8 && !stringEmpty()) {
-                newString.erase(newString.size()-1);
+                newString.erase(m_currentStringIndexPosition - 1, 1);
+                --m_currentStringIndexPosition;
             }
             else if(_event.text.unicode >= 32
                     &&
@@ -90,7 +106,11 @@ void TextEntryBox::getInput(sf::Event& _event) {
                     &&
                     newString.length() < m_maxChars) {
 
-                newString += static_cast<char>(_event.text.unicode);
+                newString.insert(m_currentStringIndexPosition,
+                                 1,
+                                 static_cast<char>(_event.text.unicode));
+
+                ++m_currentStringIndexPosition;
             }
 
             m_text.setString(newString);
@@ -206,7 +226,13 @@ void TextEntryBox::updateCaret() {
         caretColor.a = caretAlphaValue;
         m_caret.setColor(caretColor);
 
-        float caret_x{m_text.getGlobalBounds().width};
+        //float caret_x{m_text.getGlobalBounds().width};
+        //float caret_x{float(m_currentStringIndexPosition * m_charSize)};
+
+        float averageCharWidth{ m_text.getGlobalBounds().width /
+                                m_text.getString().getSize()};
+        float caret_x{float(m_currentStringIndexPosition
+                            * averageCharWidth)};
         m_caret.setPosition({caret_x, m_caret.getPosition().y});
     }
 }
@@ -253,4 +279,9 @@ void TextEntryBox::unselectAll(){
     m_allSelected = false;
     m_highlightedRectangle.setSize({});
     m_text.setColor(sf::Color::White);
+}
+
+void TextEntryBox::clearText(){
+    m_currentStringIndexPosition = 0;
+    m_text.setString("");
 }
