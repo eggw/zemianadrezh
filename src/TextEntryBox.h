@@ -22,13 +22,18 @@ class TextEntryBox : public sf::Drawable {
         void updateCaret();
         void updateView();
         bool stringEmpty() const;
+        void selectAll();
+        void unselectAll();
     private:
         sf::View m_textView;
         sf::RectangleShape m_rectangle;
+        sf::RectangleShape m_highlightedRectangle;
+
         sf::Text m_text;
         sf::Text m_caret;
         bool m_enteringText;
         bool m_inputComplete;
+        bool m_allSelected;
 
         std::string m_lastString;
 

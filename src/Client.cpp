@@ -32,6 +32,12 @@ void Client::getInput(sf::Event& _event) {
 void Client::update() {
     m_player.update();
 
+    if(m_otherPlayers != nullptr){
+            for(auto& player : *m_otherPlayers){
+            player->update();
+        }
+    }
+
     handleIncomingMessages();
     handleOutgoingMessages();
     m_networkManager.update();

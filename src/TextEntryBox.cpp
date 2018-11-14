@@ -5,6 +5,17 @@
 #include "FontManager.h"
 #include "InputLocker.h"
 
+const bool keysPressedTogether(std::vector<sf::Keyboard::Key> _keys){
+    bool allPressed{true};
+    for(auto& key : _keys){
+        if(!sf::Keyboard::isKeyPressed(key)){
+            allPressed = false;
+            break;
+        }
+    }
+    return allPressed;
+}
+
 constexpr int MAX_CHAR_SIZE{20};
 
 TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
@@ -15,10 +26,12 @@ TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
      m_text(),
      m_enteringText{false},
      m_inputComplete{false},
+     m_allSelected{false},
      m_charSize{0},
      m_maxChars{_maxChars} {
 
     m_rectangle.setFillColor(sf::Color(0,0,0,120));
+    m_highlightedRectangle.setFillColor(sf::Color(250,250,250,100));
 
     m_text.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
     m_caret.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
@@ -47,12 +60,23 @@ void TextEntryBox::getInput(sf::Event& _event) {
                     InputLocker::get_instance().unlock();
                 }
             }
+
+            else if(keysPressedTogether({Key::TEXT_SELECTALL_A,
+                                         Key::TEXT_SELECTALL_A})){
+                selectAll();
+            }
+
             break;
         }
 
         case sf::Event::TextEntered: {
             if(!m_enteringText) {
                 break;
+            }
+
+            if(m_allSelected && !sf::Keyboard::isKeyPressed(Key::TEXT_SELECTALL_A)){
+                unselectAll();
+                m_text.setString("");
             }
 
             std::string newString{m_text.getString()};
@@ -90,6 +114,9 @@ void TextEntryBox::update() {
     if(m_enteringText) {
         updateCaret();
         updateView();
+        if(m_allSelected){
+            selectAll();
+        }
     }
 }
 
@@ -99,6 +126,7 @@ void TextEntryBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
         target.draw(m_rectangle, states);
         target.draw(m_text, states);
         target.draw(m_caret, states);
+        target.draw(m_highlightedRectangle, states);
     }
 }
 
@@ -149,6 +177,10 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
         sf::Vector2f newTextPosition{m_text.getPosition()};
         newTextPosition.y -= difference;
         m_text.setPosition(newTextPosition);
+    }
+
+    if(m_allSelected){
+        selectAll();
     }
 }
 
@@ -206,4 +238,19 @@ void TextEntryBox::updateView() {
 
 bool TextEntryBox::stringEmpty() const {
     return m_text.getString().isEmpty();
+}
+
+void TextEntryBox::selectAll(){
+    m_allSelected = true;
+    sf::Vector2f size{  m_text.getGlobalBounds().width + m_caret.getGlobalBounds().width,
+                        m_rectangle.getGlobalBounds().height};
+    m_highlightedRectangle.setSize(size);
+    m_highlightedRectangle.setPosition(m_text.getPosition());
+    m_text.setColor(sf::Color::Yellow);
+}
+
+void TextEntryBox::unselectAll(){
+    m_allSelected = false;
+    m_highlightedRectangle.setSize({});
+    m_text.setColor(sf::Color::White);
 }
