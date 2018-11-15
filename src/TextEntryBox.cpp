@@ -125,9 +125,19 @@ void TextEntryBox::getInput(sf::Event& _event) {
 
             std::string newString{m_text.getString()};
 
-            if(_event.text.unicode == 8 && !stringEmpty()) {
+            //8 = backspace
+            //127 = delete
+            if(_event.text.unicode == 8
+               ||
+               _event.text.unicode == 127
+                && !stringEmpty()) {
+
                 deleteSelection();
             }
+            //Anything between 32 and 255
+            //represents the rest of the
+            //alphanumeric characters, and
+            //some symbols
             else if(_event.text.unicode >= 32
                     &&
                     _event.text.unicode <= 255
@@ -139,9 +149,7 @@ void TextEntryBox::getInput(sf::Event& _event) {
                 }
 
                 insert(static_cast<char>(_event.text.unicode));
-
-                ++m_selectionBegin;
-                m_selectionEnd = m_selectionBegin;
+                moveRight();
             }
 
             break;
@@ -326,7 +334,6 @@ void TextEntryBox::selectLeft(){
     else{
         --m_selectionEnd;
     }
-
     --m_selectionDirection;
 }
 
@@ -340,24 +347,29 @@ void TextEntryBox::selectRight(){
     else{
         ++m_selectionBegin;
     }
-
     ++m_selectionDirection;
 }
 
 void TextEntryBox::moveLeft(){
-    if(m_selectionBegin > 0){
+    if(!sequenceSelected() && m_selectionBegin > 0){
         --m_selectionBegin;
         m_selectionEnd = m_selectionBegin;
-        m_selectionDirection = 0;
     }
+    else if(sequenceSelected()){
+        m_selectionEnd = m_selectionBegin;
+    }
+    m_selectionDirection = 0;
 }
 
 void TextEntryBox::moveRight(){
-    if(m_selectionBegin < m_text.getString().getSize()){
+    if(!sequenceSelected() && m_selectionBegin < m_text.getString().getSize()){
         ++m_selectionBegin;
         m_selectionEnd = m_selectionBegin;
-        m_selectionDirection = 0;
     }
+    else if(sequenceSelected()){
+        m_selectionBegin = m_selectionEnd;
+    }
+    m_selectionDirection = 0;
 }
 
 bool TextEntryBox::sequenceSelected() const{
@@ -412,6 +424,10 @@ void TextEntryBox::clearText(){
 }
 
 float TextEntryBox::textXAtPosition(size_t _index){
+    if(stringEmpty()){
+        return 0;
+    }
+
     float averageCharWidth{ m_text.getGlobalBounds().width /
                             m_text.getString().getSize()};
 
