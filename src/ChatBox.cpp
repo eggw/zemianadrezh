@@ -4,18 +4,22 @@
 
 #include "Keybinds.h"
 
-const sf::FloatRect VIEWPORT                {
+//Here are the variables we'll use to initialise the text entry box
+//in the correct position
+//////////////////////////////////////////////////////////////////////////////////////////////
+const sf::FloatRect VIEWPORT{
     0, 0.75, 0.3, 0.25
 };
-constexpr float SECONDS_UNTIL_MESSAGES_FADE {5.0f};
-constexpr unsigned int CHARACTER_SIZE       {20};
+constexpr float         SECONDS_UNTIL_MESSAGES_FADE {5.0f};
+constexpr unsigned int  CHARACTER_SIZE       {20};
 
-const float Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
-const float Y_BUFFERSPACE{2.3f * Y_OFFSET};
+const  float            Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
+const float             Y_BUFFERSPACE{2.3f * Y_OFFSET};
 
 //The value of 2.3 above is because the origin of the text's position is top
 //left; in order to get an empty row below, we're going to need to subtract
 //2 * Y_OFFSET. The .3 is for a little aesthetic extra buffer space below.
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
     :m_name(_name),

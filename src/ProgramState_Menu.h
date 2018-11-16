@@ -11,15 +11,15 @@ class ProgramState_Menu : public ProgramState {
         ~ProgramState_Menu();
 
         virtual void getInput(sf::Event& _event);
-        void update();
-        void draw();
+        virtual void update();
+        virtual void draw();
 
         void addMenuItem(const std::string _string, void(Program::*f)() = nullptr);
         void addGap();
 
-    private:
+    protected:
         void onResize(sf::Vector2u _newSize);
-    private:
+    protected:
         typedef std::tuple<bool, void(Program::*)(), sf::Text> MenuItem;
         bool isMousedOver(MenuItem _menuItem);
         bool isFunctionNull(MenuItem _menuItem);
