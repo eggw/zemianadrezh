@@ -211,6 +211,10 @@ std::string TextEntryBox::getLastString() const {
     return m_lastString;
 }
 
+std::string TextEntryBox::getCurrentString() const {
+    return m_text.getString();
+}
+
 void TextEntryBox::setActive(){
     m_enteringText = true;
 }

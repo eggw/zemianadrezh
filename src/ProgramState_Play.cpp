@@ -33,10 +33,10 @@ ProgramState_Play::ProgramState_Play(Program& _program,
     See: https://en.sfml-dev.org/forums/index.php?topic=7118.0
     */
 
-    if(m_client.isLocal()){
+    //if(m_client.isLocal()){
         m_client.m_networkManager.connect(_ipAddress, 7777);
         m_client.m_networkManager.connect(_ipAddress, 7777);
-    }
+    //}
 
     m_rendererPlayer.addObject(m_client.getPlayer());
     m_rendererChatbox.addObject(m_client.getChatBox());

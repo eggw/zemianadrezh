@@ -17,6 +17,7 @@ class TextEntryBox : public sf::Drawable {
         bool inputComplete();
 
         std::string getLastString() const;
+        std::string getCurrentString() const;
 
         void setActive();
         void setInactive();

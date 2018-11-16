@@ -18,7 +18,8 @@ const float 			IPENTRY_Y_OFFSET =
 ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
     :ProgramState_Menu(_program),
     m_IPEntry(sf::Vector2u{},sf::FloatRect{}){
-		addMenuItem("Connect");
+		addMenuItem("Connect",
+					&Program::pushState_Play_MP_Join);
 
 		addGap();
 		addMenuItem("Back to Main Menu",
@@ -55,6 +56,7 @@ void ProgramState_MPJoinMenu::getInput(sf::Event& _event){
 void ProgramState_MPJoinMenu::update(){
 	ProgramState_Menu::update();
 	m_IPEntry.update();
+	m_program.setIpAddress(m_IPEntry.getCurrentString());
 }
 
 void ProgramState_MPJoinMenu::draw(){

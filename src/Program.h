@@ -39,7 +39,7 @@ class Program : public Singleton<Program> {
 
         void closeWindow();
 
-        void setIpAddress(std::string _ipStr);
+        void setIpAddress(const std::string& _ipStr);
 
         Server* getServer() const;
 
@@ -54,7 +54,7 @@ class Program : public Singleton<Program> {
         //a server, we'll set m_ipAddress to the IP they type,
         //so that we can initialise the client with
         //pushState_Play_MP_Join()
-        sf::IpAddress m_ipAddress{sf::IpAddress::LocalHost};
+        std::string m_ipAddress{"localhost"};
 };
 
 #endif // PROGRAM_H_INCLUDED

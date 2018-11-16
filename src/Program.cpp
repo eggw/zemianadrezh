@@ -7,6 +7,8 @@
 #include "ProgramState_MPHostMenu.h"
 #include "ProgramState_MPJoinMenu.h"
 
+#include <iostream>
+
 Program::Program() {
     m_window = std::unique_ptr<sf::RenderWindow>
                (new sf::RenderWindow(sf::VideoMode(800,600),
@@ -71,6 +73,7 @@ void Program::pushState_Play_MP_Host() {
 }
 
 void Program::pushState_Play_MP_Join() {
+    sf::IpAddress ip{sf::IpAddress(m_ipAddress)};
     initialiseLocalServer(false);
     m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
                                                                                 m_ipAddress)));
@@ -128,8 +131,8 @@ void Program::closeWindow() {
     m_window->close();
 }
 
-void Program::setIpAddress(const std::string _ipStr){
-    m_ipAddress = sf::IpAddress(_ipStr);
+void Program::setIpAddress(const std::string& _ipStr){
+    m_ipAddress = _ipStr;
 }
 
 Server* Program::getServer() const {
