@@ -6,10 +6,10 @@
 
 #include "InputLocker.h"
 
-Player::Player()
+Player::Player(std::string _name)
     :m_sprite(),
      m_animationSheet(TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER)),
-     m_playerName{"default"} {
+     m_playerName{_name} {
 
     constexpr int SPRITE_WIDTH{32};
     constexpr int SPRITE_HEIGHT{48};

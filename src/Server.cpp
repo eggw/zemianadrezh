@@ -24,7 +24,7 @@ void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
     }
 
     if(!found) {
-        auto newPlayer = std::unique_ptr<Player>(new Player());
+        auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
         newPlayer->parseData(_data);
         m_otherPlayers->push_back(std::move(newPlayer));
     }

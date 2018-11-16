@@ -14,7 +14,7 @@ class Player : public EntityMoving, public sf::Drawable {
             float positionY;
         };
 
-        Player();
+        Player(std::string _name);
 
         const std::string& getName() const;
 

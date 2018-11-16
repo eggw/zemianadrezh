@@ -11,7 +11,7 @@ Client::Client(	sf::RenderWindow& _window,
      m_networkManager(*this),
      m_serverIP(_serverIP),
      m_localServer(_localServer),
-     m_player(),
+     m_player("default"),
      m_chatBox(_window, m_player.getName()) {
 
     if(m_localServer != nullptr) {
@@ -81,7 +81,7 @@ void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
     }
 
     if(!found) {
-        auto newPlayer = std::unique_ptr<Player>(new Player());
+        auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
         newPlayer->parseData(_data);
         m_otherPlayers->push_back(std::move(newPlayer));
     }
