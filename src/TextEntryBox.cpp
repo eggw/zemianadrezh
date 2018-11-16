@@ -29,6 +29,8 @@ TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
      m_text(),
      m_enteringText{false},
      m_inputComplete{false},
+     m_alwaysVisible{false},
+     m_alwaysActive{false},
      m_charSize{0},
      m_maxChars{_maxChars} {
 
@@ -51,7 +53,9 @@ void TextEntryBox::getInput(sf::Event& _event) {
                 if(m_enteringText && !stringEmpty()) {
                     m_inputComplete = true;
                     m_lastString = m_text.getString();
-                    clearText();
+                    if(!m_alwaysActive){
+                        clearText();
+                    }
                 }
 
                 m_enteringText = !m_enteringText;
@@ -169,6 +173,9 @@ void TextEntryBox::getInput(sf::Event& _event) {
 }
 
 void TextEntryBox::update() {
+    if(m_alwaysActive){
+        m_enteringText = true;
+    }
     if(m_enteringText) {
         updateHighlight();
         updateCaret();
@@ -177,14 +184,14 @@ void TextEntryBox::update() {
 }
 
 void TextEntryBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    if(m_enteringText) {
+    if(m_enteringText || m_alwaysVisible) {
         target.setView(m_textView);
         target.draw(m_rectangle, states);
         target.draw(m_text, states);
         target.draw(m_highlightedRectangle, states);
-        if(!sequenceSelected()){
-            target.draw(m_caret, states);
-        }
+    }
+    if(m_enteringText && !sequenceSelected()){
+        target.draw(m_caret, states);
     }
 }
 
@@ -202,6 +209,22 @@ bool TextEntryBox::inputComplete() {
 
 std::string TextEntryBox::getLastString() const {
     return m_lastString;
+}
+
+void TextEntryBox::setActive(){
+    m_enteringText = true;
+}
+
+void TextEntryBox::setInactive(){
+    m_enteringText = false;
+}
+
+void TextEntryBox::setAlwaysVisible(bool _val){
+    m_alwaysVisible = _val;
+}
+
+void TextEntryBox::setAlwaysActive(bool _val){
+    m_alwaysActive = _val;
 }
 
 void TextEntryBox::onResize(sf::Vector2u _newSize) {
@@ -421,6 +444,7 @@ void TextEntryBox::clearText(){
     m_selectionEnd = 0;
     m_selectionDirection = 0;
     m_text.setString("");
+    updateCaret();
 }
 
 float TextEntryBox::textXAtPosition(size_t _index){

@@ -17,6 +17,11 @@ class TextEntryBox : public sf::Drawable {
         bool inputComplete();
 
         std::string getLastString() const;
+
+        void setActive();
+        void setInactive();
+        void setAlwaysVisible(bool _val);
+        void setAlwaysActive(bool _val);
     private:
         void onResize(sf::Vector2u _newSize);
         void updateCaret();
@@ -54,6 +59,15 @@ class TextEntryBox : public sf::Drawable {
         sf::Text m_caret;
         bool m_enteringText;
         bool m_inputComplete;
+        //m_alwaysVisible will simply display
+        //the box at all times, even when
+        //m_enteringText is false
+        bool m_alwaysVisible;
+        //m_alwaysActive will ensure
+        //m_enteringText is always set to
+        //true; additionally, it prevents text
+        //from being cleared upon pressing Enter
+        bool m_alwaysActive;
 
         std::string m_lastString;
 

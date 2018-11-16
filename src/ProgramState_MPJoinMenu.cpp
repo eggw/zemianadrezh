@@ -17,7 +17,7 @@ const float 			IPENTRY_Y_OFFSET =
 
 ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
     :ProgramState_Menu(_program),
-    mIPEntry(sf::Vector2u{},sf::FloatRect{}){
+    m_IPEntry(sf::Vector2u{},sf::FloatRect{}){
 		addMenuItem("Connect");
 
 		addGap();
@@ -25,37 +25,40 @@ ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
 					&Program::returnToMainMenu);
 
 		//IPENTRY_Y_POS can only be determined after the first menu item has
-		//been placed; therefore, we'll re-initialise mIPEntry here
+		//been placed; therefore, we'll re-initialise m_IPEntry here
 		//////////////////////////////////////////////////////////////////////////////////////////////
 		float FIRST_ITEM_POS_Y	{std::get<2>(m_menuItems.front()).getPosition().y
 									-
-								 float(1.5 * (std::get<2>(m_menuItems.front()).getGlobalBounds().height))};
+								 float(2 * (std::get<2>(m_menuItems.front()).getGlobalBounds().height))};
 		float SCREEN_SIZE_Y		{float(_program.m_window->getSize().y)};
 
 
 		float IPENTRY_Y_POS{FIRST_ITEM_POS_Y / SCREEN_SIZE_Y};
 
-		mIPEntry = TextEntryBox(_program.m_window->getSize(),
+		m_IPEntry = TextEntryBox(_program.m_window->getSize(),
 				sf::FloatRect{	IPENTRY_X_POS,
 								IPENTRY_Y_POS,
 								IPENTRY_WIDTH_FACTOR,
 								1 - (_program.m_window->getSize().y - IPENTRY_Y_OFFSET) / _program.m_window->getSize().y});
 
+		m_IPEntry.setAlwaysVisible(true);
+		m_IPEntry.setAlwaysActive(true);
 		//////////////////////////////////////////////////////////////////////////////////////////////
 
 }
 
 void ProgramState_MPJoinMenu::getInput(sf::Event& _event){
 	ProgramState_Menu::getInput(_event);
-	mIPEntry.getInput(_event);
+	m_IPEntry.getInput(_event);
 }
 
 void ProgramState_MPJoinMenu::update(){
 	ProgramState_Menu::update();
-	mIPEntry.update();
+	m_IPEntry.update();
 }
 
 void ProgramState_MPJoinMenu::draw(){
+	m_program.m_window->draw(m_IPEntry);
     ProgramState_Menu::draw();
-    m_program.m_window->draw(mIPEntry);
 }
+

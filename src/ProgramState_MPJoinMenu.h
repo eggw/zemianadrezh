@@ -12,7 +12,7 @@ class ProgramState_MPJoinMenu : public ProgramState_Menu {
 		void update();
 		void draw();
 	private:
-		TextEntryBox mIPEntry;
+		TextEntryBox m_IPEntry;
 };
 
 #endif // PROGRAMSTATE_MPJOINMENU_H_INCLUDED
