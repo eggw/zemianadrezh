@@ -7,18 +7,18 @@
 
 template <class T>
 class RendererBase {
-    public:
-        RendererBase(sf::RenderWindow& _window)
-            :m_window(_window) {
-        };
+	public:
+		RendererBase(sf::RenderWindow& _window)
+			:m_window(_window) {
+		};
 
-        virtual ~RendererBase() {
-        };
+		virtual ~RendererBase() {
+		};
 
-        virtual void draw() const = 0;
+		virtual void draw() const = 0;
 
-    protected:
-        sf::RenderWindow& m_window;
+	protected:
+		sf::RenderWindow& m_window;
 };
 
 #endif // RENDERERBASE_H_INCLUDED

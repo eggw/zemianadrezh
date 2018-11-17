@@ -24,9 +24,8 @@ class TextEntryBox : public sf::Drawable {
         void setAlwaysVisible(bool _val);
         void setAlwaysActive(bool _val);
 
-        //Temporary
-        //inline void setText(std::string _str){m_text.setString(_str);};
-        ////////////////////////////////////////////////////////////////////
+	//inline void setText(std::string _str){m_text.setString(_str);};
+	////////////////////////////////////////////////////////////////////
     private:
         void onResize(sf::Vector2u _newSize);
         void updateCaret();

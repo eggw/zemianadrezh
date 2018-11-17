@@ -7,47 +7,47 @@
 #include "Player.h"
 
 class GameInstance {
-    public:
-        GameInstance();
+	public:
+		GameInstance();
 
-        const World& getWorld() const;
-        const std::shared_ptr<std::vector<std::unique_ptr<Player>>> getOtherPlayers() const;
+		const World& getWorld() const;
+		const std::shared_ptr<std::vector<std::unique_ptr<Player>>> getOtherPlayers() const;
 
-        const World::EncodedWorldData encodeWorldData() const;
-        void parseWorldData(World::EncodedWorldData& _data);
+		const World::EncodedWorldData encodeWorldData() const;
+		void parseWorldData(World::EncodedWorldData& _data);
 
-        virtual void update();
-        //////////////////////////////////////////////////////////////////////////
-        //Server and Client both have different implementations of these functions
+		virtual void update();
+		//////////////////////////////////////////////////////////////////////////
+		//Server and Client both have different implementations of these functions
 
-        //updateOtherPlayers():
-        //The server simply updates the the player contained within m_otherPlayers
-        //that has the same name as the name contained in _data
+		//updateOtherPlayers():
+		//The server simply updates the the player contained within m_otherPlayers
+		//that has the same name as the name contained in _data
 
-        //Client does the same thing, but also does an extra check: if the player
-        //being updated has the same name as theirs (i.e. it is theirs), nothing
-        //is done.
-        //Additionally, if the _data.playerName does not match any existing player
-        //in m_otherPlayers, addPlayer() is called.
-        virtual void updateOtherPlayers(Player::EncodedPlayerData _data) = 0;
+		//Client does the same thing, but also does an extra check: if the player
+		//being updated has the same name as theirs (i.e. it is theirs), nothing
+		//is done.
+		//Additionally, if the _data.playerName does not match any existing player
+		//in m_otherPlayers, addPlayer() is called.
+		virtual void updateOtherPlayers(Player::EncodedPlayerData _data) = 0;
 
-        //addPlayer():
-        //The server creates a new player, sets its position to spawn, and appends
-        //it to m_otherPlayers. It only uses _data.playerName and ignores the rest
+		//addPlayer():
+		//The server creates a new player, sets its position to spawn, and appends
+		//it to m_otherPlayers. It only uses _data.playerName and ignores the rest
 
-        //The client creates a new player with all the information contained in _data,
-        //and appends it to m_otherPlayers, if _data.playerName isn't the same as the
-        //client's own player
-        virtual void addPlayer(Player::EncodedPlayerData _data) = 0;
-        //////////////////////////////////////////////////////////////////////////
+		//The client creates a new player with all the information contained in _data,
+		//and appends it to m_otherPlayers, if _data.playerName isn't the same as the
+		//client's own player
+		virtual void addPlayer(Player::EncodedPlayerData _data) = 0;
+		//////////////////////////////////////////////////////////////////////////
 
-    protected:
-        World m_world;
-        //The reason we use a shared pointer here is because in the case
-        //of a local server, we're going to bypass packet communication completely
-        //and simply assign the client's resources to the memory address of the
-        //server's.
-        std::shared_ptr<std::vector<std::unique_ptr<Player>>> m_otherPlayers;
+	protected:
+		World m_world;
+		//The reason we use a shared pointer here is because in the case
+		//of a local server, we're going to bypass packet communication completely
+		//and simply assign the client's resources to the memory address of the
+		//server's.
+		std::shared_ptr<std::vector<std::unique_ptr<Player>>> m_otherPlayers;
 };
 
 #endif // GAMEINSTANCE_H_INCLUDED

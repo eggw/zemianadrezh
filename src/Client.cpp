@@ -5,128 +5,128 @@
 #include "LoggerNetwork.h"
 
 Client::Client(	sf::RenderWindow& _window,
-                sf::IpAddress _serverIP,
-                Server* _localServer)
-    :GameInstance(),
-     m_networkManager(*this),
-     m_serverIP(_serverIP),
-     m_localServer(_localServer),
-     m_player(_localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
-     m_chatBox(_window, m_player.getName()) {
+				sf::IpAddress _serverIP,
+				Server* _localServer)
+	:GameInstance(),
+	 m_networkManager(*this),
+	 m_serverIP(_serverIP),
+	 m_localServer(_localServer),
+	 m_player(_localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
+	 m_chatBox(_window, m_player.getName()) {
 
-    m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
-                         (new std::vector<std::unique_ptr<Player>>());
+	m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
+					 (new std::vector<std::unique_ptr<Player>>());
 
-    if(m_localServer != nullptr) {
-        m_world = m_localServer->getWorld();
-        m_otherPlayers = m_localServer->getOtherPlayers();
+	if(m_localServer != nullptr) {
+		m_world = m_localServer->getWorld();
+		m_otherPlayers = m_localServer->getOtherPlayers();
 
-        LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
-                                          LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
-    }
+		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
+										  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
+	}
 
 }
 
 void Client::getInput(sf::Event& _event) {
-    m_player.getInput();
-    m_chatBox.getInput(_event);
+	m_player.getInput();
+	m_chatBox.getInput(_event);
 }
 
 void Client::update() {
-    m_player.update();
+	m_player.update();
 
-    if(m_otherPlayers != nullptr){
-            for(auto& player : *m_otherPlayers){
-            player->update();
-        }
-    }
+	if(m_otherPlayers != nullptr) {
+		for(auto& player : *m_otherPlayers) {
+			player->update();
+		}
+	}
 
-    handleIncomingMessages();
-    handleOutgoingMessages();
-    m_networkManager.update();
+	handleIncomingMessages();
+	handleOutgoingMessages();
+	m_networkManager.update();
 
-    m_chatBox.update();
+	m_chatBox.update();
 
-    if(!isLocal()) {
-        GameInstance::update();
-    }
+	if(!isLocal()) {
+		GameInstance::update();
+	}
 }
 
 void Client::sendPackets() {
-    m_networkManager.sendPacket(Packet::Type::DATA_PLAYER);
+	m_networkManager.sendPacket(Packet::Type::DATA_PLAYER);
 }
 
 void Client::receivePackets() {
-    m_networkManager.receivePacket();
+	m_networkManager.receivePacket();
 }
 
 void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
-    if(_data.playerName == m_player.getName()) {
-        return;
-    }
+	if(_data.playerName == m_player.getName()) {
+		return;
+	}
 
-    bool found{false};
+	bool found{false};
 
-    for(auto& player : *m_otherPlayers) {
-        if(player->getName() == _data.playerName) {
-            player->parseData(_data);
-            found = true;
-        }
-    }
+	for(auto& player : *m_otherPlayers) {
+		if(player->getName() == _data.playerName) {
+			player->parseData(_data);
+			found = true;
+		}
+	}
 
-    if(!found){
-        addPlayer(_data);
-    }
+	if(!found) {
+		addPlayer(_data);
+	}
 }
 
-void Client::addPlayer(Player::EncodedPlayerData _data){
-    if(_data.playerName == m_player.getName()) {
-        return;
-    }
+void Client::addPlayer(Player::EncodedPlayerData _data) {
+	if(_data.playerName == m_player.getName()) {
+		return;
+	}
 
-    auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
-    newPlayer->parseData(_data);
-    m_otherPlayers->push_back(std::move(newPlayer));
+	auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
+	newPlayer->parseData(_data);
+	m_otherPlayers->push_back(std::move(newPlayer));
 }
 
 const Player* Client::getPlayer() const {
-    return &m_player;
+	return &m_player;
 }
 
 const ChatBox* Client::getChatBox() const {
-    return &m_chatBox;
+	return &m_chatBox;
 }
 
 bool Client::isConnected() const {
-    return m_networkManager.connectionActive();
+	return m_networkManager.connectionActive();
 }
 
 bool Client::isLocal() const {
-    return m_localServer != nullptr;
+	return m_localServer != nullptr;
 }
 
 std::pair<std::string, std::string> Client::getPendingMessage() const {
-    return m_pendingMessage;
+	return m_pendingMessage;
 }
 
 //We check to see if any new messages have been received from our
 //network manager. If so, we'll add it to the chatbox and clear it from
 //the network manager.
 void Client::handleIncomingMessages() {
-    std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
-    if(m_networkManager.receivedMessage(ptr.get())) {
-        m_chatBox.appendMessage(ptr->first, ptr->second);
-        m_networkManager.clearLastReceivedMessage();
-    }
+	std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
+	if(m_networkManager.receivedMessage(ptr.get())) {
+		m_chatBox.appendMessage(ptr->first, ptr->second);
+		m_networkManager.clearLastReceivedMessage();
+	}
 }
 
 //We check to see if there is any new outgoing message from the chatbox,
 //and if so, we'll set it as our latest m_pendingMessage, then send it
 //to the server
 void Client::handleOutgoingMessages() {
-    std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
-    if(m_chatBox.completedMessage(ptr.get())) {
-        m_pendingMessage = *ptr;
-        m_networkManager.sendPacket(Packet::Type::CHAT_MESSAGE);
-    }
+	std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
+	if(m_chatBox.completedMessage(ptr.get())) {
+		m_pendingMessage = *ptr;
+		m_networkManager.sendPacket(Packet::Type::CHAT_MESSAGE);
+	}
 }

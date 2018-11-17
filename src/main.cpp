@@ -8,6 +8,6 @@ them in the middle of the world
 */
 
 int main() {
-    Program program;
-    return 0;
+	Program program;
+	return 0;
 }

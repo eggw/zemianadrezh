@@ -10,14 +10,14 @@
 #include <iostream>
 
 Program::Program() {
-    m_window = std::unique_ptr<sf::RenderWindow>
-               (new sf::RenderWindow(sf::VideoMode(1600,900),
-                                     "zemianadrezh"));
-    m_window->setFramerateLimit(60);
+	m_window = std::unique_ptr<sf::RenderWindow>
+			   (new sf::RenderWindow(sf::VideoMode(1600,900),
+									 "zemianadrezh"));
+	m_window->setFramerateLimit(60);
 
-    m_states.push_back(std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
 
-    gameLoop();
+	gameLoop();
 }
 
 Program::~Program() {
@@ -29,116 +29,116 @@ void Program::init() {
 }
 
 void Program::gameLoop() {
-    while(m_window->isOpen()) {
-        m_window->clear(sf::Color(53,80,200));
+	while(m_window->isOpen()) {
+		m_window->clear(sf::Color(53,80,200));
 
-        //Monitor window closing
-        /////////////////////////////////////////////////////
-        sf::Event event;
-        while(m_window->pollEvent(event)) {
-            if(event.type == sf::Event::Closed) {
-                m_window->close();
-            }
+		//Monitor window closing
+		/////////////////////////////////////////////////////
+		sf::Event event;
+		while(m_window->pollEvent(event)) {
+			if(event.type == sf::Event::Closed) {
+				m_window->close();
+			}
 
-            m_states.back()->getInput(event);
-        }
-        /////////////////////////////////////////////////////
+			m_states.back()->getInput(event);
+		}
+		/////////////////////////////////////////////////////
 
-        if(localServerInitialised()) {
-            m_localServer->receivePackets();
-            m_localServer->update();
-        }
+		if(localServerInitialised()) {
+			m_localServer->receivePackets();
+			m_localServer->update();
+		}
 
-        m_states.back()->update();
+		m_states.back()->update();
 
-        if(m_states.back()->isVisibleOverPreviousState()) {
-            m_states.end()[-2]->draw();
-        }
-        m_states.back()->draw();
+		if(m_states.back()->isVisibleOverPreviousState()) {
+			m_states.end()[-2]->draw();
+		}
+		m_states.back()->draw();
 
-        m_window->display();
-    }
+		m_window->display();
+	}
 }
 
 void Program::pushState_Play_SP() {
-    initialiseLocalServer(false);
-    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
-                                                                                sf::IpAddress::LocalHost)));
+	initialiseLocalServer(false);
+	m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
+					   sf::IpAddress::LocalHost)));
 }
 
 void Program::pushState_Play_MP_Host() {
-    initialiseLocalServer(true);
-    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
-                                                                                sf::IpAddress::LocalHost)));
+	initialiseLocalServer(true);
+	m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
+					   sf::IpAddress::LocalHost)));
 }
 
 void Program::pushState_Play_MP_Join() {
-    sf::IpAddress ip{sf::IpAddress(m_ipAddress)};
-    m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
-                                                                                m_ipAddress)));
+	sf::IpAddress ip{sf::IpAddress(m_ipAddress)};
+	m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
+					   m_ipAddress)));
 }
 
 void Program::pushState_Pause() {
-    m_states.push_back(std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
 }
 
 void Program::pushState_MPMenu() {
-    m_states.push_back(std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
 }
 
 void Program::pushState_MPHostMenu() {
-    m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(new ProgramState_MPHostMenu(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(new ProgramState_MPHostMenu(*this)));
 }
 
 void Program::pushState_MPJoinMenu() {
-    m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(new ProgramState_MPJoinMenu(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(new ProgramState_MPJoinMenu(*this)));
 }
 
 bool Program::localServerInitialised() {
-    return m_localServer != nullptr;
+	return m_localServer != nullptr;
 }
 
 void Program::initialiseLocalServer(bool _joinable) {
-    m_localServer = std::unique_ptr<Server>(new Server(_joinable));
+	m_localServer = std::unique_ptr<Server>(new Server(_joinable));
 }
 
 void Program::terminateLocalServer() {
-    m_localServer = nullptr;
+	m_localServer = nullptr;
 }
 
 bool Program::isAtMainMenu() {
-    ProgramState_MainMenu* ptrTest = dynamic_cast<ProgramState_MainMenu*> (m_states.back().get());
-    return (ptrTest != nullptr);
+	ProgramState_MainMenu* ptrTest = dynamic_cast<ProgramState_MainMenu*> (m_states.back().get());
+	return (ptrTest != nullptr);
 }
 
 //This function simply keeps popping the state until it's the main menu state.
 void Program::returnToMainMenu() {
-    while(!isAtMainMenu()) {
-        popState();
-    }
+	while(!isAtMainMenu()) {
+		popState();
+	}
 }
 
 void Program::popState() {
-    m_states.pop_back();
+	m_states.pop_back();
 
-    if(!m_states.empty()) {
-        m_states.back()->onStateSwitch();
-    }
+	if(!m_states.empty()) {
+		m_states.back()->onStateSwitch();
+	}
 }
 
 void Program::closeWindow() {
-    m_window->close();
+	m_window->close();
 }
 
-void Program::setIpAddress(const std::string& _ipStr){
-    m_ipAddress = _ipStr;
+void Program::setIpAddress(const std::string& _ipStr) {
+	m_ipAddress = _ipStr;
 }
 
 Server* Program::getServer() const {
-    if(m_localServer == nullptr) {
-        return nullptr;
-    }
-    return m_localServer.get();
+	if(m_localServer == nullptr) {
+		return nullptr;
+	}
+	return m_localServer.get();
 }
 
 

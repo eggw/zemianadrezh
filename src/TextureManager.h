@@ -7,18 +7,18 @@
 
 class TextureManager : public Singleton<TextureManager> {
 
-    public:
-        TextureManager();
+	public:
+		TextureManager();
 
-        enum class Type
-        {
-            PLAYER
-        };
+		enum class Type
+		{
+			PLAYER
+		};
 
-        const sf::Texture& getTexture(Type _type);
+		const sf::Texture& getTexture(Type _type);
 
-    private:
-        std::map<Type, sf::Texture> m_textures;
+	private:
+		std::map<Type, sf::Texture> m_textures;
 
 };
 

@@ -6,9 +6,9 @@
 #include "TextEntryBox.h"
 
 class ProgramState_MPJoinMenu : public ProgramState_Menu {
-    public:
-        ProgramState_MPJoinMenu (Program& _program);
-        void getInput(sf::Event& _event);
+	public:
+		ProgramState_MPJoinMenu (Program& _program);
+		void getInput(sf::Event& _event);
 		void update();
 		void draw();
 	private:

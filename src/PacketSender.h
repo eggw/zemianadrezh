@@ -22,23 +22,23 @@ typedef std::shared_ptr<sf::Packet> PacketSharedPtr;
 typedef std::unique_ptr<sf::Packet> PacketUPtr;
 
 class PacketSender : public Singleton<PacketSender> {
-    public:
-        struct PacketData {
-            PacketData(sf::TcpSocket* _socket, PacketSharedPtr _packet)
-                :   m_socket{_socket},
-                    m_packet{_packet} {}
+	public:
+		struct PacketData {
+			PacketData(sf::TcpSocket* _socket, PacketSharedPtr _packet)
+				:   m_socket{_socket},
+					m_packet{_packet} {}
 
-            sf::TcpSocket* m_socket;
-            PacketSharedPtr m_packet;
-        };
+			sf::TcpSocket* m_socket;
+			PacketSharedPtr m_packet;
+		};
 
-        PacketSender();
+		PacketSender();
 
-        void send(sf::TcpSocket* _socket, PacketSharedPtr _packet);
-        void update();
+		void send(sf::TcpSocket* _socket, PacketSharedPtr _packet);
+		void update();
 
-    private:
-        std::vector<PacketData> m_packetData;
+	private:
+		std::vector<PacketData> m_packetData;
 };
 
 

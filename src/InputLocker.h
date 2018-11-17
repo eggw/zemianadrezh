@@ -12,15 +12,15 @@ the chat box
 */
 
 class InputLocker : public Singleton<InputLocker> {
-    public:
-        InputLocker();
+	public:
+		InputLocker();
 
-        bool isLocked() const;
+		bool isLocked() const;
 
-        void lock();
-        void unlock();
-    private:
-        bool m_locked;
+		void lock();
+		void unlock();
+	private:
+		bool m_locked;
 };
 
 
