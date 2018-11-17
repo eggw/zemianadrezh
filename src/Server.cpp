@@ -25,7 +25,7 @@ void Server::addPlayer(Player::EncodedPlayerData _data) {
 	m_otherPlayers->push_back(std::move(newPlayer));
 }
 
-void Server::respawnPlayer(std::string& _name) {
+void Server::respawnPlayer(const std::string& _name) {
 	for(auto& player : *m_otherPlayers) {
 		if(player->getName() == _name) {
 			player->setPosition(m_world.getCenter());

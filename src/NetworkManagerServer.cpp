@@ -163,6 +163,11 @@ void NetworkManagerServer::receivePacket() {
 
 					m_server.updateOtherPlayers(playerData);
 
+					/*
+					for(auto& player : *m_server.getOtherPlayers()){
+                        m_server.respawnPlayer(player->getName());
+					}*/
+
 					sendPacket(Packet::Type::DATA_PLAYER, connection.get());
 					break;
 				}

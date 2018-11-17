@@ -15,7 +15,7 @@ class Server : public GameInstance {
 		void updateOtherPlayers(Player::EncodedPlayerData _data);
 		void addPlayer(Player::EncodedPlayerData _data);
 
-		void respawnPlayer(std::string& _name);
+		void respawnPlayer(const std::string& _name);
 
 		void receivePackets();
 
