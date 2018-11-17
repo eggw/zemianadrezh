@@ -80,7 +80,8 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 					}
 
 					*packet << playerData.facingLeft;
-					*packet << playerData.speed;
+					*packet << playerData.velocityX;
+                    *packet << playerData.velocityY;
 					*packet << playerData.positionX;
 					*packet << playerData.positionY;
 
@@ -172,7 +173,8 @@ void NetworkManagerServer::receivePacket() {
 
 					*packet >> playerData.playerName;
 					*packet >> playerData.facingLeft;
-					*packet >> playerData.speed;
+					*packet >> playerData.velocityX;
+                    *packet >> playerData.velocityY;
 					*packet >> playerData.positionX;
 					*packet >> playerData.positionY;
 

@@ -42,7 +42,8 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 			Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
 			*packet << playerData.playerName;
 			*packet << playerData.facingLeft;
-			*packet << playerData.speed;
+			*packet << playerData.velocityX;
+			*packet << playerData.velocityY;
 			*packet << playerData.positionX;
 			*packet << playerData.positionY;
 
@@ -110,7 +111,8 @@ void NetworkManagerClient::receivePacket() {
 
 				*packet >> playerData.playerName;
 				*packet >> playerData.facingLeft;
-				*packet >> playerData.speed;
+				*packet >> playerData.velocityX;
+				*packet >> playerData.velocityY;
 				*packet >> playerData.positionX;
 				*packet >> playerData.positionY;
 

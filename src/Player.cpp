@@ -78,16 +78,16 @@ void Player::getInput() {
 
 	if(sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
 		m_facingLeft = true;
-		m_horizontalSpeed = -3;
+		m_velocity.x = -3;
 	}
 
 	else if(sf::Keyboard::isKeyPressed(Key::RIGHT_KEY)) {
 		m_facingLeft = false;
-		m_horizontalSpeed = 3;
+		m_velocity.x = 3;
 
 	}
 	else {
-		m_horizontalSpeed = 0;
+		m_velocity.x = 0;
 	}
 }
 
@@ -99,8 +99,8 @@ void Player::update() {
 		m_animationSheet.setAnimationRange(11, 21);
 	}
 
-	m_animationSheet.setAnimationSpeed(abs(m_horizontalSpeed) * 0.01);
-	m_position = {m_position.x + m_horizontalSpeed, m_position.y};
+	m_animationSheet.setAnimationSpeed(abs(m_velocity.x) * 0.01);
+	m_position = {m_position.x + m_velocity.x, m_position.y};
 	m_animationSheet.update();
 
 	m_sprite = m_animationSheet.getSprite();
@@ -116,7 +116,8 @@ const Player::EncodedPlayerData Player::encodeData() const {
 
 	data.playerName = getName();
 	data.facingLeft = m_facingLeft;
-	data.speed = m_horizontalSpeed;
+	data.velocityX = m_velocity.x;
+	data.velocityY = m_velocity.y;
 	data.positionX = m_position.x;
 	data.positionY = m_position.y;
 
@@ -126,7 +127,8 @@ const Player::EncodedPlayerData Player::encodeData() const {
 void Player::parseData(Player::EncodedPlayerData& _data) {
 	m_playerName = _data.playerName;
 	m_facingLeft = _data.facingLeft;
-	m_horizontalSpeed = _data.speed;
+	m_velocity.x = _data.velocityX;
+	m_velocity.y = _data.velocityY;
 	m_position.x = _data.positionX;
 	m_position.y = _data.positionY;
 }
