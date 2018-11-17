@@ -149,6 +149,18 @@ void NetworkManagerServer::receivePacket() {
                     packetCode);
 
             switch(packetType) {
+
+                //////////////////////////////////////////////////////////////////////////////
+                case Packet::Type::JUSTJOINED: {
+                    Player::EncodedPlayerData playerData;
+
+                    *packet >> playerData.playerName;
+
+                    sendMessage("Welcome, " + playerData.playerName + "!", "Server");
+                    break;
+                }
+                //////////////////////////////////////////////////////////////////////////////
+
                 //////////////////////////////////////////////////////////////////////////////
                 case Packet::Type::REQUEST_WORLD: {
                     sendPacket(Packet::Type::DATA_WORLD, connection.get());
@@ -246,8 +258,6 @@ void NetworkManagerServer::accept() {
 
         LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
                                           LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
-
-        sendMessage("Welcome!", "Server");
     }
 }
 

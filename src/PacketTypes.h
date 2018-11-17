@@ -5,6 +5,7 @@ namespace Packet {
 
     enum class Type
     {
+        JUSTJOINED,
         //Used when sending messages
         CHAT_MESSAGE,
         //Used by the client to send

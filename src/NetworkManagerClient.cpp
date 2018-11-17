@@ -20,6 +20,17 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
     switch(_type) {
 
         //////////////////////////////////////////////////////////////////////////////
+        case Packet::Type::JUSTJOINED: {
+            Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
+            *packet << playerData.playerName;
+
+            PacketSender::get_instance().send(&m_serverConnection, packet);
+
+            break;
+        }
+        //////////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////////////
         case Packet::Type::REQUEST_WORLD: {
             PacketSender::get_instance().send(&m_serverConnection, packet);
             break;
@@ -158,6 +169,7 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
         LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
                                           LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
 
+        sendPacket(Packet::Type::JUSTJOINED);
         sendPacket(Packet::Type::REQUEST_WORLD);
         sendPacket(Packet::Type::REQUEST_RESPAWN_POSITION);
     }
