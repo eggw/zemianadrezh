@@ -46,6 +46,7 @@ class Program : public Singleton<Program> {
 		std::vector<std::unique_ptr<ProgramState>> m_states;
 		std::unique_ptr<sf::RenderWindow> m_window;
 	private:
+	    void monitorWindowClosing();
 		bool isAtMainMenu();
 		std::unique_ptr<Server> m_localServer{nullptr};
 		//Due to the way menu items work (ProgramState_Menu),

@@ -31,18 +31,7 @@ void Program::init() {
 void Program::gameLoop() {
 	while(m_window->isOpen()) {
 		m_window->clear(sf::Color(53,80,200));
-
-		//Monitor window closing
-		/////////////////////////////////////////////////////
-		sf::Event event;
-		while(m_window->pollEvent(event)) {
-			if(event.type == sf::Event::Closed) {
-				m_window->close();
-			}
-
-			m_states.back()->getInput(event);
-		}
-		/////////////////////////////////////////////////////
+        monitorWindowClosing();
 
 		if(localServerInitialised()) {
 			m_localServer->receivePackets();
@@ -58,6 +47,17 @@ void Program::gameLoop() {
 
 		m_window->display();
 	}
+}
+
+void Program::monitorWindowClosing() {
+    sf::Event event;
+    while(m_window->pollEvent(event)) {
+        if(event.type == sf::Event::Closed) {
+            m_window->close();
+        }
+
+        m_states.back()->getInput(event);
+    }
 }
 
 void Program::pushState_Play_SP() {
