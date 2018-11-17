@@ -11,7 +11,7 @@ Client::Client(	sf::RenderWindow& _window,
      m_networkManager(*this),
      m_serverIP(_serverIP),
      m_localServer(_localServer),
-     m_player("default"),
+     m_player(_localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
      m_chatBox(_window, m_player.getName()) {
 
     if(m_localServer != nullptr) {

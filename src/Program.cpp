@@ -74,7 +74,6 @@ void Program::pushState_Play_MP_Host() {
 
 void Program::pushState_Play_MP_Join() {
     sf::IpAddress ip{sf::IpAddress(m_ipAddress)};
-    initialiseLocalServer(false);
     m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
                                                                                 m_ipAddress)));
 }
