@@ -13,6 +13,10 @@ class Server : public GameInstance {
         Server(bool _allowConnections);
 
         void updateOtherPlayers(Player::EncodedPlayerData _data);
+        void addPlayer(Player::EncodedPlayerData _data);
+
+        void respawnPlayer(std::string& _name);
+
         void receivePackets();
 
         void update();

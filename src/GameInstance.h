@@ -17,15 +17,29 @@ class GameInstance {
         void parseWorldData(World::EncodedWorldData& _data);
 
         virtual void update();
+        //////////////////////////////////////////////////////////////////////////
+        //Server and Client both have different implementations of these functions
 
-        //Server and Client both have different implementations of this.
-        //The server either adds or updates the player data, depending on whether
-        //it is already present in m_otherPlayers or not.
+        //updateOtherPlayers():
+        //The server simply updates the the player contained within m_otherPlayers
+        //that has the same name as the name contained in _data
 
         //Client does the same thing, but also does an extra check: if the player
-        //being added has the same name as theirs (i.e. it is theirs), it is not
-        //appended to m_otherPlayers.
+        //being updated has the same name as theirs (i.e. it is theirs), nothing
+        //is done.
+        //Additionally, if the _data.playerName does not match any existing player
+        //in m_otherPlayers, addPlayer() is called.
         virtual void updateOtherPlayers(Player::EncodedPlayerData _data) = 0;
+
+        //addPlayer():
+        //The server creates a new player, sets its position to spawn, and appends
+        //it to m_otherPlayers. It only uses _data.playerName and ignores the rest
+
+        //The client creates a new player with all the information contained in _data,
+        //and appends it to m_otherPlayers, if _data.playerName isn't the same as the
+        //client's own player
+        virtual void addPlayer(Player::EncodedPlayerData _data) = 0;
+        //////////////////////////////////////////////////////////////////////////
 
     protected:
         World m_world;

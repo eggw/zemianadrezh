@@ -24,11 +24,10 @@ class Client : public GameInstance {
         void getInput(sf::Event& _event);
         void update();
         void updateOtherPlayers(Player::EncodedPlayerData _data);
+        void addPlayer(Player::EncodedPlayerData _data);
 
         void sendPackets();
         void receivePackets();
-
-        void respawnPlayer(sf::Vector2f _pos);
 
         const Player* getPlayer() const;
         const ChatBox* getChatBox() const;

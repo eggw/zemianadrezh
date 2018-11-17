@@ -37,8 +37,6 @@ LoggerNetwork::LoggerNetwork() {
     packetTypeMap.emplace(Packet::Type::DATA_WORLD, "DATA_WORLD");
     packetTypeMap.emplace(Packet::Type::REQUEST_WORLD, "REQUEST_WORLD");
     packetTypeMap.emplace(Packet::Type::DATA_PLAYER, "DATA_PLAYER");
-    packetTypeMap.emplace(Packet::Type::REQUEST_RESPAWN_POSITION, "REQUEST_RESPAWN_POSITION");
-    packetTypeMap.emplace(Packet::Type::DATA_RESPAWN_POSITION, "DATA_RESPAWN_POSITION");
 
     messageMap.emplace(LOG_MESSAGE::CONNECTION_WAITING, "awaiting response...");
     messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");

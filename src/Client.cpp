@@ -14,6 +14,9 @@ Client::Client(	sf::RenderWindow& _window,
      m_player(_localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
      m_chatBox(_window, m_player.getName()) {
 
+    m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
+                         (new std::vector<std::unique_ptr<Player>>());
+
     if(m_localServer != nullptr) {
         m_world = m_localServer->getWorld();
         m_otherPlayers = m_localServer->getOtherPlayers();
@@ -57,16 +60,7 @@ void Client::receivePackets() {
     m_networkManager.receivePacket();
 }
 
-void Client::respawnPlayer(sf::Vector2f _pos) {
-    m_player.setPosition(_pos);
-}
-
 void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
-    if(m_otherPlayers == nullptr) {
-        m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
-                         (new std::vector<std::unique_ptr<Player>>());
-    }
-
     if(_data.playerName == m_player.getName()) {
         return;
     }
@@ -80,11 +74,19 @@ void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
         }
     }
 
-    if(!found) {
-        auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
-        newPlayer->parseData(_data);
-        m_otherPlayers->push_back(std::move(newPlayer));
+    if(!found){
+        addPlayer(_data);
     }
+}
+
+void Client::addPlayer(Player::EncodedPlayerData _data){
+    if(_data.playerName == m_player.getName()) {
+        return;
+    }
+
+    auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
+    newPlayer->parseData(_data);
+    m_otherPlayers->push_back(std::move(newPlayer));
 }
 
 const Player* Client::getPlayer() const {
