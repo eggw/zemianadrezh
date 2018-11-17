@@ -70,8 +70,8 @@ void ProgramState_Play::update() {
 
     m_client.receivePackets();
 
-    updateNewChunks();
-    updateNewPlayers();
+    renderUpdatedChunks();
+    renderNewPlayers();
 
     m_client.update();
     m_client.sendPackets();
@@ -90,7 +90,7 @@ void ProgramState_Play::onResize(sf::Vector2u _newSize) {
     m_view.setSize(newSizeF);
 }
 
-void ProgramState_Play::updateNewChunks() {
+void ProgramState_Play::renderUpdatedChunks() {
     std::unique_ptr<std::vector<int>> ptr(new std::vector<int>);
 
     if(m_client.m_networkManager.chunkDataReceived(ptr.get())) {
@@ -110,8 +110,10 @@ void ProgramState_Play::updateNewChunks() {
 }
 
 //TODO: refactor this shit
-void ProgramState_Play::updateNewPlayers() {
+void ProgramState_Play::renderNewPlayers() {
     for(auto& player : *m_client.getOtherPlayers()) {
-        m_rendererPlayer.addObject(player.get());
+        if(player->getName() != m_client.getPlayer()->getName()){
+            m_rendererPlayer.addObject(player.get());
+        }
     }
 }

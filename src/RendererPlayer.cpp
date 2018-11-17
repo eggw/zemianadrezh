@@ -6,11 +6,14 @@ RendererPlayer::RendererPlayer(sf::RenderWindow& _window)
       m_view{sf::FloatRect(0, 0, float(m_window.getSize().x), float(m_window.getSize().y))} {
 }
 
-//TODO:
-//Don't add player if either the pointers are the same (exists currently),
-//OR if the name is the same
 void RendererPlayer::addPlayer(const Player* _player) const {
 
+    /* TODO: maybe look into this, it didn't seem to work the first attempt
+    auto it = std::find_if(m_players.begin(), m_players.end(),
+                        [_player](const Player* p) -> bool {return p == _player
+                                                            ||
+                                                            p->getName() == _player->getName();});
+    */
     auto it = std::find(m_players.begin(), m_players.end(), _player);
 
     if(it == m_players.end()) {
