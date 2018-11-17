@@ -89,6 +89,11 @@ void Client::addPlayer(Player::EncodedPlayerData _data) {
 	m_otherPlayers->push_back(std::move(newPlayer));
 }
 
+void Client::respawnPlayer() {
+    m_player.setPosition({m_world.getCenter().x, 0});
+}
+
+
 const Player* Client::getPlayer() const {
 	return &m_player;
 }

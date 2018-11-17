@@ -16,7 +16,10 @@ namespace Packet {
 		DATA_WORLD,
 		//Used by the client to send its
 		//position to the server
-		DATA_PLAYER
+		DATA_PLAYER,
+		//Used by the server to reset
+		//a player's position
+		RESPAWN_PLAYER
 	};
 
 	constexpr auto toInt(Type _t) {

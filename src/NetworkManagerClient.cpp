@@ -131,6 +131,13 @@ void NetworkManagerClient::receivePacket() {
 			}
 		//////////////////////////////////////////////////////////////////////////////
 
+		//////////////////////////////////////////////////////////////////////////////
+		case Packet::Type::RESPAWN_PLAYER: {
+				m_client.respawnPlayer();
+				break;
+			}
+		//////////////////////////////////////////////////////////////////////////////
+
 
 		default:
 			break;
@@ -150,7 +157,6 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
 
 		sendPacket(Packet::Type::JUSTJOINED);
-		sendPacket(Packet::Type::REQUEST_WORLD);
 	}
 }
 

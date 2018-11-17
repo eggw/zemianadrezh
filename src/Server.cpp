@@ -21,16 +21,7 @@ void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
 
 void Server::addPlayer(Player::EncodedPlayerData _data) {
 	auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
-	respawnPlayer(_data.playerName);
 	m_otherPlayers->push_back(std::move(newPlayer));
-}
-
-void Server::respawnPlayer(const std::string& _name) {
-	for(auto& player : *m_otherPlayers) {
-		if(player->getName() == _name) {
-			player->setPosition(m_world.getCenter());
-		}
-	}
 }
 
 void Server::receivePackets() {

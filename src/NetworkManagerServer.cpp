@@ -112,7 +112,21 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
 			break;
 		}
-		//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////
+	case Packet::Type::RESPAWN_PLAYER: {
+			for(auto& recipient : recipients) {
+				PacketSender::get_instance().send(recipient, packet);
+				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+						LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+						packetCode);
+
+			}
+
+			break;
+		}
+	//////////////////////////////////////////////////////////////////////////////
 	}
 }
 
@@ -138,7 +152,8 @@ void NetworkManagerServer::receivePacket() {
 
 					m_clientNames.insert(std::make_pair(playerData.playerName, connection.get()));
 					m_server.addPlayer(playerData);
-					m_server.respawnPlayer(playerData.playerName);
+					sendPacket(Packet::Type::DATA_WORLD);
+					sendPacket(Packet::Type::RESPAWN_PLAYER, connection.get());
 					sendMessage("Welcome, " + playerData.playerName + "!", "Server");
 					break;
 				}
@@ -162,11 +177,6 @@ void NetworkManagerServer::receivePacket() {
 					*packet >> playerData.positionY;
 
 					m_server.updateOtherPlayers(playerData);
-
-					/*
-					for(auto& player : *m_server.getOtherPlayers()){
-                        m_server.respawnPlayer(player->getName());
-					}*/
 
 					sendPacket(Packet::Type::DATA_PLAYER, connection.get());
 					break;

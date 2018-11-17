@@ -26,6 +26,8 @@ class Client : public GameInstance {
 		void updateOtherPlayers(Player::EncodedPlayerData _data);
 		void addPlayer(Player::EncodedPlayerData _data);
 
+		void respawnPlayer();
+
 		void sendPackets();
 		void receivePackets();
 
