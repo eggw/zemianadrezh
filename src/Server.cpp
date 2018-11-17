@@ -35,6 +35,12 @@ void Server::receivePackets() {
 }
 
 void Server::update() {
+    if(m_otherPlayers != nullptr){
+            for(auto& player : *m_otherPlayers){
+            player->update();
+        }
+    }
+
     m_networkManager.accept();
     m_networkManager.update();
 }

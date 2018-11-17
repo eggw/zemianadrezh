@@ -38,8 +38,17 @@ ProgramState_Play::ProgramState_Play(Program& _program,
         m_client.m_networkManager.connect(_ipAddress, 7777);
     //}
 
-    m_rendererPlayer.addObject(m_client.getPlayer());
     m_rendererChatbox.addObject(m_client.getChatBox());
+
+    //If the server is local, it will just get all its players
+    //from m_program.m_localServer.getOtherPlayers()
+
+    //If the server is remote, however, we'll need to manually
+    //add the client's own player, as getOtherPlayers() will
+    //actually mean only other players.
+    if(!m_client.isLocal()){
+        m_rendererPlayer.addObject(m_client.getPlayer());
+    }
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -109,12 +118,29 @@ void ProgramState_Play::updateNewChunks() {
 }
 
 //TODO: refactor this shit
+//If the server is local, it will just get all its players
+//from m_program.m_localServer.getOtherPlayers()
+
+//If the server is remote, however, we'll need to manually
+//add the client's own player, as getOtherPlayers() will
+//actually mean only other players.
 void ProgramState_Play::updateNewPlayers() {
-    if(m_client.getOtherPlayers() == nullptr){
-        return;
+    if(m_program.getServer() != nullptr){
+        if(m_program.getServer()->getOtherPlayers() == nullptr){
+            return;
+        }
+
+        for(auto& player : *m_program.getServer()->getOtherPlayers()) {
+            m_rendererPlayer.addObject(player.get());
+        }
+    }
+    else{
+        if(m_client.getOtherPlayers() != nullptr){
+            for(auto& player : *m_client.getOtherPlayers()) {
+                m_rendererPlayer.addObject(player.get());
+            }
+        }
     }
 
-    for(auto& player : *m_client.getOtherPlayers()) {
-        m_rendererPlayer.addObject(player.get());
-    }
+
 }
