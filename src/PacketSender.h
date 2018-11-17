@@ -18,22 +18,23 @@ See the footnote on the following page for a detailed explanation:
 https://www.sfml-dev.org/tutorials/2.5/network-socket.php
 */
 
+typedef std::shared_ptr<sf::Packet> PacketSharedPtr;
 typedef std::unique_ptr<sf::Packet> PacketUPtr;
 
 class PacketSender : public Singleton<PacketSender> {
     public:
         struct PacketData {
-            PacketData(sf::TcpSocket* _socket, PacketUPtr _packet)
+            PacketData(sf::TcpSocket* _socket, PacketSharedPtr _packet)
                 :   m_socket{_socket},
-                    m_packet{std::move(_packet)} {}
+                    m_packet{_packet} {}
 
             sf::TcpSocket* m_socket;
-            PacketUPtr m_packet;
+            PacketSharedPtr m_packet;
         };
 
         PacketSender();
 
-        void send(sf::TcpSocket* _socket, PacketUPtr _packet);
+        void send(sf::TcpSocket* _socket, PacketSharedPtr _packet);
         void update();
 
     private:

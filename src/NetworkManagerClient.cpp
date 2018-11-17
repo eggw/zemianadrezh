@@ -14,21 +14,21 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 
 void NetworkManagerClient::sendPacket(Packet::Type _type) {
     int packetCode = Packet::toInt(_type);
-    PacketUPtr packet(new sf::Packet());
+    PacketSharedPtr packet(new sf::Packet());
     *packet << packetCode;
 
     switch(_type) {
 
         //////////////////////////////////////////////////////////////////////////////
         case Packet::Type::REQUEST_WORLD: {
-            PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
+            PacketSender::get_instance().send(&m_serverConnection, packet);
             break;
         }
         //////////////////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////////////////
         case Packet::Type::REQUEST_RESPAWN_POSITION: {
-            PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
+            PacketSender::get_instance().send(&m_serverConnection, packet);
             break;
         }
         //////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
             *packet << playerData.positionX;
             *packet << playerData.positionY;
 
-            PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
+            PacketSender::get_instance().send(&m_serverConnection, packet);
 
             break;
         }
@@ -55,7 +55,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
             *packet << message.first;
             *packet << message.second;
 
-            PacketSender::get_instance().send(&m_serverConnection, std::move(packet));
+            PacketSender::get_instance().send(&m_serverConnection, packet);
 
             break;
         }

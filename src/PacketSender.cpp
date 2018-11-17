@@ -8,12 +8,12 @@ PacketSender::PacketSender() {
 //Attempts to send the packet, and if not successful, moves
 //it along with its sending socket into m_packetData, where
 //sending the very same packet object can be attempted again
-void PacketSender::send(sf::TcpSocket* _socket, PacketUPtr _packet) {
-    PacketData data{_socket, std::move(_packet)};
+void PacketSender::send(sf::TcpSocket* _socket, PacketSharedPtr _packet) {
+    PacketData data{_socket, _packet};
 
     auto status = data.m_socket->send(*(data.m_packet));
     if(status == sf::Socket::Status::Partial) {
-        m_packetData.push_back(std::move(data));
+        m_packetData.push_back(data);
     }
 }
 

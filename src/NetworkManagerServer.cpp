@@ -37,7 +37,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
         }
     }
 
-    PacketUPtr packet(new sf::Packet());
+    PacketSharedPtr packet(new sf::Packet());
     *packet << packetCode;
 
     switch(_type) {
@@ -49,7 +49,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
             for(auto& recipient : recipients) {
                 *packet << worldData.chunkIDs;
                 *packet << worldData.invisibleBlocks;
-                PacketSender::get_instance().send(recipient, std::move(packet));
+                PacketSender::get_instance().send(recipient, packet);
                 LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
                         LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
                         packetCode);
@@ -69,7 +69,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
                 *packet << position.x;
                 //*packet << position.y;
                 *packet << 0;
-                PacketSender::get_instance().send(recipient, std::move(packet));
+                PacketSender::get_instance().send(recipient, packet);
                 LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
                         LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
                         packetCode);
@@ -104,7 +104,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
                     *packet << playerData.positionX;
                     *packet << playerData.positionY;
 
-                    PacketSender::get_instance().send(recipient, std::move(packet));
+                    PacketSender::get_instance().send(recipient, packet);
                     LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
                             LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
                             packetCode);
@@ -123,7 +123,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
             *packet << sender;
 
             for(auto& recipient : recipients) {
-                PacketSender::get_instance().send(recipient, std::move(packet));
+                PacketSender::get_instance().send(recipient, packet);
             }
 
             LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,

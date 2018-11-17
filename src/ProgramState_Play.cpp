@@ -70,6 +70,7 @@ void ProgramState_Play::update() {
     m_client.receivePackets();
 
     updateNewChunks();
+    updateNewPlayers();
 
     m_client.update();
     m_client.sendPackets();
@@ -104,5 +105,16 @@ void ProgramState_Play::updateNewChunks() {
         }
 
         m_client.m_networkManager.setChunkDataProcessed(true);
+    }
+}
+
+//TODO: refactor this shit
+void ProgramState_Play::updateNewPlayers() {
+    if(m_client.getOtherPlayers() == nullptr){
+        return;
+    }
+
+    for(auto& player : *m_client.getOtherPlayers()) {
+        m_rendererPlayer.addObject(player.get());
     }
 }
