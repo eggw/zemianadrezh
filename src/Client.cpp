@@ -14,15 +14,16 @@ Client::Client(	sf::RenderWindow& _window,
 	 m_player(_localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
 	 m_chatBox(_window, m_player.getName()) {
 
-	m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
-					 (new std::vector<std::unique_ptr<Player>>());
-
 	if(m_localServer != nullptr) {
 		m_world = m_localServer->getWorld();
 		m_otherPlayers = m_localServer->getOtherPlayers();
 
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
+	}
+	else{
+        m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
+					 (new std::vector<std::unique_ptr<Player>>());
 	}
 
 }
