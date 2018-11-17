@@ -17,5 +17,6 @@ ProgramState_MainMenu::ProgramState_MainMenu(Program& _program)
 }
 
 void ProgramState_MainMenu::onStateSwitch() {
+    ProgramState_Menu::onStateSwitch();
 	m_program.terminateLocalServer();
 }

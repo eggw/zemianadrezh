@@ -6,7 +6,9 @@
 
 ProgramState_Menu::ProgramState_Menu(Program& _program, bool _visibleOverPreviousState)
 	:ProgramState(_program, _visibleOverPreviousState),
-	 m_view(m_program.m_window->getDefaultView()) {
+	 m_view{sf::FloatRect(0, 0,
+							float(m_program.m_window->getSize().x),
+							float(m_program.m_window->getSize().y))} {
 
 	m_program.m_window->setView(m_view);
 
@@ -128,6 +130,6 @@ void ProgramState_Menu::addGap() {
 
 void ProgramState_Menu::onResize(sf::Vector2u _newSize) {
 	ProgramState::onResize(_newSize);
-	sf::Vector2f newSize{float(_newSize.x), float(_newSize.y)};
-	m_view.setSize(newSize);
+	m_view.setSize({float(_newSize.x),
+                    float(_newSize.y)});
 }
