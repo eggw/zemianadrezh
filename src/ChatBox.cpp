@@ -6,6 +6,8 @@
 
 //Here are the variables we'll use to initialise the text entry box
 //in the correct position
+//Note that the height (0.25 by default) specifies that of both the
+//ChatBox and m_textEntry combined.
 //////////////////////////////////////////////////////////////////////////////////////////////
 const sf::FloatRect VIEWPORT{
 	0, 0.75, 0.3, 0.25
@@ -14,11 +16,16 @@ constexpr float         SECONDS_UNTIL_MESSAGES_FADE {5.0f};
 constexpr unsigned int  CHARACTER_SIZE       {20};
 
 const  float            Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
-const float             Y_BUFFERSPACE{2.3f * Y_OFFSET};
+const float             Y_BUFFERSPACE{1.3f * Y_OFFSET};
 
-//The value of 2.3 above is because the origin of the text's position is top
-//left; in order to get an empty row below, we're going to need to subtract
-//2 * Y_OFFSET. The .3 is for a little aesthetic extra buffer space below.
+//The value of 1.3 above is because the origin of the text's position is top
+//left, in order to get a little aesthetic extra buffer space below the
+//last message
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+float calculateTextEntryHeight(sf::Vector2u _size) {
+    return 1 - (_size.y - Y_OFFSET) /_size.y;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
@@ -32,11 +39,14 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 	0,
 	(_window.getSize().y - Y_OFFSET) / _window.getSize().y,
 	VIEWPORT.width,
-	1 - (_window.getSize().y - Y_OFFSET) / _window.getSize().y
+    calculateTextEntryHeight(_window.getSize())
 }),
 m_clock() {
 
-	m_shadedRectangleView.setViewport(VIEWPORT);
+    sf::FloatRect shadedViewport{VIEWPORT};
+    shadedViewport.height -= calculateTextEntryHeight(_window.getSize());
+
+	m_shadedRectangleView.setViewport(shadedViewport);
 	onResize(_window.getSize());
 
 	/*
@@ -78,10 +88,18 @@ void ChatBox::appendMessage(const std::string _message,
 		adjustMessage(newMessage);
 	}
 
+	bool snap{false};
+	if(viewAtLowest()){
+        snap = true;
+	}
+
 	m_messages.push_back(newMessage);
 	positionMessage(m_messages.size() - 1);
-	snapToBottom();
 	m_clock.restart();
+
+	if(snap){
+        snapToBottom();
+	}
 }
 
 void ChatBox::getInput(sf::Event& _event) {
@@ -93,7 +111,7 @@ void ChatBox::getInput(sf::Event& _event) {
 	switch(_event.type) {
 	case sf::Event::KeyPressed: {
 			if(_event.key.code == Key::CHAT_SEND) {
-				snapToBottom();
+				//snapToBottom();
 				m_clock.restart();
 			}
 
@@ -304,14 +322,19 @@ void ChatBox::updateMessageTransparency() {
 
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
+    float newViewportHeight{VIEWPORT.height - calculateTextEntryHeight(_newSize)};
+
 	sf::FloatRect viewRect({0,
 							0,
 							_newSize.x * VIEWPORT.width,
-							_newSize.y * VIEWPORT.height
+							_newSize.y * newViewportHeight
 						   });
 
 	m_view.reset(viewRect);
-	m_view.setViewport({0, 0.75, VIEWPORT.width, VIEWPORT.height});
+	m_view.setViewport({VIEWPORT.left,
+                        VIEWPORT.top,
+                        VIEWPORT.width,
+                        newViewportHeight});
 
 	m_shadedRectangleView.reset(viewRect);
 	m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
@@ -332,7 +355,7 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 //If so, it adjusts the view's center so that the very first message is
 //on top.
 void ChatBox::snapToTop() {
-	if(!m_messages.empty() && !m_textEntry.enteringText()) {
+	if(!m_messages.empty()) {
 		Message& latestMessage = m_messages.back();
 
 		float lastLineYPosition{latestMessage.text.getPosition().y
@@ -357,7 +380,7 @@ void ChatBox::snapToTop() {
 //This function checks if the last message is "outside" (below) the view.
 //If so, it adjusts the view's center so that it is visible.
 void ChatBox::snapToBottom() {
-	if(!m_messages.empty()&& !m_textEntry.enteringText()) {
+	if(!m_messages.empty()) {
 		Message& latestMessage = m_messages.back();
 		float lastLineYPosition{latestMessage.text.getPosition().y
 								+
@@ -381,6 +404,9 @@ float ChatBox::getUpperViewBound() const {
 	return 0;
 }
 float ChatBox::getLowerViewBound() const {
+    if(m_messages.empty()){
+        return 0;
+    }
 	float lowestPoint{m_messages.back().text.getPosition().y};
 	lowestPoint += Y_BUFFERSPACE;
 	return lowestPoint;
@@ -403,7 +429,7 @@ bool ChatBox::viewAtLowest() const {
 }
 
 void ChatBox::scrollUp() {
-	if(!viewAtHighest() && !m_textEntry.enteringText()) {
+	if(!viewAtHighest()) {
 		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (Y_OFFSET));
 	}
 	if(viewAtHighest()) {
@@ -412,7 +438,7 @@ void ChatBox::scrollUp() {
 }
 
 void ChatBox::scrollDown() {
-	if(!viewAtLowest() && !m_textEntry.enteringText()) {
+	if(!viewAtLowest()) {
 		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (Y_OFFSET));
 	}
 	if(viewAtLowest()) {
