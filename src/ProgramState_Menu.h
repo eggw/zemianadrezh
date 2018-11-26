@@ -18,7 +18,7 @@ class ProgramState_Menu : public ProgramState {
 		void addGap();
 
 	protected:
-		void onResize(sf::Vector2u _newSize);
+		virtual void onResize(sf::Vector2u _newSize);
 	protected:
 		typedef std::tuple<bool, void(Program::*)(), sf::Text> MenuItem;
 		bool isMousedOver(MenuItem _menuItem);

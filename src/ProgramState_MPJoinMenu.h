@@ -11,6 +11,8 @@ class ProgramState_MPJoinMenu : public ProgramState_Menu {
 		void getInput(sf::Event& _event);
 		void update();
 		void draw();
+	protected:
+		void onResize(sf::Vector2u _newSize);
 	private:
 		TextEntryBox m_IPEntry;
 };

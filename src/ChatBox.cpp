@@ -4,6 +4,8 @@
 
 #include "Keybinds.h"
 
+
+#include <iostream>
 //Here are the variables we'll use to initialise the text entry box
 //in the correct position
 //Note that the height (0.25 by default) specifies that of both the
@@ -23,30 +25,15 @@ const float             Y_BUFFERSPACE{1.3f * LINESPACING};
 //last message
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-float calculateTextEntryHeight(sf::Vector2u _size) {
-    return 1 - (_size.y - LINESPACING) /_size.y;
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
 ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 	:m_name(_name),
 	 m_view(),
 	 m_shadedRectangleView(),
 	 m_shadedRectangle(),
 	 m_messages(),
-	 m_textEntry(_window.getSize(),
-{
-	0,
-	(_window.getSize().y - LINESPACING) / _window.getSize().y,
-	VIEWPORT.width,
-    calculateTextEntryHeight(_window.getSize())
-}),
-m_clock() {
+	 m_textEntry(),
+	 m_clock() {
 
-    sf::FloatRect shadedViewport{VIEWPORT};
-    shadedViewport.height -= calculateTextEntryHeight(_window.getSize());
-
-	m_shadedRectangleView.setViewport(shadedViewport);
 	onResize(_window.getSize());
 
 	/*
@@ -322,13 +309,32 @@ void ChatBox::updateMessageTransparency() {
 
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
-    float newViewportHeight{VIEWPORT.height - calculateTextEntryHeight(_newSize)};
+	sf::FloatRect textEntryViewport{
+		0,
+		1 - m_textEntry.getMaxHeightAsRatio(_newSize),
+		VIEWPORT.width,
+		0	//this can be removed as it's unused now
+	};
+
+	m_textEntry.initialise(_newSize, textEntryViewport);
+
+    float newViewportHeight{VIEWPORT.height - (m_textEntry.getMaxHeightAsRatio(_newSize))};
+
+    //I noticed that sometimes, maybe due to float precision reasons, the text entry box
+	//and the shaded rectangle overlap. Because I can't reduce the size of the shaded
+	//rectangle pixel by pixel easily, I tried decrementing it by 0.0001% until they no
+	//longer overlap and there is no visible discrepancy. My do...while loop tests showed
+	//that it just needed to be called once to fix this weird visual quirk.
+	newViewportHeight -= 0.0001;
 
 	sf::FloatRect viewRect({0,
 							0,
 							_newSize.x * VIEWPORT.width,
 							_newSize.y * newViewportHeight
 						   });
+
+
+
 
 	m_view.reset(viewRect);
 	m_view.setViewport({VIEWPORT.left,
@@ -337,6 +343,8 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
                         newViewportHeight});
 
 	m_shadedRectangleView.reset(viewRect);
+	m_shadedRectangleView.setViewport(m_view.getViewport());
+
 	m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
 	for(int i{0}; i < m_messages.size(); i++) {

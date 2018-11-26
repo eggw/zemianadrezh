@@ -16,9 +16,7 @@ const bool keysPressedTogether(std::vector<sf::Keyboard::Key> _keys) {
 	return allPressed;
 }
 
-TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
-						   sf::FloatRect _viewPort,
-						   unsigned int _charSize,
+TextEntryBox::TextEntryBox(unsigned int _charSize,
 						   unsigned int _maxChars)
 	:m_textView(),
 	 m_rectangle(),
@@ -43,9 +41,38 @@ TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
 	m_caret.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_caret.setColor(sf::Color(230,230,230));
 	m_caret.setString("|");
+}
 
-	m_textView.setViewport(_viewPort);
-	onResize(_windowSize);
+//TODO: Since the last variable in _viewPort (height) is going to be determined
+//by the character size, this function should take 3 floats instead of a FloatRect
+void TextEntryBox::initialise(sf::Vector2u _windowSize,
+				 sf::FloatRect _viewPort) {
+
+    _viewPort.height =  getMaxHeightAsRatio(_windowSize);
+    m_textView.setViewport(_viewPort);
+
+	float newWidth{_windowSize.x * m_textView.getViewport().width};
+
+	m_textView.reset({0,
+					  0,
+					  newWidth,
+					  getMaxHeight()
+					 });
+
+
+	sf::Vector2f rectSize{m_textView.getSize()};
+	m_rectangle.setSize(rectSize);
+
+	float lineSpacing {getMaxHeight()};
+	double textHeight{m_text.getPosition().y + lineSpacing};
+	double rectangleHeight{m_rectangle.getGlobalBounds().height * 0.8};
+
+	if(textHeight > rectangleHeight) {
+		double difference{textHeight - rectangleHeight};
+		sf::Vector2f newTextPosition{m_text.getPosition()};
+		newTextPosition.y -= difference;
+		m_text.setPosition(newTextPosition);
+	}
 }
 
 void TextEntryBox::getInput(sf::Event& _event) {
@@ -167,12 +194,6 @@ void TextEntryBox::getInput(sf::Event& _event) {
 			break;
 		}
 
-	case sf::Event::Resized: {
-			sf::Vector2u newSize{_event.size.width, _event.size.height};
-			onResize(newSize);
-			break;
-		}
-
 	default:
 		break;
 
@@ -239,35 +260,14 @@ void TextEntryBox::setAlwaysActive(bool _val) {
 	m_alwaysActive = _val;
 }
 
-int TextEntryBox::getMaxHeight() const {
-	return FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, m_charSize);
+float TextEntryBox::getMaxHeight() const {
+	return (FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, m_charSize));
 }
 
-void TextEntryBox::onResize(sf::Vector2u _newSize) {
-	float xRatio{m_textView.getViewport().width};
-	float yRatio{m_textView.getViewport().height};
-
-	m_textView.reset({0,
-					  0,
-					  _newSize.x * xRatio,
-					  _newSize.y * yRatio
-					 });
-
-
-	sf::Vector2f rectSize{m_textView.getSize()};
-	m_rectangle.setSize(rectSize);
-
-	int lineSpacing {getMaxHeight()};
-	double textHeight{m_text.getPosition().y + lineSpacing};
-	double rectangleHeight{m_rectangle.getGlobalBounds().height * 0.8};
-
-	if(textHeight > rectangleHeight) {
-		double difference{textHeight - rectangleHeight};
-		sf::Vector2f newTextPosition{m_text.getPosition()};
-		newTextPosition.y -= difference;
-		m_text.setPosition(newTextPosition);
-	}
+float TextEntryBox::getMaxHeightAsRatio(sf::Vector2u _windowSize) const {
+	return 1 - (_windowSize.y - getMaxHeight()) /_windowSize.y;
 }
+
 
 void TextEntryBox::updateCaret() {
 	if(m_enteringText) {
