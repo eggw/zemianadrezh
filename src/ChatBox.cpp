@@ -15,8 +15,8 @@ const sf::FloatRect VIEWPORT{
 constexpr float         SECONDS_UNTIL_MESSAGES_FADE {5.0f};
 constexpr unsigned int  CHARACTER_SIZE       {20};
 
-const  float            Y_OFFSET = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
-const float             Y_BUFFERSPACE{1.3f * Y_OFFSET};
+const  float            LINESPACING = FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, CHARACTER_SIZE);
+const float             Y_BUFFERSPACE{1.3f * LINESPACING};
 
 //The value of 1.3 above is because the origin of the text's position is top
 //left, in order to get a little aesthetic extra buffer space below the
@@ -24,7 +24,7 @@ const float             Y_BUFFERSPACE{1.3f * Y_OFFSET};
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 float calculateTextEntryHeight(sf::Vector2u _size) {
-    return 1 - (_size.y - Y_OFFSET) /_size.y;
+    return 1 - (_size.y - LINESPACING) /_size.y;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 	 m_textEntry(_window.getSize(),
 {
 	0,
-	(_window.getSize().y - Y_OFFSET) / _window.getSize().y,
+	(_window.getSize().y - LINESPACING) / _window.getSize().y,
 	VIEWPORT.width,
     calculateTextEntryHeight(_window.getSize())
 }),
@@ -260,7 +260,7 @@ void ChatBox::positionMessage(int _index) {
 		Message& message = m_messages[_index];
 		sf::Vector2f newPosition{m_messages[_index-1].text.getPosition()};
 		unsigned int lastMessageLines{m_messages[_index-1].numberOfLines};
-		newPosition.y += lastMessageLines * (Y_OFFSET);
+		newPosition.y += lastMessageLines * (LINESPACING);
 		message.text.setPosition(newPosition);
 	}
 }
@@ -360,7 +360,7 @@ void ChatBox::snapToTop() {
 
 		float lastLineYPosition{latestMessage.text.getPosition().y
 								+
-								(latestMessage.numberOfLines - 1) * Y_OFFSET};
+								(latestMessage.numberOfLines - 1) * LINESPACING};
 
 		float boundary{m_view.getSize().y - Y_BUFFERSPACE};
 
@@ -384,7 +384,7 @@ void ChatBox::snapToBottom() {
 		Message& latestMessage = m_messages.back();
 		float lastLineYPosition{latestMessage.text.getPosition().y
 								+
-								(latestMessage.numberOfLines - 1) * Y_OFFSET};
+								(latestMessage.numberOfLines - 1) * LINESPACING};
 
 		float boundary{m_view.getSize().y - Y_BUFFERSPACE};
 
@@ -430,7 +430,7 @@ bool ChatBox::viewAtLowest() const {
 
 void ChatBox::scrollUp() {
 	if(!viewAtHighest()) {
-		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (Y_OFFSET));
+		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (LINESPACING));
 	}
 	if(viewAtHighest()) {
 		snapToTop();
@@ -439,7 +439,7 @@ void ChatBox::scrollUp() {
 
 void ChatBox::scrollDown() {
 	if(!viewAtLowest()) {
-		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (Y_OFFSET));
+		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (LINESPACING));
 	}
 	if(viewAtLowest()) {
 		snapToBottom();

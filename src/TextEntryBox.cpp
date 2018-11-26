@@ -16,10 +16,9 @@ const bool keysPressedTogether(std::vector<sf::Keyboard::Key> _keys) {
 	return allPressed;
 }
 
-constexpr int MAX_CHAR_SIZE{20};
-
 TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
 						   sf::FloatRect _viewPort,
+						   unsigned int _charSize,
 						   unsigned int _maxChars)
 	:m_textView(),
 	 m_rectangle(),
@@ -31,11 +30,14 @@ TextEntryBox::TextEntryBox(sf::Vector2u _windowSize,
 	 m_inputComplete{false},
 	 m_alwaysVisible{false},
 	 m_alwaysActive{false},
-	 m_charSize{0},
+	 m_charSize{_charSize},
 	 m_maxChars{_maxChars} {
 
 	m_rectangle.setFillColor(sf::Color(0,0,0,120));
 	m_highlightedRectangle.setFillColor(sf::Color(250,250,250,100));
+
+	m_text.setCharacterSize(m_charSize);
+	m_caret.setCharacterSize(m_charSize);
 
 	m_text.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_caret.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
@@ -237,6 +239,10 @@ void TextEntryBox::setAlwaysActive(bool _val) {
 	m_alwaysActive = _val;
 }
 
+int TextEntryBox::getMaxHeight() const {
+	return FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, m_charSize);
+}
+
 void TextEntryBox::onResize(sf::Vector2u _newSize) {
 	float xRatio{m_textView.getViewport().width};
 	float yRatio{m_textView.getViewport().height};
@@ -251,15 +257,7 @@ void TextEntryBox::onResize(sf::Vector2u _newSize) {
 	sf::Vector2f rectSize{m_textView.getSize()};
 	m_rectangle.setSize(rectSize);
 
-	m_charSize = m_rectangle.getSize().y - 4;
-	if(m_charSize > MAX_CHAR_SIZE) {
-		m_charSize = MAX_CHAR_SIZE;
-	}
-
-	m_text.setCharacterSize(m_charSize);
-	m_caret.setCharacterSize(m_charSize);
-
-	float lineSpacing {FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, m_charSize)};
+	int lineSpacing {getMaxHeight()};
 	double textHeight{m_text.getPosition().y + lineSpacing};
 	double rectangleHeight{m_rectangle.getGlobalBounds().height * 0.8};
 
