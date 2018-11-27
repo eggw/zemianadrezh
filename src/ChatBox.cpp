@@ -4,8 +4,6 @@
 
 #include "Keybinds.h"
 
-
-#include <iostream>
 //Here are the variables we'll use to initialise the text entry box
 //in the correct position
 //Note that the height (0.25 by default) specifies that of both the
@@ -204,6 +202,10 @@ void removeNewlines(std::string& _str) {
 }
 
 void ChatBox::adjustMessage(Message& _message) {
+	if(!messageTooWide(_message) && !messageTooNarrow(_message)){
+		return;
+	}
+
 	//Before we recalculate everything, we'll remove
 	//all newline characters currently present and
 	//set the message's numberOfLines to 1
@@ -311,14 +313,14 @@ void ChatBox::updateMessageTransparency() {
 void ChatBox::onResize(sf::Vector2u _newSize) {
 	sf::FloatRect textEntryViewport{
 		0,
-		1 - m_textEntry.getMaxHeightAsRatio(_newSize),
+		1 - m_textEntry.getHeightAsRatio(_newSize),
 		VIEWPORT.width,
 		0	//this can be removed as it's unused now
 	};
 
 	m_textEntry.initialise(_newSize, textEntryViewport);
 
-    float newViewportHeight{VIEWPORT.height - (m_textEntry.getMaxHeightAsRatio(_newSize))};
+    float newViewportHeight{VIEWPORT.height - (m_textEntry.getHeightAsRatio(_newSize))};
 
     //I noticed that sometimes, maybe due to float precision reasons, the text entry box
 	//and the shaded rectangle overlap. Because I can't reduce the size of the shaded
@@ -349,11 +351,8 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 
 	for(int i{0}; i < m_messages.size(); i++) {
 		Message& message = m_messages[i];
-
-		if(messageTooWide(message) || messageTooNarrow(message)) {
-			adjustMessage(message);
-			positionMessage(i);
-		}
+		adjustMessage(message);
+		positionMessage(i);
 	}
 
 	snapToBottom();

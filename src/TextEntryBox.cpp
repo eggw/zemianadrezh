@@ -48,7 +48,7 @@ TextEntryBox::TextEntryBox(unsigned int _charSize,
 void TextEntryBox::initialise(sf::Vector2u _windowSize,
 				 sf::FloatRect _viewPort) {
 
-    _viewPort.height =  getMaxHeightAsRatio(_windowSize);
+    _viewPort.height =  getHeightAsRatio(_windowSize);
     m_textView.setViewport(_viewPort);
 
 	float newWidth{_windowSize.x * m_textView.getViewport().width};
@@ -56,14 +56,14 @@ void TextEntryBox::initialise(sf::Vector2u _windowSize,
 	m_textView.reset({0,
 					  0,
 					  newWidth,
-					  getMaxHeight()
+					  getHeightAsPixels()
 					 });
 
 
 	sf::Vector2f rectSize{m_textView.getSize()};
 	m_rectangle.setSize(rectSize);
 
-	float lineSpacing {getMaxHeight()};
+	float lineSpacing {getHeightAsPixels()};
 	double textHeight{m_text.getPosition().y + lineSpacing};
 	double rectangleHeight{m_rectangle.getGlobalBounds().height * 0.8};
 
@@ -162,26 +162,14 @@ void TextEntryBox::getInput(sf::Event& _event) {
 				deleteSelection();
 			}
 
-			std::string newString{m_text.getString()};
-
 			//8 = backspace
-			//127 = delete
-			if(_event.text.unicode == 8
-					||
-					_event.text.unicode == 127
-					&& !stringEmpty()) {
-
+			//for some reason, 127 (delete)
+			//isn't registering
+			if(_event.text.unicode == 8) {
 				deleteSelection();
 			}
-			//Anything between 32 and 255
-			//represents the rest of the
-			//alphanumeric characters, and
-			//some symbols
-			else if(_event.text.unicode >= 32
-					&&
-					_event.text.unicode <= 255
-					&&
-					newString.length() < m_maxChars) {
+
+			else if(validInsertion(_event.text.unicode)) {
 
 				if(sequenceSelected()) {
 					deleteSelection();
@@ -260,12 +248,12 @@ void TextEntryBox::setAlwaysActive(bool _val) {
 	m_alwaysActive = _val;
 }
 
-float TextEntryBox::getMaxHeight() const {
+float TextEntryBox::getHeightAsPixels() const {
 	return (FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY, m_charSize));
 }
 
-float TextEntryBox::getMaxHeightAsRatio(sf::Vector2u _windowSize) const {
-	return 1 - (_windowSize.y - getMaxHeight()) /_windowSize.y;
+float TextEntryBox::getHeightAsRatio(sf::Vector2u _windowSize) const {
+	return 1 - (_windowSize.y - getHeightAsPixels()) /_windowSize.y;
 }
 
 
@@ -295,7 +283,7 @@ void TextEntryBox::updateCaret() {
 		//float caret_x{float(m_currentStringIndexPosition * m_charSize)};
 
 
-		m_caret.setPosition({textXAtPosition(m_selectionBegin), m_caret.getPosition().y});
+		m_caret.setPosition({textXAtPosition(m_selectionBegin), -2});
 	}
 }
 
@@ -410,6 +398,10 @@ bool TextEntryBox::sequenceSelected() const {
 }
 
 void TextEntryBox::deleteSelection() {
+	if(stringEmpty()){
+		return;
+	}
+
 	std::string newString{m_text.getString()};
 
 	if(sequenceSelected()) {
@@ -425,6 +417,22 @@ void TextEntryBox::deleteSelection() {
 	m_selectionEnd = m_selectionBegin;
 	m_selectionDirection = 0;
 	m_text.setString(newString);
+}
+
+bool TextEntryBox::validInsertion(sf::Uint32 _unicode) {
+	//Anything between 32 and 255
+	//represents the rest of the
+	//alphanumeric characters, and
+	//some symbols
+	if(_unicode >= 32
+		&&
+		_unicode <= 255
+		&&
+		m_text.getString().getSize() < m_maxChars) {
+		return true;
+	}
+
+	return false;
 }
 
 void TextEntryBox::insert(std::string& _str) {
