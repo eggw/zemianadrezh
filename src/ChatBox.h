@@ -2,8 +2,11 @@
 #define CHATBOX_H_INCLUDED
 
 #include <SFML/Graphics.hpp>
+#include "MulticolourText/MulticolourText.hpp"
 
 #include "TextEntryBox.h"
+
+
 
 class ChatBox : public sf::Drawable {
 	public:
@@ -19,12 +22,12 @@ class ChatBox : public sf::Drawable {
 		bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
 	private:
 		struct Message {
-			Message(sf::Text& _text, unsigned int _numberOfLines = 1)
+			Message(sf::MulticolourText& _text, unsigned int _numberOfLines = 1)
 				:text{_text},
 				 numberOfLines{_numberOfLines} {
 			}
 
-			sf::Text text;
+			sf::MulticolourText text;
 			unsigned int numberOfLines;
 		};
 

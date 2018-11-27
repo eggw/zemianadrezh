@@ -54,7 +54,7 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 
 void ChatBox::appendMessage(const std::string _message,
 							const std::string _sender) {
-	sf::Text newText;
+	sf::MulticolourText newText;
 	newText.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	newText.setCharacterSize(CHARACTER_SIZE);
 
@@ -62,10 +62,9 @@ void ChatBox::appendMessage(const std::string _message,
 	if(_sender != "") {
 		finalStr = ("<" + _sender + "> " + finalStr);
 	}
-	else {
-		newText.setColor(sf::Color::Red);
-	}
+
 	newText.setString(finalStr);
+	newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
 
 	Message newMessage{newText};
 
@@ -232,11 +231,15 @@ void ChatBox::adjustMessage(Message& _message) {
 
 		//If we have a space as the first character
 		//on a new line, we'll get rid of it
+		/*
 		else if(currentWidth == charSize) {
 			if(isspace(textStr.at(i))) {
 				textStr.erase(i, 1);
 			}
 		}
+
+		... or not. A bit funky with MultiColorText::setString()
+		*/
 	}
 
 	_message.text.setString(textStr);
@@ -254,20 +257,20 @@ void ChatBox::positionMessage(int _index) {
 	}
 }
 
+
 void ChatBox::setTransparency(int _a) {
 	for(auto& message : m_messages) {
-		sf::Color color = message.text.getFillColor();
-		color.a = _a;
-		message.text.setFillColor(color);
+		message.text.setTransparency(_a);
 	}
 }
+
 
 bool ChatBox::messagesTransparent() const {
 	//Since all messages will have the same transparency,
 	//it's enough for us to get the alpha value of the first
 	//element
 	if(!m_messages.empty()) {
-		return m_messages.front().text.getColor().a == 0;
+		return m_messages.front().text.getFillColor(0).a == 0;
 	}
 }
 
