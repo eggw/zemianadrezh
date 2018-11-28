@@ -148,6 +148,9 @@ void NetworkManagerClient::receivePacket() {
 }
 
 void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
+	bool successfullyConnected{false};
+
+	m_serverConnection.setBlocking(true);
 	sf::Socket::Status status = m_serverConnection.connect(_ip, _port);
 
 	if(status != sf::Socket::Done) {
@@ -157,7 +160,12 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
 	else {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
+		successfullyConnected = true;
+	}
 
+	m_serverConnection.setBlocking(false);
+
+	if(successfullyConnected){
 		sendPacket(Packet::Type::JUSTJOINED);
 	}
 }

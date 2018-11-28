@@ -3,7 +3,7 @@
 #include "Keybinds.h"
 #include "LoggerNetwork.h"
 
-#include <iostream>
+
 ProgramState_Play::ProgramState_Play(Program& _program,
 									 sf::IpAddress _ipAddress)
 	: 	ProgramState(_program),
@@ -20,23 +20,8 @@ ProgramState_Play::ProgramState_Play(Program& _program,
 							float(m_program.m_window->getSize().x),
 							float(m_program.m_window->getSize().y))} {
 
-	/*
-	The reason the client calls connect() twice is because of the way
-	SFML connection statuses work: the client won't return
-	sf::Socket::Done unless it's called AFTER a connection with the server
-	has been estalished.
 
-	Therefore, we'll call connect the first time in order for the log entry
-	to register "awaiting response...", then a second time after the
-	connection is established for "connection established!"
-
-	See: https://en.sfml-dev.org/forums/index.php?topic=7118.0
-	*/
-
-	//if(m_client.isLocal()){
 	m_client.m_networkManager.connect(_ipAddress, 7777);
-	m_client.m_networkManager.connect(_ipAddress, 7777);
-	//}
 
 	m_rendererChatbox.addObject(m_client.getChatBox());
 	m_rendererPlayer.addObject(m_client.getPlayer());
