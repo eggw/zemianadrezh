@@ -69,6 +69,10 @@ void ProgramState_Play::draw() {
 	m_rendererChatbox.draw();
 }
 
+bool ProgramState_Play::clientConnected() const {
+	return m_client.isConnected();
+}
+
 void ProgramState_Play::onResize(sf::Vector2u _newSize) {
 	ProgramState::onResize(_newSize);
 	sf::Vector2f newSizeF{float(_newSize.x), float(_newSize.y)};

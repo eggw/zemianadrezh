@@ -29,6 +29,8 @@ class Program : public Singleton<Program> {
 		void pushState_MPHostMenu();
 		void pushState_MPJoinMenu();
 
+		void pushState_MPJoinFailed();
+
 		void returnToMainMenu();
 
 		bool localServerInitialised();

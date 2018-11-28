@@ -6,8 +6,7 @@
 #include "ProgramState_MPMenu.h"
 #include "ProgramState_MPHostMenu.h"
 #include "ProgramState_MPJoinMenu.h"
-
-#include <iostream>
+#include "ProgramState_MPJoinFailed.h"
 
 Program::Program() {
 	m_window = std::unique_ptr<sf::RenderWindow>
@@ -74,8 +73,14 @@ void Program::pushState_Play_MP_Host() {
 
 void Program::pushState_Play_MP_Join() {
 	sf::IpAddress ip{sf::IpAddress(m_ipAddress)};
-	m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
-					   m_ipAddress)));
+	std::unique_ptr<ProgramState_Play>newState (new ProgramState_Play(*this,
+													m_ipAddress));
+	if(newState->clientConnected()){
+		m_states.push_back(std::move(newState));
+	}
+	else{
+		pushState_MPJoinFailed();
+	}
 }
 
 void Program::pushState_Pause() {
@@ -92,6 +97,10 @@ void Program::pushState_MPHostMenu() {
 
 void Program::pushState_MPJoinMenu() {
 	m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(new ProgramState_MPJoinMenu(*this)));
+}
+
+void Program::pushState_MPJoinFailed() {
+	m_states.push_back(std::unique_ptr<ProgramState_MPJoinFailed>(new ProgramState_MPJoinFailed(*this, m_ipAddress)));
 }
 
 bool Program::localServerInitialised() {

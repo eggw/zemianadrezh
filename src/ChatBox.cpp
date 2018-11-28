@@ -278,7 +278,7 @@ void ChatBox::updateShadedRectangleTransparency() {
 	static int rectangleAlphaValue{0};
 
 	if(m_textEntry.enteringText()) {
-		rectangleAlphaValue = 100;
+		rectangleAlphaValue = 50;
 	}
 	else {
 		if(rectangleAlphaValue > 0) {

@@ -18,6 +18,8 @@ class ProgramState_Play : public ProgramState {
         void update();
         void draw();
 
+        bool clientConnected() const;
+
     private:
         void onResize(sf::Vector2u _newSize);
 
