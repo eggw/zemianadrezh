@@ -14,7 +14,7 @@ constexpr float 		IPENTRY_X_POS{0.5f - (IPENTRY_WIDTH_FACTOR/2)};
 
 ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
 	:ProgramState_Menu(_program),
-	 m_IPEntry() {
+	 m_IPEntry(18, 45) {
 	addMenuItem("Connect",
 				&Program::pushState_Play_MP_Join);
 

@@ -5,10 +5,16 @@
 #include "FontManager.h"
 #include "InputLocker.h"
 
+#include <iostream>
+
+const bool keyPressed(sf::Keyboard::Key _key) {
+	return sf::Keyboard::isKeyPressed(_key);
+}
+
 const bool keysPressedTogether(std::vector<sf::Keyboard::Key> _keys) {
 	bool allPressed{true};
 	for(auto& key : _keys) {
-		if(!sf::Keyboard::isKeyPressed(key)) {
+		if(!keyPressed(key)) {
 			allPressed = false;
 			break;
 		}
@@ -97,50 +103,55 @@ void TextEntryBox::getInput(sf::Event& _event) {
 				}
 			}
 
-			else if(keysPressedTogether({Key::TEXT_SELECTLEFT_A,
-										 Key::TEXT_SELECTLEFT_B
+
+			else if(keysPressedTogether({Key::LSHIFT,
+										 Key::TEXT_SELECTLEFT
 										})) {
 				selectLeft();
 			}
 
-			else if(keysPressedTogether({Key::TEXT_SELECTRIGHT_A,
-										 Key::TEXT_SELECTRIGHT_B
+			else if(keysPressedTogether({Key::LSHIFT,
+										 Key::TEXT_SELECTRIGHT
 										})) {
 				selectRight();
 			}
 
-			else if(keysPressedTogether({Key::TEXT_SELECTALL_A,
-										 Key::TEXT_SELECTALL_B
+			else if(keysPressedTogether({Key::LCTRL,
+										 Key::TEXT_SELECTALL
 										})) {
 				selectAll();
 			}
 
-			else if(keysPressedTogether({Key::TEXT_COPY_A,
-										 Key::TEXT_COPY_B
+			else if(keysPressedTogether({Key::LCTRL,
+										 Key::TEXT_COPY
 										})) {
-				//TODO: implement COPY functionality
-				//requires SFML 2.5+
+				sf::Clipboard::setString(getSelection());
 			}
 
-			else if(keysPressedTogether({Key::TEXT_CUT_A,
-										 Key::TEXT_CUT_B
+			else if(keysPressedTogether({Key::LCTRL,
+										 Key::TEXT_CUT
 										})) {
-				//TODO: implement CUT functionality
-				//requires SFML 2.5+
+				sf::Clipboard::setString(getSelection());
+				if(sequenceSelected()){
+					deleteSelection();
+				}
 			}
 
-			else if(keysPressedTogether({Key::TEXT_PASTE_A,
-										 Key::TEXT_PASTE_B
+			else if(keysPressedTogether({Key::LCTRL,
+										 Key::TEXT_PASTE
 										})) {
-				//TODO: implement PASTE functionality
-				//requires SFML 2.5+
+				if(sequenceSelected()){
+					deleteSelection();
+				}
+				std::string s{sf::Clipboard::getString()};
+				insert(s);
 			}
 
-			else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVELEFT)) {
+			else if(keyPressed(Key::TEXT_MOVELEFT)) {
 				moveLeft();
 			}
 
-			else if(sf::Keyboard::isKeyPressed(Key::TEXT_MOVERIGHT)) {
+			else if(keyPressed(Key::TEXT_MOVERIGHT)) {
 				moveRight();
 			}
 
@@ -157,8 +168,7 @@ void TextEntryBox::getInput(sf::Event& _event) {
 			//Since typing "A" counts as text entry, we'll see if
 			//CTRL is held too and not treat it as such if that's the
 			//case. If it isn't, we'll delete the selection.
-			if(sequenceSelected() &&
-					!sf::Keyboard::isKeyPressed(Key::TEXT_SELECTALL_A)) {
+			if(sequenceSelected() && !keyPressed(Key::LCTRL)) {
 				deleteSelection();
 			}
 
@@ -176,7 +186,6 @@ void TextEntryBox::getInput(sf::Event& _event) {
 				}
 
 				insert(static_cast<char>(_event.text.unicode));
-				moveRight();
 			}
 
 			break;
@@ -345,7 +354,10 @@ void TextEntryBox::unselectAll() {
 }
 
 void TextEntryBox::selectLeft() {
-	if(m_selectionDirection <= 0) {
+	if(keyPressed(Key::LCTRL)){
+		m_selectionBegin = posAtPreviousWord();
+	}
+	else if(m_selectionDirection <= 0) {
 		if(m_selectionBegin <= 0) {
 			return;
 		}
@@ -358,7 +370,10 @@ void TextEntryBox::selectLeft() {
 }
 
 void TextEntryBox::selectRight() {
-	if(m_selectionDirection >= 0) {
+	if(keyPressed(Key::LCTRL)){
+		m_selectionEnd = posAtNextWord();
+	}
+	else if(m_selectionDirection >= 0) {
 		if(m_selectionEnd >= m_text.getString().getSize()) {
 			return;
 		}
@@ -371,7 +386,13 @@ void TextEntryBox::selectRight() {
 }
 
 void TextEntryBox::moveLeft() {
-	if(!sequenceSelected() && m_selectionBegin > 0) {
+	if(keyPressed(Key::LCTRL)){
+		size_t before = m_selectionBegin;
+		m_selectionBegin = posAtPreviousWord();
+		size_t after = m_selectionBegin;
+		m_selectionEnd = m_selectionBegin;
+	}
+	else if(!sequenceSelected() && m_selectionBegin > 0) {
 		--m_selectionBegin;
 		m_selectionEnd = m_selectionBegin;
 	}
@@ -382,7 +403,11 @@ void TextEntryBox::moveLeft() {
 }
 
 void TextEntryBox::moveRight() {
-	if(!sequenceSelected() && m_selectionBegin < m_text.getString().getSize()) {
+	if(keyPressed(Key::LCTRL)){
+		m_selectionBegin = posAtNextWord();
+		m_selectionEnd = m_selectionBegin;
+	}
+	else if(!sequenceSelected() && m_selectionBegin < m_text.getString().getSize()) {
 		++m_selectionBegin;
 		m_selectionEnd = m_selectionBegin;
 	}
@@ -390,6 +415,48 @@ void TextEntryBox::moveRight() {
 		m_selectionBegin = m_selectionEnd;
 	}
 	m_selectionDirection = 0;
+}
+
+size_t TextEntryBox::posAtPreviousWord() {
+	size_t pos{m_selectionBegin};
+	if(pos == 0){
+		return pos;
+	}
+
+	std::string s{m_text.getString()};
+	std::string previousChar{s.substr(pos-1, 1)};
+	if(previousChar == " "){
+		while(pos > 0 && s.substr(pos-1, 1) == " "){
+			--pos;
+		}
+	}
+
+	while(pos > 0 && s.substr(pos-1, 1) != " "){
+		--pos;
+	}
+
+	return pos;
+}
+
+size_t TextEntryBox::posAtNextWord() {
+	size_t pos{m_selectionEnd};
+	std::string s{m_text.getString()};
+	if(pos == s.length()){
+		return pos;
+	}
+
+	std::string previousChar{s.substr(pos, 1)};
+	if(previousChar == " "){
+		while(pos < s.length() && s.substr(pos, 1) == " "){
+			++pos;
+		}
+	}
+
+	while(pos < s.length() && s.substr(pos, 1) != " "){
+		++pos;
+	}
+
+	return pos;
 }
 
 bool TextEntryBox::sequenceSelected() const {
@@ -419,6 +486,11 @@ void TextEntryBox::deleteSelection() {
 	m_text.setString(newString);
 }
 
+const std::string TextEntryBox::getSelection() const {
+    std::string s{m_text.getString()};
+    return s.substr(m_selectionBegin, m_selectionEnd);
+}
+
 bool TextEntryBox::validInsertion(sf::Uint32 _unicode) {
 	//Anything between 32 and 255
 	//represents the rest of the
@@ -439,8 +511,14 @@ void TextEntryBox::insert(std::string& _str) {
 	std::string newString{m_text.getString()};
 	newString.insert(m_selectionBegin,
 					 _str);
+
+    if(newString.length() > m_maxChars){
+        newString = newString.substr(0, m_maxChars);
+    }
+
 	m_text.setString(newString);
 
+	m_selectionEnd = m_selectionBegin + _str.length();
 	m_selectionBegin = m_selectionEnd;
 	m_selectionDirection = 0;
 }
@@ -450,10 +528,13 @@ void TextEntryBox::insert(char _char) {
 	newString.insert(m_selectionBegin,
 					 1,
 					 _char);
-	m_text.setString(newString);
 
-	m_selectionBegin = m_selectionEnd;
-	m_selectionDirection = 0;
+	if(newString.length() > m_maxChars){
+        newString = newString.substr(0, m_maxChars);
+    }
+
+	m_text.setString(newString);
+	moveRight();
 }
 
 void TextEntryBox::clearText() {

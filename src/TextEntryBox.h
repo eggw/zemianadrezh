@@ -46,9 +46,13 @@ class TextEntryBox : public sf::Drawable {
         void selectLeft();
         void selectRight();
 
+        size_t posAtPreviousWord();
+        size_t posAtNextWord();
+
         bool sequenceSelected() const;
 
         void deleteSelection();
+        const std::string getSelection() const;
 
         bool validInsertion(sf::Uint32 _unicode);
         void insert(std::string& _str);
