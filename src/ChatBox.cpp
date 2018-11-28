@@ -64,7 +64,15 @@ void ChatBox::appendMessage(const std::string _message,
 	}
 
 	newText.setString(finalStr);
-	newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
+	if(_sender == "Server"){
+        newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
+	}
+	else if (_sender == "LocalPlayer") {
+        newText.setFillColor(sf::Color::Cyan, 1, _sender.length() + 1);
+	}
+	else {
+        newText.setFillColor(sf::Color::Magenta, 1, _sender.length() + 1);
+	}
 
 	Message newMessage{newText};
 
@@ -72,6 +80,9 @@ void ChatBox::appendMessage(const std::string _message,
 		adjustMessage(newMessage);
 	}
 
+	////////////////////////////////////////////////////////
+	//TODO: look into this when host/client are playing
+	////////////////////////////////////////////////////////
 	bool snap{false};
 	if(viewAtLowest()){
         snap = true;
@@ -84,6 +95,7 @@ void ChatBox::appendMessage(const std::string _message,
 	if(snap){
         snapToBottom();
 	}
+	////////////////////////////////////////////////////////
 }
 
 void ChatBox::getInput(sf::Event& _event) {
