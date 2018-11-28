@@ -355,6 +355,8 @@ public:
     ////////////////////////////////////////////////////////////
     FloatRect getGlobalBounds() const;
 
+    sf::Vector2f getPositionOfCharacter(size_t _index) const;
+
 private:
 
     ////////////////////////////////////////////////////////////
@@ -393,7 +395,13 @@ private:
     //Instead of m_fillColor, we have a map that
     //specifies a color for every position in the
     //m_string.
+
+    //m_vertexIndeces is a map that has the position
+    //of a character in the string as its first element,
+    //and the index of the first of 6 vertices used to draw
+    //it in m_vertices.
     mutable std::map<int,Color> m_fillColors;
+    mutable std::map<int,int>   m_vertexIndeces;
 
     //Note that I replaced m_fillColor with m_styleFillColor,
     //which defaults to white and can be changed with

@@ -30,7 +30,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <cmath>
 
-
 namespace
 {
     // Add an underline or strikethrough line to the vertex array
@@ -96,7 +95,8 @@ m_vertices          (Triangles),
 m_outlineVertices   (Triangles),
 m_bounds            (),
 m_geometryNeedUpdate(false),
-m_fillColors()
+m_fillColors(),
+m_vertexIndeces()
 {
 
 }
@@ -115,7 +115,8 @@ m_vertices          (Triangles),
 m_outlineVertices   (Triangles),
 m_bounds            (),
 m_geometryNeedUpdate(true),
-m_fillColors()
+m_fillColors(),
+m_vertexIndeces()
 {
 }
 
@@ -200,22 +201,16 @@ void MulticolourText::setFillColor(const Color& color, size_t _startPos, size_t 
         }
     }
 
-    m_geometryNeedUpdate = true;
-
-    /*
-    if (color != m_fillColor)
+    // Change vertex colors directly, no need to update whole geometry
+    // (if geometry is updated anyway, we can skip this step)
+    if(!m_geometryNeedUpdate)
     {
-        m_fillColor = color;
+        int verticesBegin{m_vertexIndeces.at(_startPos)};
+        int verticesEnd{m_vertexIndeces.at(_endPos)};
 
-        // Change vertex colors directly, no need to update whole geometry
-        // (if geometry is updated anyway, we can skip this step)
-        if (!m_geometryNeedUpdate)
-        {
-            for (std::size_t i = 0; i < m_vertices.getVertexCount(); ++i)
-                m_vertices[i].color = m_fillColor;
-        }
+        for (std::size_t i = verticesBegin; i < verticesEnd; ++i)
+            m_vertices[i].color = color;
     }
-    */
 }
 
 void MulticolourText::setTransparency(int _alpha)
@@ -372,7 +367,6 @@ FloatRect MulticolourText::getGlobalBounds() const
     return getTransform().transformRect(getLocalBounds());
 }
 
-
 ////////////////////////////////////////////////////////////
 void MulticolourText::draw(RenderTarget& target, RenderStates states) const
 {
@@ -403,6 +397,7 @@ void MulticolourText::ensureGeometryUpdate() const
     m_geometryNeedUpdate = false;
 
     // Clear the previous geometry
+    m_vertexIndeces.clear();
     m_vertices.clear();
     m_outlineVertices.clear();
     m_bounds = FloatRect();
@@ -517,6 +512,7 @@ void MulticolourText::ensureGeometryUpdate() const
 
         // Add the glyph to the vertices
         addGlyphQuad(m_vertices, Vector2f(x, y), curColor, glyph, italic);
+        m_vertexIndeces.insert(std::make_pair(i,m_vertices.getVertexCount() - 6));
 
         // Update the current bounds with the non outlined glyph bounds
         if (m_outlineThickness == 0)
