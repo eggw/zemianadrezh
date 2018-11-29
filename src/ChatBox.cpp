@@ -83,6 +83,7 @@ void ChatBox::getInput(sf::Event& _event) {
 	case sf::Event::KeyPressed: {
 			if(_event.key.code == Key::CHAT_SEND) {
 				m_clock.restart();
+				setTransparency(255);
 			}
 
 			else if(_event.key.code == Key::CHAT_UP) {
@@ -121,9 +122,11 @@ void ChatBox::getInput(sf::Event& _event) {
 void ChatBox::update() {
 	m_textEntry.update();
 	if(m_textEntry.inputComplete()) {
-		//appendMessage(m_textEntry.getLastString(), m_name);
 		m_lastMessage = std::make_pair( m_textEntry.getLastString(),
 										m_name);
+	}
+	if (m_textEntry.enteringText()) {
+		m_clock.restart();
 	}
 	updateShadedRectangleTransparency();
 	updateMessageTransparency();
@@ -193,7 +196,7 @@ void ChatBox::updateShadedRectangleTransparency() {
 	static int rectangleAlphaValue{0};
 
 	if(m_textEntry.enteringText()) {
-		rectangleAlphaValue = 50;
+		rectangleAlphaValue = 25;
 	}
 	else {
 		if(rectangleAlphaValue > 0) {
@@ -214,6 +217,9 @@ void ChatBox::updateMessageTransparency() {
 
         setTransparency(textAlphaValue);
     }
+	else {
+		textAlphaValue = 255;
+	}
 }
 
 

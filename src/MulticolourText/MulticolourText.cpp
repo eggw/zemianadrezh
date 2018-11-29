@@ -115,6 +115,10 @@ m_vertexIndeces()
 
 
 ////////////////////////////////////////////////////////////
+//When the string is changed, we're going to have to clear 
+//all colour/thickness data, because the positions will no
+//longer be accurate. They must be re-set if needed.
+////////////////////////////////////////////////////////////
 void MulticolourText::setString(const String& string)
 {
     if (m_string != string)
@@ -218,7 +222,8 @@ void MulticolourText::setStyleOutlineColor(const Color& color) {
 ////////////////////////////////////////////////////////////
 void MulticolourText::setOutlineColor(const Color& color, size_t _startPos, size_t _endPos)
 {
-    if(_endPos == 0){
+    if(_endPos == 0)
+	{
         _endPos = m_string.getSize() - 1;
     }
 
@@ -236,7 +241,6 @@ void MulticolourText::setOutlineColor(const Color& color, size_t _startPos, size
 
     //Since m_vertexIndeces only caches the positions of letters and the indeces of the first
     //vertex used to draw them, and doesn't account for outlines, we'll have to update the geometry
-
     m_geometryNeedUpdate = true;
 }
 
@@ -259,9 +263,6 @@ void MulticolourText::setOutlineThickness(float thickness, size_t _startPos, siz
             m_outlineThicknesses.insert(std::make_pair(i, thickness));
         }
     }
-
-    //Since m_vertexIndeces only caches the positions of letters and the indeces of the first
-    //vertex used to draw them, and doesn't account for outlines, we'll have to update the geometry
 
     m_geometryNeedUpdate = true;
 }

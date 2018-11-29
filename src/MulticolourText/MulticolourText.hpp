@@ -1,15 +1,16 @@
 #pragma once
 
-/*
-TODO: add more comments
-*/
-
 ////////////////////////////////////////////////////////////
 //This is a custom version of sf::Text, modified so that
 //instead of having 1 set fill colour, every character in
 //a string can have its own colour set, along with some
 //other changes.
 //
+//Additionally, outline colours and thicknesses can be defined
+//for individual characters in the same way. 
+//
+//There are more detailed comments regarding my modifications
+//near the end of the file.
 //https://github.com/eggw/zemianadrezh
 ////////////////////////////////////////////////////////////
 
@@ -380,25 +381,29 @@ private:
     mutable FloatRect   m_bounds;             ///< Bounding rectangle of the text (in local coordinates)
     mutable bool        m_geometryNeedUpdate; ///< Does the geometry need to be recomputed?
 
-    //Instead of m_fillColor, we have a map that
-    //specifies a color for every position in the
-    //m_string.
-    //The same idea applies to m_outlineColor.
+    //Instead of m_fillColor, we have a map, m_fillColors, 
+	//that specifies a color for every position in the
+    //m_string. Same concept for m_outlineColors and
+	//m_outlineThicknesses
+
+	//Note that I replaced m_fillColor with m_styleFillColor,
+	//which defaults to white and can be changed with
+	//setStyleFillColor(). Same concept for m_outlineColor
+	//->m_styleOutlineColor and m_outlineThickness->
+	//m_styleOutlineThickness.
 
     //m_vertexIndeces is a map that has the position
     //of a character in the string as its first element,
     //and the index of the first of 6 vertices used to draw
     //it in m_vertices.
+
     mutable std::map<int,Color> m_fillColors;
     mutable std::map<int,Color> m_outlineColors;
     mutable std::map<int,int>   m_outlineThicknesses;
     mutable std::map<int,int>   m_vertexIndeces;
 
-    //Note that I replaced m_fillColor with m_styleFillColor,
-    //which defaults to white and can be changed with
-    //setStyleFillColor().
-
-    //I also added setTransparency().
+    //I also added setTransparency() and removed the deprecated
+	//setColor().
 };
 
 } // namespace sf
