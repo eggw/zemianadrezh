@@ -4,6 +4,7 @@
 #include <time.h>
 
 #include <map>
+#include <string>
 #include <iostream>
 
 #include "PacketTypes.h"

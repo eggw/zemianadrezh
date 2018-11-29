@@ -10,7 +10,7 @@
 //ChatBox and m_textEntry combined.
 //////////////////////////////////////////////////////////////////////////////////////////////
 const sf::FloatRect VIEWPORT{
-	0, 0.75, 0.3, 0.25
+	0, 0.75f, 0.3f, 0.25f
 };
 constexpr float         SECONDS_UNTIL_MESSAGES_FADE {5.0f};
 constexpr unsigned int  CHARACTER_SIZE       {20};

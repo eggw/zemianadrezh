@@ -46,7 +46,7 @@ TextEntryBox::TextEntryBox(unsigned int _charSize,
 
 	m_text.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_caret.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
-	m_caret.setColor(sf::Color(230,230,230));
+	m_caret.setFillColor(sf::Color(230,230,230));
 	m_caret.setString("|");
 }
 
@@ -285,9 +285,9 @@ void TextEntryBox::updateCaret() {
 			}
 		}
 
-		sf::Color caretColor = m_caret.getColor();
+		sf::Color caretColor = m_caret.getFillColor();
 		caretColor.a = caretAlphaValue;
-		m_caret.setColor(caretColor);
+		m_caret.setFillColor(caretColor);
 
 		//float caret_x{m_text.getGlobalBounds().width};
 		//float caret_x{float(m_currentStringIndexPosition * m_charSize)};

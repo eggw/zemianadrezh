@@ -67,12 +67,12 @@ void ProgramState_Menu::update() {
 		if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
 			std::get<0>(menuItem) = true;
 			std::get<2>(menuItem).setFillColor(sf::Color::Yellow);
-			std::get<2>(menuItem).setScale({1.2, 1.2});
+			std::get<2>(menuItem).setScale({1.2f, 1.2f});
 		}
 		else {
 			std::get<0>(menuItem) = false;
 			std::get<2>(menuItem).setFillColor(sf::Color::White);
-			std::get<2>(menuItem).setScale({1.0, 1.0});
+			std::get<2>(menuItem).setScale({1.0f, 1.0f});
 		}
 	}
 }
