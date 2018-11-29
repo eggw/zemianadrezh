@@ -66,17 +66,6 @@ namespace
         vertices.append(sf::Vertex(sf::Vector2f(position.x + right - italic * top    - outlineThickness, position.y + top    - outlineThickness), color, sf::Vector2f(u2, v1)));
         vertices.append(sf::Vertex(sf::Vector2f(position.x + right - italic * bottom - outlineThickness, position.y + bottom - outlineThickness), color, sf::Vector2f(u2, v2)));
     }
-
-        void removeNewlines(std::string& _str)
-        {
-            std::string newline{"\n"};
-            auto i = _str.find(newline);
-            while(i != std::string::npos)
-            {
-                _str.erase(i, newline.length());
-                i = _str.find(newline, i);
-            }
-        }
 }
 
 
@@ -90,13 +79,14 @@ m_characterSize     (30),
 m_style             (Regular),
 m_styleFillColor    (255, 255, 255),
 m_styleOutlineColor (0,0,0),
-m_outlineThickness  (0),
+m_styleOutlineThickness  (0),
 m_vertices          (Triangles),
 m_outlineVertices   (Triangles),
 m_bounds            (),
 m_geometryNeedUpdate(false),
 m_fillColors(),
 m_outlineColors(),
+m_outlineThicknesses(),
 m_vertexIndeces()
 {
 
@@ -111,13 +101,14 @@ m_characterSize     (characterSize),
 m_style             (Regular),
 m_styleFillColor    (255, 255, 255),
 m_styleOutlineColor (0,0,0),
-m_outlineThickness  (0),
+m_styleOutlineThickness  (0),
 m_vertices          (Triangles),
 m_outlineVertices   (Triangles),
 m_bounds            (),
 m_geometryNeedUpdate(true),
 m_fillColors(),
 m_outlineColors(),
+m_outlineThicknesses(),
 m_vertexIndeces()
 {
 }
@@ -128,17 +119,9 @@ void MulticolourText::setString(const String& string)
 {
     if (m_string != string)
     {
-        //As long as only newlines were added/removed, we won't
-        //have to reset our color range settings.
-        std::string oldStr = m_string;
-        std::string newStr = string;
-        removeNewlines(oldStr);
-        removeNewlines(newStr);
-        if(oldStr != newStr){
-            m_fillColors.clear();
-            m_outlineColors.clear();
-        }
-
+        m_fillColors.clear();
+        m_outlineColors.clear();
+        m_outlineThicknesses.clear();
         m_string = string;
         m_geometryNeedUpdate = true;
     }
@@ -259,13 +242,28 @@ void MulticolourText::setOutlineColor(const Color& color, size_t _startPos, size
 
 
 ////////////////////////////////////////////////////////////
-void MulticolourText::setOutlineThickness(float thickness)
+void MulticolourText::setOutlineThickness(float thickness, size_t _startPos, size_t _endPos)
 {
-    if (thickness != m_outlineThickness)
-    {
-        m_outlineThickness = thickness;
-        m_geometryNeedUpdate = true;
+    if(_endPos == 0){
+        _endPos = m_string.getSize() - 1;
     }
+
+    for (std::size_t i = _startPos; i <= _endPos; ++i)
+    {
+        if(m_outlineThicknesses.count(i))
+        {
+            m_outlineThicknesses[i] = thickness;
+        }
+        else
+        {
+            m_outlineThicknesses.insert(std::make_pair(i, thickness));
+        }
+    }
+
+    //Since m_vertexIndeces only caches the positions of letters and the indeces of the first
+    //vertex used to draw them, and doesn't account for outlines, we'll have to update the geometry
+
+    m_geometryNeedUpdate = true;
 }
 
 
@@ -297,10 +295,10 @@ Uint32 MulticolourText::getStyle() const
 }
 
 ////////////////////////////////////////////////////////////
-const Color& MulticolourText::getFillColor(size_t _index) const
+const Color MulticolourText::getFillColor(size_t _index) const
 {
-    if(m_fillColors.empty()){
-        return Color(255,255,255);
+    if(m_fillColors.empty() || (!m_fillColors.count(_index))){
+        return {255,255,255};
     }
 
     return m_fillColors[_index];
@@ -308,10 +306,10 @@ const Color& MulticolourText::getFillColor(size_t _index) const
 
 
 ////////////////////////////////////////////////////////////
-const Color& MulticolourText::getOutlineColor(size_t _index) const
+const Color MulticolourText::getOutlineColor(size_t _index) const
 {
-    if(m_outlineColors.empty()){
-        return Color(0,0,0);
+    if(m_outlineColors.empty() || (!m_outlineColors.count(_index))){
+        return {0,0,0};
     }
 
     return m_outlineColors[_index];
@@ -319,9 +317,19 @@ const Color& MulticolourText::getOutlineColor(size_t _index) const
 
 
 ////////////////////////////////////////////////////////////
-float MulticolourText::getOutlineThickness() const
+float MulticolourText::getOutlineThickness(size_t _index) const
 {
-    return m_outlineThickness;
+    if(m_outlineThicknesses.empty() || (!m_outlineThicknesses.count(_index))){
+        return 0;
+    }
+
+    return m_outlineThicknesses[_index];
+}
+
+////////////////////////////////////////////////////////////
+float MulticolourText::getStyleOutlineThickness() const
+{
+    return m_styleOutlineThickness;
 }
 
 
@@ -397,8 +405,10 @@ void MulticolourText::draw(RenderTarget& target, RenderStates states) const
         states.texture = &m_font->getTexture(m_characterSize);
 
         // Only draw the outline if there is something to draw
-        if (m_outlineThickness != 0)
+        if(!m_outlineThicknesses.empty())
+        {
             target.draw(m_outlineVertices, states);
+        }
 
         target.draw(m_vertices, states);
     }
@@ -463,8 +473,14 @@ void MulticolourText::ensureGeometryUpdate() const
             m_outlineColors.insert(std::make_pair(i,Color(0,0,0)));
         }
 
+        if(!m_outlineThicknesses.count(i))
+        {
+            m_outlineThicknesses.insert(std::make_pair(i,0));
+        }
+
         Color curFillColor = m_fillColors[i];
         Color curOutlineColor = m_outlineColors[i];
+        float curOutlineThickness = m_outlineThicknesses[i];
         Uint32 curChar = m_string[i];
 
         // Apply the kerning offset
@@ -476,8 +492,8 @@ void MulticolourText::ensureGeometryUpdate() const
         {
             addLine(m_vertices, x, y, m_styleFillColor, underlineOffset, underlineThickness);
 
-            if (m_outlineThickness != 0)
-                addLine(m_outlineVertices, x, y, curOutlineColor, underlineOffset, underlineThickness, m_outlineThickness);
+            if (curOutlineThickness != 0)
+                addLine(m_outlineVertices, x, y, curOutlineColor, underlineOffset, underlineThickness, curOutlineThickness);
         }
 
         // If we're using the strike through style and there's a new line, draw a line across all characters
@@ -485,8 +501,8 @@ void MulticolourText::ensureGeometryUpdate() const
         {
             addLine(m_vertices, x, y, m_styleFillColor, strikeThroughOffset, underlineThickness);
 
-            if (m_outlineThickness != 0)
-                addLine(m_outlineVertices, x, y, curOutlineColor, strikeThroughOffset, underlineThickness, m_outlineThickness);
+            if (curOutlineThickness != 0)
+                addLine(m_outlineVertices, x, y, curOutlineColor, strikeThroughOffset, underlineThickness, curOutlineThickness);
         }
 
         // Handle special characters
@@ -513,9 +529,9 @@ void MulticolourText::ensureGeometryUpdate() const
 
 
         // Apply the outline
-        if (m_outlineThickness != 0)
+        if (curOutlineThickness != 0)
         {
-            const Glyph& glyph = m_font->getGlyph(curChar, m_characterSize, bold, m_outlineThickness);
+            const Glyph& glyph = m_font->getGlyph(curChar, m_characterSize, bold, curOutlineThickness);
 
             float left   = glyph.bounds.left;
             float top    = glyph.bounds.top;
@@ -523,13 +539,13 @@ void MulticolourText::ensureGeometryUpdate() const
             float bottom = glyph.bounds.top  + glyph.bounds.height;
 
             // Add the outline glyph to the vertices
-            addGlyphQuad(m_outlineVertices, Vector2f(x, y), curOutlineColor, glyph, italic, m_outlineThickness);
+            addGlyphQuad(m_outlineVertices, Vector2f(x, y), curOutlineColor, glyph, italic, curOutlineThickness);
 
             // Update the current bounds with the outlined glyph bounds
-            minX = std::min(minX, x + left   - italic * bottom - m_outlineThickness);
-            maxX = std::max(maxX, x + right  - italic * top    - m_outlineThickness);
-            minY = std::min(minY, y + top    - m_outlineThickness);
-            maxY = std::max(maxY, y + bottom - m_outlineThickness);
+            minX = std::min(minX, x + left   - italic * bottom - curOutlineThickness);
+            maxX = std::max(maxX, x + right  - italic * top    - curOutlineThickness);
+            minY = std::min(minY, y + top    - curOutlineThickness);
+            maxY = std::max(maxY, y + bottom - curOutlineThickness);
         }
 
         // Extract the current glyph's description
@@ -540,7 +556,7 @@ void MulticolourText::ensureGeometryUpdate() const
         m_vertexIndeces.insert(std::make_pair(i,m_vertices.getVertexCount() - 6));
 
         // Update the current bounds with the non outlined glyph bounds
-        if (m_outlineThickness == 0)
+        if (curOutlineThickness == 0)
         {
             float left   = glyph.bounds.left;
             float top    = glyph.bounds.top;
@@ -562,8 +578,8 @@ void MulticolourText::ensureGeometryUpdate() const
     {
         addLine(m_vertices, x, y, m_styleFillColor, underlineOffset, underlineThickness);
 
-        if (m_outlineThickness != 0)
-            addLine(m_outlineVertices, x, y, m_styleOutlineColor, underlineOffset, underlineThickness, m_outlineThickness);
+        if (m_styleOutlineThickness != 0)
+            addLine(m_outlineVertices, x, y, m_styleOutlineColor, underlineOffset, underlineThickness, m_styleOutlineThickness);
     }
 
     // If we're using the strike through style, add the last line across all characters
@@ -571,8 +587,8 @@ void MulticolourText::ensureGeometryUpdate() const
     {
         addLine(m_vertices, x, y, m_styleFillColor, strikeThroughOffset, underlineThickness);
 
-        if (m_outlineThickness != 0)
-            addLine(m_outlineVertices, x, y, m_styleOutlineColor, strikeThroughOffset, underlineThickness, m_outlineThickness);
+        if (m_styleOutlineThickness != 0)
+            addLine(m_outlineVertices, x, y, m_styleOutlineColor, strikeThroughOffset, underlineThickness, m_styleOutlineThickness);
     }
 
     // Update the bounding rectangle

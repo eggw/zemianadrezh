@@ -5,7 +5,7 @@
 #include "MulticolourText/MulticolourText.hpp"
 
 #include "TextEntryBox.h"
-
+#include "ChatBoxMessage.h"
 
 
 class ChatBox : public sf::Drawable {
@@ -21,21 +21,11 @@ class ChatBox : public sf::Drawable {
 
 		bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
 	private:
-		struct Message {
-			Message(sf::MulticolourText& _text, unsigned int _numberOfLines = 1)
-				:text{_text},
-				 numberOfLines{_numberOfLines} {
-			}
-
-			sf::MulticolourText text;
-			unsigned int numberOfLines;
-		};
-
 		//Message-related
 		/////////////////////////////////////////
-		const bool messageTooWide(Message& _message) const;
-		const bool messageTooNarrow(Message& _message) const;
-		void adjustMessage(Message& _message);
+		const bool messageTooWide(ChatBoxMessage& _message) const;
+		const bool messageTooNarrow(ChatBoxMessage& _message) const;
+		void adjustMessage(ChatBoxMessage& _message);
 		void positionMessage(int _index);
 		void setTransparency(int _a);
 		bool messagesTransparent() const;
@@ -64,7 +54,7 @@ class ChatBox : public sf::Drawable {
 
 		sf::RectangleShape m_shadedRectangle;
 
-		std::vector<Message> m_messages;
+		std::vector<ChatBoxMessage> m_messages;
 		std::pair<std::string, std::string> m_lastMessage;
 
 		TextEntryBox m_textEntry;

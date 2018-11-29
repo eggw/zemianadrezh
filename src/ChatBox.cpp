@@ -55,35 +55,47 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 
 void ChatBox::appendMessage(const std::string _message,
 							const std::string _sender) {
-	sf::MulticolourText newText;
-	newText.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
-	newText.setCharacterSize(CHARACTER_SIZE);
 
+<<<<<<< HEAD
+	ChatBoxMessage newMessage{	_sender,
+								_message,
+								FontManager::get_instance().getFont(FontManager::Type::ANDY),
+								CHARACTER_SIZE};
+=======
 	std::string finalStr{_message};
 	if(_sender != "") {
 		finalStr = ("<" + _sender + "> " + finalStr);
 	}
 
 	newText.setString(finalStr);
-	newText.setOutlineThickness(1);
-
-	if(_sender == "Server") {
-		newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
+	if(_sender == "Server"){
+        newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
 	}
-	else if(_sender == "LocalPlayer") {
-		newText.setFillColor(sf::Color::Cyan, 1, _sender.length() + 1);
+	else if (_sender == "LocalPlayer") {
+        newText.setFillColor(sf::Color::Cyan, 1, _sender.length() + 1);
 	}
 	else {
-		newText.setFillColor(sf::Color::Magenta, 1, _sender.length() + 1);
+        newText.setFillColor(sf::Color::Magenta, 1, _sender.length() + 1);
 	}
 
 	Message newMessage{newText};
+>>>>>>> 70023cffebabe06c5b4e00302fb2d99ee1d77153
 
 	if(messageTooWide(newMessage)) {
 		adjustMessage(newMessage);
 	}
 
+<<<<<<< HEAD
 
+=======
+	////////////////////////////////////////////////////////
+	//TODO: look into this when host/client are playing
+	////////////////////////////////////////////////////////
+	bool snap{false};
+	if(viewAtLowest()){
+        snap = true;
+	}
+>>>>>>> 70023cffebabe06c5b4e00302fb2d99ee1d77153
 
 	m_messages.push_back(newMessage);
 	positionMessage(m_messages.size() - 1);
@@ -92,6 +104,7 @@ void ChatBox::appendMessage(const std::string _message,
 	if(m_anchoredToBottom){
         snapToBottom();
 	}
+	////////////////////////////////////////////////////////
 }
 
 void ChatBox::getInput(sf::Event& _event) {
@@ -164,7 +177,7 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.setView(m_view);
 	if(!messagesTransparent()) {
 		for(auto& message : m_messages) {
-			target.draw(message.text, states);
+			target.draw(message.m_text, states);
 		}
 	}
 
@@ -186,18 +199,18 @@ bool ChatBox::completedMessage(std::pair<std::string, std::string>* _ptr) {
 	return true;
 }
 
-const bool ChatBox::messageTooWide(Message& _message) const {
-	return _message.text.getGlobalBounds().width >= m_view.getSize().x * 0.9;
+const bool ChatBox::messageTooWide(ChatBoxMessage& _message) const {
+	return _message.m_text.getGlobalBounds().width >= m_view.getSize().x * 0.9;
 }
 
-const bool ChatBox::messageTooNarrow(Message& _message) const {
+const bool ChatBox::messageTooNarrow(ChatBoxMessage& _message) const {
 	bool containsNewline{false};
-	auto i = _message.text.getString().find("\n");
+	auto i = _message.m_text.getString().find("\n");
 	if(i != std::string::npos) {
 		containsNewline = true;
 	}
 
-	return (_message.text.getGlobalBounds().width < m_view.getSize().x * 0.9)
+	return (_message.m_text.getGlobalBounds().width < m_view.getSize().x * 0.9)
 		   &&
 		   containsNewline;
 }
@@ -211,7 +224,7 @@ void removeNewlines(std::string& _str) {
 	}
 }
 
-void ChatBox::adjustMessage(Message& _message) {
+void ChatBox::adjustMessage(ChatBoxMessage& _message) {
 	if(!messageTooWide(_message) && !messageTooNarrow(_message)){
 		return;
 	}
@@ -219,12 +232,12 @@ void ChatBox::adjustMessage(Message& _message) {
 	//Before we recalculate everything, we'll remove
 	//all newline characters currently present and
 	//set the message's numberOfLines to 1
-	std::string textStr = _message.text.getString();
+	std::string textStr = _message.m_text.getString();
 	removeNewlines(textStr);
-	_message.text.setString(textStr);
-	_message.numberOfLines = 1;
+	_message.m_text.setString(textStr);
+	_message.m_numberOfLines = 1;
 
-	float charSize = _message.text.getGlobalBounds().width / textStr.size();
+	float charSize = _message.m_text.getGlobalBounds().width / textStr.size();
 	auto widthLimit = m_view.getSize().x * 0.9;
 
 	float currentWidth{0};
@@ -236,42 +249,40 @@ void ChatBox::adjustMessage(Message& _message) {
 		//too wide
 		if(currentWidth >= widthLimit) {
 			textStr.insert(i, 1, '\n');
-			_message.numberOfLines++;
+			_message.m_numberOfLines++;
 			currentWidth = 0;
 		}
 
 		//If we have a space as the first character
 		//on a new line, we'll get rid of it
-		/*
+
 		else if(currentWidth == charSize) {
 			if(isspace(textStr.at(i))) {
 				textStr.erase(i, 1);
 			}
 		}
 
-		... or not. A bit funky with MultiColorText::setString()
-		*/
 	}
 
-	_message.text.setString(textStr);
+	_message.m_text.setString(textStr);
 }
 
 //This function sets the position of a new message, at the
 //very bottom of the box
 void ChatBox::positionMessage(int _index) {
 	if(!m_messages.empty() && _index > 0) {
-		Message& message = m_messages[_index];
-		sf::Vector2f newPosition{m_messages[_index-1].text.getPosition()};
-		unsigned int lastMessageLines{m_messages[_index-1].numberOfLines};
+		ChatBoxMessage& message = m_messages[_index];
+		sf::Vector2f newPosition{m_messages[_index-1].m_text.getPosition()};
+		unsigned int lastMessageLines{m_messages[_index-1].m_numberOfLines};
 		newPosition.y += lastMessageLines * (LINESPACING);
-		message.text.setPosition(newPosition);
+		message.m_text.setPosition(newPosition);
 	}
 }
 
 
 void ChatBox::setTransparency(int _a) {
 	for(auto& message : m_messages) {
-		message.text.setTransparency(_a);
+		message.m_text.setTransparency(_a);
 	}
 }
 
@@ -281,7 +292,7 @@ bool ChatBox::messagesTransparent() const {
 	//it's enough for us to get the alpha value of the first
 	//element
 	if(!m_messages.empty()) {
-		return m_messages.front().text.getFillColor(0).a == 0;
+		return m_messages.front().m_text.getFillColor(0).a == 0;
 	}
 }
 
@@ -364,7 +375,7 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 	m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
 	for(int i{0}; i < m_messages.size(); i++) {
-		Message& message = m_messages[i];
+		ChatBoxMessage& message = m_messages[i];
 		adjustMessage(message);
 		positionMessage(i);
 	}
@@ -377,11 +388,11 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 //on top.
 void ChatBox::snapToTop() {
 	if(!m_messages.empty()) {
-		Message& latestMessage = m_messages.back();
+		ChatBoxMessage& latestMessage = m_messages.back();
 
-		float lastLineYPosition{latestMessage.text.getPosition().y
+		float lastLineYPosition{latestMessage.m_text.getPosition().y
 								+
-								(latestMessage.numberOfLines - 1) * LINESPACING};
+								(latestMessage.m_numberOfLines - 1) * LINESPACING};
 
 		float boundary{m_view.getSize().y - Y_BUFFERSPACE};
 
@@ -389,8 +400,8 @@ void ChatBox::snapToTop() {
 			return;
 		}
 
-		Message& earliestMessage = m_messages.front();
-		sf::Vector2f newCenter {m_view.getCenter().x, earliestMessage.text.getPosition().y};
+		ChatBoxMessage& earliestMessage = m_messages.front();
+		sf::Vector2f newCenter {m_view.getCenter().x, earliestMessage.m_text.getPosition().y};
 
 		newCenter.y += (m_view.getSize().y / 2);
 
@@ -404,10 +415,10 @@ void ChatBox::snapToBottom() {
 	m_anchoredToBottom = true;
 
 	if(!m_messages.empty()) {
-		Message& latestMessage = m_messages.back();
-		float lastLineYPosition{latestMessage.text.getPosition().y
+		ChatBoxMessage& latestMessage = m_messages.back();
+		float lastLineYPosition{latestMessage.m_text.getPosition().y
 								+
-								(latestMessage.numberOfLines - 1) * LINESPACING};
+								(latestMessage.m_numberOfLines - 1) * LINESPACING};
 
 		float boundary{m_view.getSize().y - Y_BUFFERSPACE};
 
@@ -430,7 +441,7 @@ float ChatBox::getLowerViewBound() const {
     if(m_messages.empty()){
         return 0;
     }
-	float lowestPoint{m_messages.back().text.getPosition().y};
+	float lowestPoint{m_messages.back().m_text.getPosition().y};
 	lowestPoint += Y_BUFFERSPACE;
 	return lowestPoint;
 }

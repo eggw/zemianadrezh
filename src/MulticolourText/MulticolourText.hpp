@@ -1,5 +1,9 @@
 #pragma once
 
+/*
+TODO: add more comments
+*/
+
 ////////////////////////////////////////////////////////////
 //This is a custom version of sf::Text, modified so that
 //instead of having 1 set fill colour, every character in
@@ -208,7 +212,7 @@ public:
     /// \see getOutlineThickness
     ///
     ////////////////////////////////////////////////////////////
-    void setOutlineThickness(float thickness);
+    void setOutlineThickness(float thickness, size_t _startPos = 0, size_t _endPos = 0);
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the text's string
@@ -271,7 +275,7 @@ public:
     /// \see setFillColor
     ///
     ////////////////////////////////////////////////////////////
-    const Color& getFillColor(size_t _index) const;
+    const Color getFillColor(size_t _index) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the outline color of the text
@@ -281,7 +285,7 @@ public:
     /// \see setOutlineColor
     ///
     ////////////////////////////////////////////////////////////
-    const Color& getOutlineColor(size_t _index) const;
+    const Color getOutlineColor(size_t _index) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the outline thickness of the text
@@ -291,7 +295,8 @@ public:
     /// \see setOutlineThickness
     ///
     ////////////////////////////////////////////////////////////
-    float getOutlineThickness() const;
+    float getOutlineThickness(size_t _index) const;
+    float getStyleOutlineThickness() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the position of the \a index-th character
@@ -369,7 +374,7 @@ private:
     Uint32              m_style;              ///< Text style (see Style enum)
     Color               m_styleFillColor;     ///< Strikethrough/underline color
     Color               m_styleOutlineColor;  ///< Outline color for strikethroughs/underlines
-    float               m_outlineThickness;   ///< Thickness of the text's outline
+    float               m_styleOutlineThickness;   ///< Thickness of the text's outline
     mutable VertexArray m_vertices;           ///< Vertex array containing the fill geometry
     mutable VertexArray m_outlineVertices;    ///< Vertex array containing the outline geometry
     mutable FloatRect   m_bounds;             ///< Bounding rectangle of the text (in local coordinates)
@@ -386,6 +391,7 @@ private:
     //it in m_vertices.
     mutable std::map<int,Color> m_fillColors;
     mutable std::map<int,Color> m_outlineColors;
+    mutable std::map<int,int>   m_outlineThicknesses;
     mutable std::map<int,int>   m_vertexIndeces;
 
     //Note that I replaced m_fillColor with m_styleFillColor,
