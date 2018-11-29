@@ -99,7 +99,7 @@ void Player::update() {
 		m_animationSheet.setAnimationRange(11, 21);
 	}
 
-	m_animationSheet.setAnimationSpeed(abs(m_velocity.x) * 0.01);
+	m_animationSheet.setAnimationSpeed(abs(m_velocity.x) * 0.01f);
 	m_position = {m_position.x + m_velocity.x, m_position.y};
 	m_animationSheet.update();
 

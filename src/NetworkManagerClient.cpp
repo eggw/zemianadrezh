@@ -147,7 +147,7 @@ void NetworkManagerClient::receivePacket() {
 	}
 }
 
-void NetworkManagerClient::connect(sf::IpAddress _ip, int _port) {
+void NetworkManagerClient::connect(sf::IpAddress _ip, unsigned short _port) {
 	bool successfullyConnected{false};
 
 	m_serverConnection.setBlocking(true);

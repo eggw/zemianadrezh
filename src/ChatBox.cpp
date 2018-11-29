@@ -61,7 +61,7 @@ void ChatBox::appendMessage(const std::string _message,
                                 FontManager::get_instance().getFont(FontManager::Type::ANDY),
                                 CHARACTER_SIZE};
 
-	newMessage.fitWidth(m_view.getSize().x * 0.9);
+	newMessage.fitWidth(m_view.getSize().x * 0.9f);
 
 	m_messages.push_back(newMessage);
 	positionMessage(m_messages.size() - 1);
@@ -190,6 +190,7 @@ bool ChatBox::messagesTransparent() const {
 	if(!m_messages.empty()) {
 		return m_messages.front().getTransparency() == 0;
 	}
+	return true;
 }
 
 void ChatBox::updateShadedRectangleTransparency() {
@@ -204,7 +205,7 @@ void ChatBox::updateShadedRectangleTransparency() {
 		}
 	}
 
-	m_shadedRectangle.setFillColor(sf::Color(0,0,0,rectangleAlphaValue));
+	m_shadedRectangle.setFillColor(sf::Color(0, 0, 0, rectangleAlphaValue));
 }
 
 void ChatBox::updateMessageTransparency() {
@@ -240,7 +241,7 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 	//rectangle pixel by pixel easily, I tried decrementing it by 0.0001% until they no
 	//longer overlap and there is no visible discrepancy. My do...while loop tests showed
 	//that it just needed to be called once to fix this weird visual quirk.
-	newViewportHeight -= 0.0001;
+	newViewportHeight -= 0.0001f;
 
 	sf::FloatRect viewRect({0,
 							0,
@@ -262,9 +263,9 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 
 	m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
-	for(int i{0}; i < m_messages.size(); i++) {
+	for(size_t i{0}; i < m_messages.size(); i++) {
 		ChatBoxMessage& message = m_messages[i];
-		message.fitWidth(m_view.getSize().x * 0.9);
+		message.fitWidth(m_view.getSize().x * 0.9f);
 		positionMessage(i);
 	}
 

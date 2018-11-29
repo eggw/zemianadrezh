@@ -3,8 +3,8 @@
 
 #include "Entity.h"
 
-constexpr float BLOCK_DIMENSIONS_X = 16;
-constexpr float BLOCK_DIMENSIONS_Y = 16;
+constexpr int BLOCK_DIMENSIONS_X = 16;
+constexpr int BLOCK_DIMENSIONS_Y = 16;
 
 class Block : public Entity {
 	public:

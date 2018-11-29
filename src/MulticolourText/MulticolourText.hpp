@@ -399,7 +399,7 @@ private:
 
     mutable std::map<int,Color> m_fillColors;
     mutable std::map<int,Color> m_outlineColors;
-    mutable std::map<int,int>   m_outlineThicknesses;
+    mutable std::map<int,float> m_outlineThicknesses;
     mutable std::map<int,int>   m_vertexIndeces;
 
     //I also added setTransparency() and removed the deprecated

@@ -14,7 +14,7 @@ class Animation {
 		void setAnimationSpeed(float _speed);
 
 		void beginAnimation();
-		void stopAnimation(int _index = 0);
+		void stopAnimation();
 
 		//without arguments, this returns the sprite
 		//corresponding to the textureRect of the current

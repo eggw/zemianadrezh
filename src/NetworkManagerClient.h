@@ -14,7 +14,7 @@ class NetworkManagerClient {
 
 		void sendPacket(Packet::Type _type);
 		void receivePacket();
-		void connect(sf::IpAddress _ip, int _port);
+		void connect(sf::IpAddress _ip, unsigned short _port);
 
 		bool connectionActive() const;
 

@@ -194,7 +194,7 @@ void MulticolourText::setFillColor(const Color& color, size_t _startPos, size_t 
         //vertex, we'll add 6 to get the whole thing
         verticesEnd += 6;
 
-        for (std::size_t i = verticesBegin; i < verticesEnd; ++i)
+        for (int i = verticesBegin; i < verticesEnd; ++i)
             m_vertices[i].color = color;
     }
 
@@ -203,7 +203,7 @@ void MulticolourText::setFillColor(const Color& color, size_t _startPos, size_t 
 void MulticolourText::setTransparency(int _alpha)
 {
     for (std::size_t i = 0; i < m_vertices.getVertexCount(); ++i)
-        m_vertices[i].color.a = _alpha;
+		m_vertices[i].color.a = _alpha;
 
     for (std::size_t i = 0; i < m_outlineVertices.getVertexCount(); ++i)
         m_outlineVertices[i].color.a = _alpha;

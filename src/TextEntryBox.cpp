@@ -71,11 +71,11 @@ void TextEntryBox::initialise(sf::Vector2u _windowSize,
 	m_rectangle.setSize(rectSize);
 
 	float lineSpacing {getHeightAsPixels()};
-	double textHeight{m_text.getPosition().y + lineSpacing};
-	double rectangleHeight{m_rectangle.getGlobalBounds().height * 0.8};
+	float textHeight{m_text.getPosition().y + lineSpacing};
+	float rectangleHeight{m_rectangle.getGlobalBounds().height * 0.8f};
 
 	if(textHeight > rectangleHeight) {
-		double difference{textHeight - rectangleHeight};
+		float difference{textHeight - rectangleHeight};
 		sf::Vector2f newTextPosition{m_text.getPosition()};
 		newTextPosition.y -= difference;
 		m_text.setPosition(newTextPosition);
@@ -388,9 +388,7 @@ void TextEntryBox::selectRight() {
 
 void TextEntryBox::moveLeft() {
 	if(keyPressed(Key::LCTRL)){
-		size_t before = m_selectionBegin;
 		m_selectionBegin = posAtPreviousWord();
-		size_t after = m_selectionBegin;
 		m_selectionEnd = m_selectionBegin;
 	}
 	else if(!sequenceSelected() && m_selectionBegin > 0) {
@@ -461,7 +459,6 @@ size_t TextEntryBox::posAtNextWord() {
 }
 
 bool TextEntryBox::sequenceSelected() const {
-	return (m_selectionBegin != m_selectionEnd);
 	return (m_selectionBegin != m_selectionEnd);
 }
 

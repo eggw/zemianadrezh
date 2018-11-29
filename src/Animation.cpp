@@ -40,7 +40,7 @@ void Animation::beginAnimation() {
 	//m_currentIndex = m_minIndex;
 }
 
-void Animation::stopAnimation(int _index) {
+void Animation::stopAnimation() {
 	m_currentIndex = m_minIndex;
 	m_animationRunning = false;
 }

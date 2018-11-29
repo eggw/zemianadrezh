@@ -3,6 +3,7 @@
 #include "Keybinds.h"
 #include "LoggerNetwork.h"
 
+#include <iostream>
 
 ProgramState_Play::ProgramState_Play(Program& _program,
 									 sf::IpAddress _ipAddress)

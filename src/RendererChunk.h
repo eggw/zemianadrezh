@@ -6,8 +6,6 @@
 #include "RendererBase.h"
 #include "WorldChunk.h"
 
-#include <iostream>
-
 class RendererChunk : public RendererBase<WorldChunk> {
 	public:
 		RendererChunk(sf::RenderWindow& _window)

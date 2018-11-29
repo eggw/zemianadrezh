@@ -59,13 +59,13 @@ const World::EncodedWorldData World::encodeData() const {
 
 	EncodedWorldData data;
 
-	for(int i{0}; i < m_chunks.size(); i++) {
+	for(size_t i{0}; i < m_chunks.size(); i++) {
 		data.chunkIDs += std::to_string(m_chunks[i].getID());
 		data.chunkIDs += "%";
 
 		auto blocks = m_chunks[i].getBlocks();
 
-		for(int z{0}; z < blocks.size(); z++) {
+		for(size_t z{0}; z < blocks.size(); z++) {
 
 			if(!blocks[z].getVisibility()) {
 				data.invisibleBlocks += std::to_string(z);
