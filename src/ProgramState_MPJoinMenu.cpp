@@ -2,6 +2,8 @@
 
 #include "FontManager.h"
 
+#include <iostream>
+
 //Here are the variables we'll use to initialise the IP entry box
 //in the correct position. It will take 20% of the screen width and
 //be located just above the first item in m_menuItems (which should be
@@ -38,6 +40,13 @@ void ProgramState_MPJoinMenu::update() {
 	ProgramState_Menu::update();
 	m_IPEntry.update();
 	m_program.setIpAddress(m_IPEntry.getCurrentString());
+
+	//Simulate a click on the "connect" button after the user
+	//presses enter
+	if(m_IPEntry.inputComplete()) {
+		(m_program.*std::get<1>(m_menuItems[0]))();
+        return;
+	}
 }
 
 void ProgramState_MPJoinMenu::draw() {
