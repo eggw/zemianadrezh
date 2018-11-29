@@ -56,46 +56,9 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 void ChatBox::appendMessage(const std::string _message,
 							const std::string _sender) {
 
-<<<<<<< HEAD
-	ChatBoxMessage newMessage{	_sender,
-								_message,
-								FontManager::get_instance().getFont(FontManager::Type::ANDY),
-								CHARACTER_SIZE};
-=======
-	std::string finalStr{_message};
-	if(_sender != "") {
-		finalStr = ("<" + _sender + "> " + finalStr);
-	}
-
-	newText.setString(finalStr);
-	if(_sender == "Server"){
-        newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
-	}
-	else if (_sender == "LocalPlayer") {
-        newText.setFillColor(sf::Color::Cyan, 1, _sender.length() + 1);
-	}
-	else {
-        newText.setFillColor(sf::Color::Magenta, 1, _sender.length() + 1);
-	}
-
-	Message newMessage{newText};
->>>>>>> 70023cffebabe06c5b4e00302fb2d99ee1d77153
-
 	if(messageTooWide(newMessage)) {
 		adjustMessage(newMessage);
 	}
-
-<<<<<<< HEAD
-
-=======
-	////////////////////////////////////////////////////////
-	//TODO: look into this when host/client are playing
-	////////////////////////////////////////////////////////
-	bool snap{false};
-	if(viewAtLowest()){
-        snap = true;
-	}
->>>>>>> 70023cffebabe06c5b4e00302fb2d99ee1d77153
 
 	m_messages.push_back(newMessage);
 	positionMessage(m_messages.size() - 1);
