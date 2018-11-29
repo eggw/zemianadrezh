@@ -82,30 +82,25 @@ void ChatBox::getInput(sf::Event& _event) {
 	switch(_event.type) {
 	case sf::Event::KeyPressed: {
 			if(_event.key.code == Key::CHAT_SEND) {
-				//snapToBottom();
 				m_clock.restart();
 			}
 
 			else if(_event.key.code == Key::CHAT_UP) {
 				m_anchoredToBottom = false;
-				m_clock.restart();
 				scrollUp();
 			}
 
 			else if(_event.key.code == Key::CHAT_DOWN) {
 				m_anchoredToBottom = false;
-				m_clock.restart();
 				scrollDown();
 			}
 
 			else if(_event.key.code == Key::CHAT_TOP) {
 				m_anchoredToBottom = false;
-				m_clock.restart();
 				snapToTop();
 			}
 
 			else if(_event.key.code == Key::CHAT_BOTTOM) {
-				m_clock.restart();
 				snapToBottom();
 			}
 
@@ -212,24 +207,13 @@ void ChatBox::updateShadedRectangleTransparency() {
 void ChatBox::updateMessageTransparency() {
 	static int textAlphaValue{255};
 
-	if(m_textEntry.enteringText()) {
-		textAlphaValue = 255;
-	}
-	else {
-		if(m_clock.getElapsedTime().asSeconds() > SECONDS_UNTIL_MESSAGES_FADE) {
-			if(textAlphaValue > 0) {
-				textAlphaValue -= 1;
-			}
-		}
-		//The clock might have been reset due to the user scrolling
-		//up or down, despite m_enteringText being false.
-		//In this case, we still want the text to be visible.
-		else {
-			textAlphaValue = 255;
-		}
-	}
+    if(m_clock.getElapsedTime().asSeconds() > SECONDS_UNTIL_MESSAGES_FADE) {
+        if(textAlphaValue > 0) {
+            textAlphaValue -= 1;
+        }
 
-	setTransparency(textAlphaValue);
+        setTransparency(textAlphaValue);
+    }
 }
 
 
@@ -285,6 +269,9 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 //If so, it adjusts the view's center so that the very first message is
 //on top.
 void ChatBox::snapToTop() {
+    m_clock.restart();
+    setTransparency(255);
+
 	if(!m_messages.empty()) {
 		ChatBoxMessage& latestMessage = m_messages.back();
 
@@ -310,6 +297,8 @@ void ChatBox::snapToTop() {
 //This function checks if the last message is "outside" (below) the view.
 //If so, it adjusts the view's center so that it is visible.
 void ChatBox::snapToBottom() {
+    m_clock.restart();
+    setTransparency(255);
 	m_anchoredToBottom = true;
 
 	if(!m_messages.empty()) {
@@ -361,6 +350,9 @@ bool ChatBox::viewAtLowest() const {
 }
 
 void ChatBox::scrollUp() {
+    m_clock.restart();
+    setTransparency(255);
+
 	if(!viewAtHighest()) {
 		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y - (LINESPACING));
 	}
@@ -370,6 +362,9 @@ void ChatBox::scrollUp() {
 }
 
 void ChatBox::scrollDown() {
+    m_clock.restart();
+    setTransparency(255);
+
 	if(!viewAtLowest()) {
 		m_view.setCenter(m_view.getCenter().x, m_view.getCenter().y + (LINESPACING));
 	}

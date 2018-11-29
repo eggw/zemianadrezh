@@ -1,7 +1,5 @@
 #include "Animation.h"
 
-//#include <iostream>
-
 Animation::Animation(const sf::Texture& _texture)
 	:m_textureRects(),
 	 m_currentIndex{0},
