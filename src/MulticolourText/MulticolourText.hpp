@@ -177,28 +177,11 @@ public:
     ///
     /// \see getFillColor
     ///
-    /// \deprecated There is now fill and outline colors instead
-    /// of a single global color.
-    /// Use setFillColor() or setOutlineColor() instead.
-    ///
-    ////////////////////////////////////////////////////////////
-    SFML_DEPRECATED void setColor(const Color& color);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Set the fill color of the text
-    ///
-    /// By default, the text's fill color is opaque white.
-    /// Setting the fill color to a transparent color with an outline
-    /// will cause the outline to be displayed in the fill area of the text.
-    ///
-    /// \param color New fill color of the text
-    ///
-    /// \see getFillColor
-    ///
     ////////////////////////////////////////////////////////////
     void setFillColor(const Color& color, size_t _startPos = 0, size_t _endPos = 0);
     void setTransparency(int _alpha);
     void setStyleFillColor(const Color& color);
+    void setStyleOutlineColor(const Color& color);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the outline color of the text
@@ -298,7 +281,7 @@ public:
     /// \see setOutlineColor
     ///
     ////////////////////////////////////////////////////////////
-    const Color& getOutlineColor() const;
+    const Color& getOutlineColor(size_t _index) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the outline thickness of the text
@@ -385,7 +368,7 @@ private:
     unsigned int        m_characterSize;      ///< Base size of characters, in pixels
     Uint32              m_style;              ///< Text style (see Style enum)
     Color               m_styleFillColor;     ///< Strikethrough/underline color
-    Color               m_outlineColor;       ///< Text outline color
+    Color               m_styleOutlineColor;  ///< Outline color for strikethroughs/underlines
     float               m_outlineThickness;   ///< Thickness of the text's outline
     mutable VertexArray m_vertices;           ///< Vertex array containing the fill geometry
     mutable VertexArray m_outlineVertices;    ///< Vertex array containing the outline geometry
@@ -395,12 +378,14 @@ private:
     //Instead of m_fillColor, we have a map that
     //specifies a color for every position in the
     //m_string.
+    //The same idea applies to m_outlineColor.
 
     //m_vertexIndeces is a map that has the position
     //of a character in the string as its first element,
     //and the index of the first of 6 vertices used to draw
     //it in m_vertices.
     mutable std::map<int,Color> m_fillColors;
+    mutable std::map<int,Color> m_outlineColors;
     mutable std::map<int,int>   m_vertexIndeces;
 
     //Note that I replaced m_fillColor with m_styleFillColor,

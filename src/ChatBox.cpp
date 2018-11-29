@@ -30,7 +30,8 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 	 m_shadedRectangle(),
 	 m_messages(),
 	 m_textEntry(),
-	 m_clock() {
+	 m_clock(),
+	 m_anchoredToBottom(true) {
 
 	onResize(_window.getSize());
 
@@ -64,7 +65,17 @@ void ChatBox::appendMessage(const std::string _message,
 	}
 
 	newText.setString(finalStr);
-	newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
+	newText.setOutlineThickness(1);
+
+	if(_sender == "Server") {
+		newText.setFillColor(sf::Color::Red, 1, _sender.length() + 1);
+	}
+	else if(_sender == "LocalPlayer") {
+		newText.setFillColor(sf::Color::Cyan, 1, _sender.length() + 1);
+	}
+	else {
+		newText.setFillColor(sf::Color::Magenta, 1, _sender.length() + 1);
+	}
 
 	Message newMessage{newText};
 
@@ -72,16 +83,13 @@ void ChatBox::appendMessage(const std::string _message,
 		adjustMessage(newMessage);
 	}
 
-	bool snap{false};
-	if(viewAtLowest()){
-        snap = true;
-	}
+
 
 	m_messages.push_back(newMessage);
 	positionMessage(m_messages.size() - 1);
 	m_clock.restart();
 
-	if(snap){
+	if(m_anchoredToBottom){
         snapToBottom();
 	}
 }
@@ -100,16 +108,19 @@ void ChatBox::getInput(sf::Event& _event) {
 			}
 
 			else if(_event.key.code == Key::CHAT_UP) {
+				m_anchoredToBottom = false;
 				m_clock.restart();
 				scrollUp();
 			}
 
 			else if(_event.key.code == Key::CHAT_DOWN) {
+				m_anchoredToBottom = false;
 				m_clock.restart();
 				scrollDown();
 			}
 
 			else if(_event.key.code == Key::CHAT_TOP) {
+				m_anchoredToBottom = false;
 				m_clock.restart();
 				snapToTop();
 			}
@@ -390,6 +401,8 @@ void ChatBox::snapToTop() {
 //This function checks if the last message is "outside" (below) the view.
 //If so, it adjusts the view's center so that it is visible.
 void ChatBox::snapToBottom() {
+	m_anchoredToBottom = true;
+
 	if(!m_messages.empty()) {
 		Message& latestMessage = m_messages.back();
 		float lastLineYPosition{latestMessage.text.getPosition().y

@@ -41,6 +41,7 @@ TextEntryBox::TextEntryBox(unsigned int _charSize,
 	m_highlightedRectangle.setFillColor(sf::Color(250,250,250,100));
 
 	m_text.setCharacterSize(m_charSize);
+	m_text.setOutlineThickness(1);
 	m_caret.setCharacterSize(m_charSize);
 
 	m_text.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));

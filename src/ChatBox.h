@@ -69,6 +69,8 @@ class ChatBox : public sf::Drawable {
 
 		TextEntryBox m_textEntry;
 		sf::Clock m_clock;
+
+		bool m_anchoredToBottom;
 };
 
 #endif // CHATBOX_H_INCLUDED
