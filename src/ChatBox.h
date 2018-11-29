@@ -23,9 +23,6 @@ class ChatBox : public sf::Drawable {
 	private:
 		//Message-related
 		/////////////////////////////////////////
-		const bool messageTooWide(ChatBoxMessage& _message) const;
-		const bool messageTooNarrow(ChatBoxMessage& _message) const;
-		void adjustMessage(ChatBoxMessage& _message);
 		void positionMessage(int _index);
 		void setTransparency(int _a);
 		bool messagesTransparent() const;
