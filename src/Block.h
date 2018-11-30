@@ -8,7 +8,7 @@ constexpr int BLOCK_DIMENSIONS_Y = 16;
 
 class Block : public Entity {
 	public:
-		Block();
+		Block(bool _visibility);
 		bool getVisibility() const;
 		void setVisibility(bool _v);
 	private:

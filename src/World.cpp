@@ -1,7 +1,5 @@
 #include "World.h"
 
-#include <iostream>
-
 World::World() {
 
 }
@@ -29,9 +27,10 @@ const sf::Vector2f World::getCenter() const {
 	return {xPos,yPos};
 }
 
-void World::addChunk(int _num) {
+void World::addChunk(int _num, bool _randomiseVisibility) {
 	for(int i{0}; i < _num; i++) {
-		m_chunks.push_back(m_chunks.size());
+		WorldChunk w{ int(m_chunks.size()), _randomiseVisibility };
+		m_chunks.push_back(w);
 	}
 }
 
@@ -129,3 +128,27 @@ void World::parseData(World::EncodedWorldData& _data) {
 		}
 	}
 }
+
+
+/*
+This is useful for debugging inconsistencies between encoded/decoded
+world data, just keeping it as a comment in case it's ever needed
+again
+
+#include <fstream>
+#include <map>
+#include <string>
+#include <iostream>
+
+void tempLog(std::string _str) {
+	std::ofstream output;
+	output.open("log_world.txt", std::fstream::app);
+	output << _str;
+
+	output << "\n";
+
+	output.close();
+
+	return;
+}
+*/

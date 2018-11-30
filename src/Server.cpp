@@ -8,7 +8,7 @@ Server::Server(bool _allowConnections)
 	m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
 					 (new std::vector<std::unique_ptr<Player>>());
 
-	m_world.addChunk(1);
+	m_world.addChunk(1, true);
 }
 
 void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {

@@ -16,7 +16,7 @@ class World {
 
 		const sf::Vector2f getCenter() const;
 
-		void addChunk(int _num = 1);
+		void addChunk(int _num = 1, bool _randomiseVisibility = false);
 
 		const std::vector<WorldChunk>& getChunks() const;
 		const EncodedWorldData encodeData() const;
