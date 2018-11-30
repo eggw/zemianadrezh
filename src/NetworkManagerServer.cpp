@@ -11,6 +11,8 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	  m_listener(),
 	  m_udpSocket(){
 
+	m_udpSocket.setBlocking(false);
+
 	if (m_udpSocket.bind(Packet::Port_UDP_Server) != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 		LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
@@ -24,7 +26,7 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	listen();
 }
 
-void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipient, bool _exclude) {
+void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _recipient, bool _exclude) {
 	int packetCode = Packet::toInt(_type);
 
 	std::vector<sf::TcpSocket*> recipients;
@@ -52,7 +54,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 
 	switch(_type) {
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::DATA_WORLD: {
+	case Packet::TCPPacket::DATA_WORLD: {
 
 			World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
@@ -71,43 +73,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::DATA_PLAYER: {
-
-			for(auto& recipient : recipients) {
-				for(auto& player : *m_server.getOtherPlayers()) {
-					Player::EncodedPlayerData playerData = player->encodeData();
-
-					*packet << playerData.playerName;
-
-					//Here we do a quick check to see if the playerdata generated
-					//belongs to the recipient's player; if it does, we'll cancel
-					//and not redundantly send it back to them
-					auto i = m_clientIPs.find(playerData.playerName);
-					if(i != m_clientIPs.end()) {
-						if(i->second == recipient->getRemoteAddress()) {
-							continue;
-						}
-					}
-
-					*packet << playerData.facingLeft;
-					*packet << playerData.velocityX;
-                    *packet << playerData.velocityY;
-					*packet << playerData.positionX;
-					*packet << playerData.positionY;
-
-					PacketSender::get_instance().send(recipient, packet);
-					LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
-							LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-							packetCode);
-				}
-			}
-
-			break;
-		}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::CHAT_MESSAGE: {
+	case Packet::TCPPacket::CHAT_MESSAGE: {
 			std::string message = m_messages.back().first;
 			std::string sender = m_messages.back().second;
 			*packet << message;
@@ -126,7 +92,7 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
     //////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::RESPAWN_PLAYER: {
+	case Packet::TCPPacket::RESPAWN_PLAYER: {
 			for(auto& recipient : recipients) {
 				PacketSender::get_instance().send(recipient, packet);
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
@@ -141,14 +107,83 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 	}
 }
 
-void NetworkManagerServer::receivePacket() {
+void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
+										sf::IpAddress _recipient,
+										bool _exclude) {
+
+	int packetCode = Packet::toInt(_type);
+
+	std::vector<sf::IpAddress> recipients;
+
+	if (_recipient == sf::IpAddress::None) {
+		for (auto& client : m_clientIPs) {
+			recipients.push_back(client.second);
+		}
+	}
+	else {
+		if (!_exclude) {
+			recipients.push_back(_recipient);
+		}
+		else {
+			for (auto& client : m_clientIPs) {
+				if (client.second != _recipient) {
+					recipients.push_back(client.second);
+				}
+			}
+		}
+	}
+
+	PacketSharedPtr packet(new sf::Packet());
+	*packet << packetCode;
+
+	switch (_type) {
+	//////////////////////////////////////////////////////////////////////////////
+	case Packet::UDPPacket::DATA_PLAYER: {
+
+		for (auto& recipient : recipients) {
+			for (auto& player : *m_server.getOtherPlayers()) {
+				Player::EncodedPlayerData playerData = player->encodeData();
+
+				*packet << playerData.playerName;
+
+				//Here we do a quick check to see if the playerdata generated
+				//belongs to the recipient's player; if it does, we'll cancel
+				//and not redundantly send it back to them
+				auto i = m_clientIPs.find(playerData.playerName);
+				if (i != m_clientIPs.end()) {
+					if (i->second == recipient) {
+						continue;
+					}
+				}
+
+				*packet << playerData.facingLeft;
+				*packet << playerData.velocityX;
+				*packet << playerData.velocityY;
+				*packet << playerData.positionX;
+				*packet << playerData.positionY;
+
+				PacketSender::get_instance().send(&m_udpSocket, packet, recipient, Packet::Port_UDP_Client);
+				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+					packetCode);
+			}
+		}
+
+		break;
+	}
+	//////////////////////////////////////////////////////////////////////////////
+	}
+
+}
+
+void NetworkManagerServer::receiveTCPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
 
 	for(auto& connection : m_clientConnections) {
 		if(connection->receive(*packet) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
-			Packet::Type packetType{Packet::toType(packetCode)};
+			Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
 					packetCode);
@@ -156,59 +191,78 @@ void NetworkManagerServer::receivePacket() {
 			switch(packetType) {
 
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::Type::JUSTJOINED: {
+			case Packet::TCPPacket::JUSTJOINED: {
 					Player::EncodedPlayerData playerData = Player::EncodedPlayerData();
 
 					*packet >> playerData.playerName;
 
 					m_clientIPs.insert(std::make_pair(playerData.playerName, connection.get()->getRemoteAddress()));
 					m_server.addPlayer(playerData);
-					sendPacket(Packet::Type::DATA_WORLD);
-					sendPacket(Packet::Type::RESPAWN_PLAYER, connection.get());
+					sendPacket(Packet::TCPPacket::DATA_WORLD);
+					sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
 					sendMessage("Welcome, " + playerData.playerName + "!", "Server");
 					break;
 				}
 			//////////////////////////////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::Type::REQUEST_WORLD: {
-					sendPacket(Packet::Type::DATA_WORLD, connection.get());
+			case Packet::TCPPacket::REQUEST_WORLD: {
+					sendPacket(Packet::TCPPacket::DATA_WORLD, connection.get());
 					break;
 				}
 			//////////////////////////////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::Type::DATA_PLAYER: {
-					Player::EncodedPlayerData playerData;
-
-					*packet >> playerData.playerName;
-					*packet >> playerData.facingLeft;
-					*packet >> playerData.velocityX;
-                    *packet >> playerData.velocityY;
-					*packet >> playerData.positionX;
-					*packet >> playerData.positionY;
-
-					m_server.updateOtherPlayers(playerData);
-
-					sendPacket(Packet::Type::DATA_PLAYER, connection.get());
-					break;
-				}
-			//////////////////////////////////////////////////////////////////////////////
-			default:
-				break;
-
-			//////////////////////////////////////////////////////////////////////////////
-			case Packet::Type::CHAT_MESSAGE: {
+			case Packet::TCPPacket::CHAT_MESSAGE: {
 					std::string message;
 					std::string sender;
 					*packet >> message;
 					*packet >> sender;
 					m_messages.push_back(std::make_pair(message, sender));
 
-					sendPacket(Packet::Type::CHAT_MESSAGE);
+					sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 					break;
 				}
 				//////////////////////////////////////////////////////////////////////////////
+
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void NetworkManagerServer::receiveUDPPackets() {
+	int packetCode;
+	PacketUPtr packet(new sf::Packet());
+	unsigned short port{ Packet::Port_UDP_Server };
+
+	for (auto& client : m_clientIPs) {
+		if (m_udpSocket.receive(*packet, client.second, port) == sf::Socket::Status::Done) {
+			*packet >> packetCode;
+			Packet::UDPPacket packetType{ Packet::toUDPType(packetCode) };
+			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+				LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
+				packetCode);
+
+			switch (packetType) {
+			//////////////////////////////////////////////////////////////////////////////
+			case Packet::UDPPacket::DATA_PLAYER: {
+				Player::EncodedPlayerData playerData;
+
+				*packet >> playerData.playerName;
+				*packet >> playerData.facingLeft;
+				*packet >> playerData.velocityX;
+				*packet >> playerData.velocityY;
+				*packet >> playerData.positionX;
+				*packet >> playerData.positionY;
+
+				m_server.updateOtherPlayers(playerData);
+
+				sendPacket(Packet::UDPPacket::DATA_PLAYER, client.second);
+				break;
+				}
+			//////////////////////////////////////////////////////////////////////////////
 			}
 		}
 	}
@@ -218,9 +272,9 @@ void NetworkManagerServer::sendMessage(std::string _message, std::string _sender
 	if(m_messages.size() == 50) {
 		m_messages.clear();
 	}
-
+	
 	m_messages.push_back(std::make_pair(_message, _sender));
-	sendPacket(Packet::Type::CHAT_MESSAGE);
+	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 }
 
 const std::vector<std::unique_ptr<sf::TcpSocket>>& NetworkManagerServer::getClients() {

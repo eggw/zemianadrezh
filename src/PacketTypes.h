@@ -6,12 +6,11 @@
 namespace Packet {
 
 	constexpr unsigned short Port_TCP_Server	{ 7777 };
-	constexpr unsigned short  Port_TCP_Client	{ 7777 };
 
-	constexpr unsigned short  Port_UDP_Server	{ 7777 };
-	constexpr unsigned short  Port_UDP_Client	{ 7878 };
+	constexpr unsigned short Port_UDP_Server	{ 7777 };
+	constexpr unsigned short Port_UDP_Client	{ 7878 };
 
-	enum class Type
+	enum class TCPPacket
 	{
 		JUSTJOINED,
 		//Used when sending messages
@@ -22,38 +21,31 @@ namespace Packet {
 		//Used by the server to send the
 		//world data
 		DATA_WORLD,
-		//Used by the client to send its
-		//position to the server
-		DATA_PLAYER,
 		//Used by the server to reset
 		//a player's position
 		RESPAWN_PLAYER
 	};
 
-	enum class SocketType
+	enum class UDPPacket
 	{
-		TCP,
-		UDP
+		//Used by the client to send its
+		//position to the server
+		DATA_PLAYER,
 	};
 
-	static const std::map<Type, SocketType> PacketTypeMap =
-	{
-		{Type::JUSTJOINED,      SocketType::TCP},
-		{Type::CHAT_MESSAGE,    SocketType::TCP},
-		{Type::REQUEST_WORLD,   SocketType::TCP},
-		{Type::DATA_WORLD,      SocketType::TCP},
-		{Type::DATA_PLAYER,     SocketType::UDP},
-		{Type::RESPAWN_PLAYER,  SocketType::TCP}
-	};
-
-	constexpr auto toInt(Type _t) {
-		return static_cast<std::underlying_type_t<Type>>(_t);
+	constexpr auto toInt(TCPPacket _t) {
+		return static_cast<std::underlying_type_t<TCPPacket>>(_t);
+	}
+	constexpr TCPPacket toTCPType(int _i) {
+		return static_cast<TCPPacket>(_i);
 	}
 
-	constexpr Type toType(int _i) {
-		return static_cast<Type>(_i);
+	constexpr auto toInt(UDPPacket _t) {
+		return static_cast<std::underlying_type_t<UDPPacket>>(_t);
 	}
-
+	constexpr UDPPacket toUDPType(int _i) {
+		return static_cast<UDPPacket>(_i);
+	}
 }
 
 #endif // PACKETTYPES_H_INCLUDED

@@ -25,7 +25,8 @@ void Server::addPlayer(Player::EncodedPlayerData _data) {
 }
 
 void Server::receivePackets() {
-	m_networkManager.receivePacket();
+	m_networkManager.receiveUDPPackets();
+	m_networkManager.receiveTCPPackets();
 }
 
 void Server::update() {

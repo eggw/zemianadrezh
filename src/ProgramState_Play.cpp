@@ -22,7 +22,7 @@ ProgramState_Play::ProgramState_Play(Program& _program,
 							float(m_program.m_window->getSize().y))} {
 
 
-	m_client.m_networkManager.connect(_ipAddress, Packet::Port_TCP_Client);
+	m_client.m_networkManager.connect(_ipAddress, Packet::Port_TCP_Server);
 
 	m_rendererChatbox.addObject(m_client.getChatBox());
 	m_rendererPlayer.addObject(m_client.getPlayer());

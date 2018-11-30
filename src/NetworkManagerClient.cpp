@@ -10,6 +10,8 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	:m_client(_client),
 	 m_udpSocket(){
 
+	m_udpSocket.setBlocking(false);
+
 	if (m_udpSocket.bind(Packet::Port_UDP_Client) != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 			LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
@@ -22,7 +24,7 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	m_serverConnection.setBlocking(false);
 }
 
-void NetworkManagerClient::sendPacket(Packet::Type _type) {
+void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	int packetCode = Packet::toInt(_type);
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
@@ -30,7 +32,7 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 	switch(_type) {
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::JUSTJOINED: {
+	case Packet::TCPPacket::JUSTJOINED: {
 			Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
 			*packet << playerData.playerName;
 
@@ -41,30 +43,14 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::REQUEST_WORLD: {
+	case Packet::TCPPacket::REQUEST_WORLD: {
 			PacketSender::get_instance().send(&m_serverConnection, packet);
 			break;
 		}
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::DATA_PLAYER: {
-			Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
-			*packet << playerData.playerName;
-			*packet << playerData.facingLeft;
-			*packet << playerData.velocityX;
-			*packet << playerData.velocityY;
-			*packet << playerData.positionX;
-			*packet << playerData.positionY;
-
-			PacketSender::get_instance().send(&m_serverConnection, packet);
-
-			break;
-		}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::Type::CHAT_MESSAGE: {
+	case Packet::TCPPacket::CHAT_MESSAGE: {
 			auto message = m_client.getPendingMessage();
 
 			*packet << message.first;
@@ -86,21 +72,46 @@ void NetworkManagerClient::sendPacket(Packet::Type _type) {
 			packetCode);
 }
 
+void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
+	int packetCode = Packet::toInt(_type);
+	PacketSharedPtr packet(new sf::Packet());
+	*packet << packetCode;
+	unsigned short port{ Packet::Port_UDP_Server };
 
-void NetworkManagerClient::receivePacket() {
+	switch (_type) {
+	//////////////////////////////////////////////////////////////////////////////
+	case Packet::UDPPacket::DATA_PLAYER: {
+		Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
+		*packet << playerData.playerName;
+		*packet << playerData.facingLeft;
+		*packet << playerData.velocityX;
+		*packet << playerData.velocityY;
+		*packet << playerData.positionX;
+		*packet << playerData.positionY;
+
+		PacketSender::get_instance().send(&m_udpSocket, packet, m_serverConnection.getRemoteAddress(), port);
+
+		break;
+	}
+	//////////////////////////////////////////////////////////////////////////////
+	}
+}
+
+
+void NetworkManagerClient::receiveTCPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
 
 	if(m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
 		*packet >> packetCode;
-		Packet::Type packetType{Packet::toType(packetCode)};
+		Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
 				LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
 				packetCode);
 
 		switch(packetType) {
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::Type::DATA_WORLD: {
+		case Packet::TCPPacket::DATA_WORLD: {
 
 				World::EncodedWorldData worldData;
 
@@ -116,23 +127,7 @@ void NetworkManagerClient::receivePacket() {
 		//////////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::Type::DATA_PLAYER: {
-				Player::EncodedPlayerData playerData;
-
-				*packet >> playerData.playerName;
-				*packet >> playerData.facingLeft;
-				*packet >> playerData.velocityX;
-				*packet >> playerData.velocityY;
-				*packet >> playerData.positionX;
-				*packet >> playerData.positionY;
-
-				m_client.updateOtherPlayers(playerData);
-				break;
-			}
-		//////////////////////////////////////////////////////////////////////////////
-
-		//////////////////////////////////////////////////////////////////////////////
-		case Packet::Type::CHAT_MESSAGE: {
+		case Packet::TCPPacket::CHAT_MESSAGE: {
 				std::string message;
 				std::string sender;
 				*packet >> message;
@@ -144,7 +139,7 @@ void NetworkManagerClient::receivePacket() {
 		//////////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::Type::RESPAWN_PLAYER: {
+		case Packet::TCPPacket::RESPAWN_PLAYER: {
 				m_client.respawnPlayer();
 				break;
 			}
@@ -153,6 +148,39 @@ void NetworkManagerClient::receivePacket() {
 
 		default:
 			break;
+		}
+	}
+}
+
+void NetworkManagerClient::receiveUDPPackets() {
+	int packetCode;
+	PacketUPtr packet(new sf::Packet());
+	unsigned short port{ Packet::Port_UDP_Client };
+	sf::IpAddress address{ m_serverConnection.getRemoteAddress() };
+
+	if (m_udpSocket.receive(*packet, address, port) == sf::Socket::Status::Done) {
+		*packet >> packetCode;
+		Packet::UDPPacket packetType{ Packet::toUDPType(packetCode) };
+		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
+			LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
+			packetCode);
+
+		switch (packetType) {
+		//////////////////////////////////////////////////////////////////////////////
+		case Packet::UDPPacket::DATA_PLAYER: {
+			Player::EncodedPlayerData playerData;
+
+			*packet >> playerData.playerName;
+			*packet >> playerData.facingLeft;
+			*packet >> playerData.velocityX;
+			*packet >> playerData.velocityY;
+			*packet >> playerData.positionX;
+			*packet >> playerData.positionY;
+
+			m_client.updateOtherPlayers(playerData);
+			break;
+		}
+		//////////////////////////////////////////////////////////////////////////////
 		}
 	}
 }
@@ -176,7 +204,7 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, unsigned short _port) {
 	m_serverConnection.setBlocking(false);
 
 	if(successfullyConnected){
-		sendPacket(Packet::Type::JUSTJOINED);
+		sendPacket(Packet::TCPPacket::JUSTJOINED);
 	}
 }
 

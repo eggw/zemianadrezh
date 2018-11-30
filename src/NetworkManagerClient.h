@@ -12,8 +12,13 @@ class NetworkManagerClient {
 	public:
 		NetworkManagerClient(Client& _client);
 
-		void sendPacket(Packet::Type _type);
-		void receivePacket();
+		void sendPacket(Packet::TCPPacket _type);
+		void sendPacket(Packet::UDPPacket _type);
+
+		void receiveTCPPackets();
+		void receiveUDPPackets();
+
+
 		void connect(sf::IpAddress _ip, unsigned short _port);
 
 		bool connectionActive() const;

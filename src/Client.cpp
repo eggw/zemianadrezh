@@ -54,11 +54,12 @@ void Client::update() {
 }
 
 void Client::sendPackets() {
-	m_networkManager.sendPacket(Packet::Type::DATA_PLAYER);
+	m_networkManager.sendPacket(Packet::UDPPacket::DATA_PLAYER);
 }
 
 void Client::receivePackets() {
-	m_networkManager.receivePacket();
+	m_networkManager.receiveUDPPackets();
+	m_networkManager.receiveTCPPackets();
 }
 
 void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
@@ -133,6 +134,6 @@ void Client::handleOutgoingMessages() {
 	std::unique_ptr<std::pair<std::string, std::string>> ptr(new std::pair<std::string, std::string>);
 	if(m_chatBox.completedMessage(ptr.get())) {
 		m_pendingMessage = *ptr;
-		m_networkManager.sendPacket(Packet::Type::CHAT_MESSAGE);
+		m_networkManager.sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 	}
 }

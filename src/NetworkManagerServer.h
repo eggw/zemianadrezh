@@ -20,11 +20,16 @@ class NetworkManagerServer {
 		//the packet will either be sent to everyone but the
 		//specificed recipient (true), or only include the specified
 		//recipient (false, default).
-		void sendPacket(Packet::Type _type,
+		void sendPacket(Packet::TCPPacket _type,
 						sf::TcpSocket* _recipient = nullptr,
 						bool _exclude = false);
 
-		void receivePacket();
+		void sendPacket(Packet::UDPPacket _type,
+						sf::IpAddress _recipient = sf::IpAddress::None,
+						bool _exclude = false);
+
+		void receiveTCPPackets();
+		void receiveUDPPackets();
 
 		//Sends a message to all connected players
 		void sendMessage(std::string _message, std::string _sender);
