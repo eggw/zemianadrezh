@@ -35,7 +35,7 @@ TextEntryBox::TextEntryBox(unsigned int _charSize,
 	 m_alwaysVisible{false},
 	 m_alwaysActive{false},
 	 m_charSize{_charSize},
-	 m_maxChars{m_maxChars} {
+	 m_maxChars{_maxChars} {
 
 	m_rectangle.setFillColor(sf::Color(0,0,0,120));
 	m_highlightedRectangle.setFillColor(sf::Color(250,250,250,100));
