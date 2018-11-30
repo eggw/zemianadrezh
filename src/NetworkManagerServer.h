@@ -39,7 +39,7 @@ class NetworkManagerServer {
 		sf::TcpListener m_listener;
 		sf::UdpSocket m_udpSocket;
 		std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
-		std::map<std::string, sf::TcpSocket*> m_clientNames;
+		std::map<std::string, sf::IpAddress> m_clientIPs;
 		std::vector<std::pair<std::string, std::string>> m_messages;
 };
 

@@ -82,9 +82,9 @@ void NetworkManagerServer::sendPacket(Packet::Type _type, sf::TcpSocket* _recipi
 					//Here we do a quick check to see if the playerdata generated
 					//belongs to the recipient's player; if it does, we'll cancel
 					//and not redundantly send it back to them
-					auto i = m_clientNames.find(playerData.playerName);
-					if(i != m_clientNames.end()) {
-						if(i->second == recipient) {
+					auto i = m_clientIPs.find(playerData.playerName);
+					if(i != m_clientIPs.end()) {
+						if(i->second == recipient->getRemoteAddress()) {
 							continue;
 						}
 					}
@@ -161,7 +161,7 @@ void NetworkManagerServer::receivePacket() {
 
 					*packet >> playerData.playerName;
 
-					m_clientNames.insert(std::make_pair(playerData.playerName, connection.get()));
+					m_clientIPs.insert(std::make_pair(playerData.playerName, connection.get()->getRemoteAddress()));
 					m_server.addPlayer(playerData);
 					sendPacket(Packet::Type::DATA_WORLD);
 					sendPacket(Packet::Type::RESPAWN_PLAYER, connection.get());

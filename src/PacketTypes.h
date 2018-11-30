@@ -5,11 +5,11 @@
 
 namespace Packet {
 
-	constexpr int Port_TCP_Server	{ 7777 };
-	constexpr int Port_TCP_Client	{ 7777 };
+	constexpr unsigned short Port_TCP_Server	{ 7777 };
+	constexpr unsigned short  Port_TCP_Client	{ 7777 };
 
-	constexpr int Port_UDP_Server	{ 7777 };
-	constexpr int Port_UDP_Client	{ 7878 };
+	constexpr unsigned short  Port_UDP_Server	{ 7777 };
+	constexpr unsigned short  Port_UDP_Client	{ 7878 };
 
 	enum class Type
 	{
