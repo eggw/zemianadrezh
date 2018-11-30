@@ -7,7 +7,17 @@
 #include "Client.h"
 
 NetworkManagerClient::NetworkManagerClient(Client& _client)
-	:m_client(_client) {
+	:m_client(_client),
+	 m_udpSocket(){
+
+	if (m_udpSocket.bind(Packet::Port_UDP_Client) != sf::Socket::Done) {
+		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
+			LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
+	}
+	else {
+		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
+			LoggerNetwork::LOG_MESSAGE::BIND_PORT_SUCCESS);
+	}
 
 	m_serverConnection.setBlocking(false);
 }

@@ -8,7 +8,17 @@
 
 NetworkManagerServer::NetworkManagerServer(Server& _server)
 	: m_server(_server),
-	  m_listener() {
+	  m_listener(),
+	  m_udpSocket(){
+
+	if (m_udpSocket.bind(Packet::Port_UDP_Server) != sf::Socket::Done) {
+		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
+		LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
+	}
+	else {
+		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
+		LoggerNetwork::LOG_MESSAGE::BIND_PORT_SUCCESS);
+	}
 
 	m_listener.setBlocking(false);
 	listen();
@@ -218,7 +228,7 @@ const std::vector<std::unique_ptr<sf::TcpSocket>>& NetworkManagerServer::getClie
 }
 
 void NetworkManagerServer::listen() {
-	if(m_listener.listen(7777) != sf::Socket::Done) {
+	if(m_listener.listen(Packet::Port_TCP_Server) != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 										  LoggerNetwork::LOG_MESSAGE::LISTEN_PORT_FAILURE);
 	} else {

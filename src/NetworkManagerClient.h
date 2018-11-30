@@ -34,6 +34,7 @@ class NetworkManagerClient {
 		void update();
 	private:
 		Client& m_client;
+		sf::UdpSocket m_udpSocket;
 		sf::TcpSocket m_serverConnection;
 
 		//m_chunkDataReceived will be set to true (in NetworkManagerClient)

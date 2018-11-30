@@ -20,6 +20,8 @@ class LoggerNetwork: public Singleton<LoggerNetwork> {
 			CONNECTION_BLOCKED,
 			LISTEN_PORT_SUCCESS,
 			LISTEN_PORT_FAILURE,
+			BIND_PORT_SUCCESS,
+			BIND_PORT_FAILURE,
 			CONNECTION_LOCALHOST
 		};
 

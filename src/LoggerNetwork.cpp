@@ -43,8 +43,10 @@ LoggerNetwork::LoggerNetwork() {
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_SUCCESS, "connection established!");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_BLOCKED, "unauthorised connection blocked!");
-	messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_FAILURE, "failed to listen to port 7777");
-	messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_SUCCESS, "listening on port 7777...");
+	messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_FAILURE, "failed to listen to port ");
+	messageMap.emplace(LOG_MESSAGE::LISTEN_PORT_SUCCESS, "listening on port ");
+	messageMap.emplace(LOG_MESSAGE::BIND_PORT_FAILURE, "failed to bind to port ");
+	messageMap.emplace(LOG_MESSAGE::BIND_PORT_SUCCESS, "bound to port ");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_LOCALHOST, "connected to local server!");
 
 }
@@ -71,6 +73,18 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
 	output << senderMap[_sender] << ": ";
 	output << messageMap[_message];
 
+	if (_message == LOG_MESSAGE::LISTEN_PORT_FAILURE || _message == LOG_MESSAGE::LISTEN_PORT_SUCCESS) {
+		output << Packet::Port_TCP_Server;
+	}
+	else if (_message == LOG_MESSAGE::BIND_PORT_FAILURE || _message == LOG_MESSAGE::BIND_PORT_SUCCESS) {
+		if (_sender == LOG_SENDER::CLIENT) {
+			output << Packet::Port_UDP_Client;
+		}
+		else {
+			output << Packet::Port_UDP_Server;
+		}
+	}
+	
 	output << "\n";
 
 	output.close();
