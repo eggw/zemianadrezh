@@ -35,7 +35,7 @@ TextEntryBox::TextEntryBox(unsigned int _charSize,
 	 m_alwaysVisible{false},
 	 m_alwaysActive{false},
 	 m_charSize{_charSize},
-	 m_maxChars{_maxChars} {
+	 m_maxChars{m_maxChars} {
 
 	m_rectangle.setFillColor(sf::Color(0,0,0,120));
 	m_highlightedRectangle.setFillColor(sf::Color(250,250,250,100));
@@ -506,13 +506,15 @@ bool TextEntryBox::validInsertion(sf::Uint32 _unicode) {
 }
 
 void TextEntryBox::insert(std::string& _str) {
+	size_t currentLength{m_text.getString().getSize()};
+	size_t combinedLength{_str.length() + currentLength};
+	if(combinedLength > m_maxChars) {
+        _str = _str.substr(0, m_maxChars - currentLength);
+	}
+
 	std::string newString{m_text.getString()};
 	newString.insert(m_selectionBegin,
 					 _str);
-
-    if(newString.length() > m_maxChars){
-        newString = newString.substr(0, m_maxChars);
-    }
 
 	m_text.setString(newString);
 

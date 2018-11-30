@@ -25,7 +25,8 @@ class ChatBoxMessage : public sf::Drawable {
 
         sf::Vector2f getPosition() const;
         int getTransparency() const;
-        unsigned int getNumberOfLines() const;
+        unsigned int getNumberOfLines(size_t _startPos = 0,
+									  size_t _endPos = 0) const;
 
     private:
 		sf::MulticolourText m_text;

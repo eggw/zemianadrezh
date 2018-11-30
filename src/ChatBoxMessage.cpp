@@ -44,6 +44,7 @@ void ChatBoxMessage::fitWidth(float _width) {
 
     std::string textStr = m_text.getString();
 	removeNewlines(textStr);
+	setString(textStr);
 
 	float charSize = m_text.getGlobalBounds().width / textStr.size();
 	float currentWidth{0};
@@ -79,14 +80,23 @@ void ChatBoxMessage::setString(const std::string& _str) {
 
     m_text.setOutlineThickness(1);
 
+    //If m_sender contains a newline, we'll want to make sure that
+    //the whole name gets its colour set. Therefore, we'll check how
+    //many newlines there are in the name part and make sure to add
+    //the result to the end position of setFillColor().
+    //Since getNumberOfLines returns 1 normally, we'll decrement our
+    //initial result.
+    unsigned int endOffset{ getNumberOfLines(1, m_sender.length()) } ;
+    --endOffset;
+
     if(m_sender == "Server") {
-        m_text.setFillColor(sf::Color::Red, 1, m_sender.length());
+        m_text.setFillColor(sf::Color::Red, 1, m_sender.length() + endOffset);
     }
     else if(m_sender == "LocalPlayer") {
-        m_text.setFillColor(sf::Color::Cyan, 1, m_sender.length());
+        m_text.setFillColor(sf::Color::Cyan, 1, m_sender.length() + endOffset);
     }
     else {
-        m_text.setFillColor(sf::Color::Magenta, 1, m_sender.length());
+        m_text.setFillColor(sf::Color::Magenta, 1, m_sender.length() + endOffset);
     }
 }
 
@@ -106,14 +116,18 @@ int ChatBoxMessage::getTransparency() const {
     return m_text.getFillColor(0).a;
 }
 
-unsigned int ChatBoxMessage::getNumberOfLines() const {
+unsigned int ChatBoxMessage::getNumberOfLines(size_t _startPos, size_t _endPos) const {
     const std::string& s{m_text.getString()};
+    if(_endPos == 0) {
+		_endPos = s.length() - 1;
+    }
+    std::string sub{s.substr(_startPos, _endPos)};
 
     int count{1};
-    size_t nPos = s.find("\n");
+    size_t nPos = sub.find("\n");
     while(nPos != std::string::npos) {
         count++;
-        nPos = s.find("\n", nPos + 1);
+        nPos = sub.find("\n", nPos + 1);
     }
 
     return count;
