@@ -6,9 +6,11 @@
 namespace Packet {
 
 	constexpr unsigned short Port_TCP_Server	{ 7777 };
-
 	constexpr unsigned short Port_UDP_Server	{ 7777 };
-	constexpr unsigned short Port_UDP_Client	{ 7878 };
+
+	constexpr unsigned short Port_UDP_LocalClient	{ 7878 };
+	constexpr unsigned short Port_UDP_RemoteClient	{ 7979 };
+
 
 	enum class TCPPacket
 	{

@@ -11,8 +11,15 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	 m_udpSocket(){
 
 	m_udpSocket.setBlocking(false);
+	unsigned short port;
+	if(m_client.isLocal()) {
+		port = Packet::Port_UDP_LocalClient;
+	}
+	else{
+		port = Packet::Port_UDP_RemoteClient;
+	}
 
-	if (m_udpSocket.bind(Packet::Port_UDP_Client) != sf::Socket::Done) {
+	if (m_udpSocket.bind(port) != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 			LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
 	}
@@ -155,7 +162,14 @@ void NetworkManagerClient::receiveTCPPackets() {
 void NetworkManagerClient::receiveUDPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
-	unsigned short port{ Packet::Port_UDP_Client };
+	unsigned short port;
+	if(m_client.isLocal()) {
+		port = Packet::Port_UDP_LocalClient;
+	}
+	else{
+		port = Packet::Port_UDP_RemoteClient;
+	}
+
 	sf::IpAddress address{ m_serverConnection.getRemoteAddress() };
 
 	if (m_udpSocket.receive(*packet, address, port) == sf::Socket::Status::Done) {

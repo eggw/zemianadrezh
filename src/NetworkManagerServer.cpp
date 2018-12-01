@@ -146,6 +146,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 
 				*packet << playerData.playerName;
 
+				/*
 				//Here we do a quick check to see if the playerdata generated
 				//belongs to the recipient's player; if it does, we'll cancel
 				//and not redundantly send it back to them
@@ -155,6 +156,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 						continue;
 					}
 				}
+				*/
 
 				*packet << playerData.facingLeft;
 				*packet << playerData.velocityX;
@@ -162,7 +164,15 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 				*packet << playerData.positionX;
 				*packet << playerData.positionY;
 
-				PacketSender::get_instance().send(&m_udpSocket, packet, recipient, Packet::Port_UDP_Client);
+				unsigned short port;
+				if(recipient == sf::IpAddress::LocalHost) {
+					port = Packet::Port_UDP_LocalClient;
+				}
+				else {
+					port = Packet::Port_UDP_RemoteClient;
+				}
+
+				PacketSender::get_instance().send(&m_udpSocket, packet, recipient, port);
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
 					packetCode);
@@ -272,7 +282,7 @@ void NetworkManagerServer::sendMessage(std::string _message, std::string _sender
 	if(m_messages.size() == 50) {
 		m_messages.clear();
 	}
-	
+
 	m_messages.push_back(std::make_pair(_message, _sender));
 	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 }

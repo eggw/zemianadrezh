@@ -80,6 +80,7 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
 	if (_message == LOG_MESSAGE::LISTEN_PORT_FAILURE || _message == LOG_MESSAGE::LISTEN_PORT_SUCCESS) {
 		output << Packet::Port_TCP_Server;
 	}
+	/*
 	else if (_message == LOG_MESSAGE::BIND_PORT_FAILURE || _message == LOG_MESSAGE::BIND_PORT_SUCCESS) {
 		if (_sender == LOG_SENDER::CLIENT) {
 			output << Packet::Port_UDP_Client;
@@ -87,8 +88,8 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
 		else {
 			output << Packet::Port_UDP_Server;
 		}
-	}
-	
+	}*/
+
 	output << "\n";
 
 	output.close();
