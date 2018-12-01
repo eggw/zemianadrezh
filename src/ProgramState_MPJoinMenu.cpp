@@ -28,6 +28,7 @@ ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
 
 	m_IPEntry.setAlwaysVisible(true);
 	m_IPEntry.setAlwaysActive(true);
+	m_IPEntry.setText("localhost");
 
 }
 

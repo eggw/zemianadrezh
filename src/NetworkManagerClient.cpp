@@ -1,7 +1,7 @@
 #include "NetworkManagerClient.h"
 
 #include <sstream>
-
+#include <iostream>
 #include "LoggerNetwork.h"
 
 #include "Client.h"
@@ -11,15 +11,8 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	 m_udpSocket(){
 
 	m_udpSocket.setBlocking(false);
-	unsigned short port;
-	if(m_client.isLocal()) {
-		port = Packet::Port_UDP_LocalClient;
-	}
-	else{
-		port = Packet::Port_UDP_RemoteClient;
-	}
 
-	if (m_udpSocket.bind(port) != sf::Socket::Done) {
+	if (m_udpSocket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 			LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
 	}
@@ -27,6 +20,8 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 			LoggerNetwork::LOG_MESSAGE::BIND_PORT_SUCCESS);
 	}
+
+	std::cout << "NetworkManagerClient: m_udpSocket bound to " << m_udpSocket.getLocalPort() << std::endl;
 
 	m_serverConnection.setBlocking(false);
 }
@@ -41,8 +36,9 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::JUSTJOINED: {
 			Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
+			sf::Uint16 port{ m_udpSocket.getLocalPort() };
 			*packet << playerData.playerName;
-
+			*packet << port;
 			PacketSender::get_instance().send(&m_serverConnection, packet);
 
 			break;
@@ -109,7 +105,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
 
-	while(m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
+	if (m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
 		*packet >> packetCode;
 		Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
@@ -162,13 +158,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 void NetworkManagerClient::receiveUDPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
-	unsigned short port;
-	if(m_client.isLocal()) {
-		port = Packet::Port_UDP_LocalClient;
-	}
-	else{
-		port = Packet::Port_UDP_RemoteClient;
-	}
+	unsigned short port{ m_udpSocket.getLocalPort() };
 
 	sf::IpAddress address{ m_serverConnection.getRemoteAddress() };
 

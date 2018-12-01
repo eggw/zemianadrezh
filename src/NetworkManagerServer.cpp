@@ -1,9 +1,7 @@
 #include "NetworkManagerServer.h"
 
-#include <iostream>
-
 #include "LoggerNetwork.h"
-
+#include <iostream>
 #include "Server.h"
 
 NetworkManagerServer::NetworkManagerServer(Server& _server)
@@ -16,6 +14,7 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	if (m_udpSocket.bind(Packet::Port_UDP_Server) != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 		LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
+		std::cout << "NetworkManagerServer: m_udpSocket bound to " << m_udpSocket.getLocalPort() << std::endl;
 	}
 	else {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
@@ -113,7 +112,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 
 	int packetCode = Packet::toInt(_type);
 
-	std::vector<sf::IpAddress> recipients;
+	std::vector<IPInfo> recipients;
 
 	if (_recipient == sf::IpAddress::None) {
 		for (auto& client : m_clientIPs) {
@@ -122,11 +121,15 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 	}
 	else {
 		if (!_exclude) {
-			recipients.push_back(_recipient);
+			for (auto& client : m_clientIPs) {
+				if (client.second.ipAddress == _recipient) {
+					recipients.push_back(client.second);
+				}
+			}
 		}
 		else {
 			for (auto& client : m_clientIPs) {
-				if (client.second != _recipient) {
+				if (client.second.ipAddress != _recipient) {
 					recipients.push_back(client.second);
 				}
 			}
@@ -167,16 +170,8 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 				*packet << playerData.velocityY;
 				*packet << playerData.positionX;
 				*packet << playerData.positionY;
-
-				unsigned short port;
-				if(recipient == sf::IpAddress::LocalHost) {
-					port = Packet::Port_UDP_LocalClient;
-				}
-				else {
-					port = Packet::Port_UDP_RemoteClient;
-				}
-
-				PacketSender::get_instance().send(&m_udpSocket, packet, recipient, port);
+	
+				PacketSender::get_instance().send(&m_udpSocket, packet, recipient.ipAddress, recipient.port);
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
 					packetCode);
@@ -195,7 +190,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 	PacketUPtr packet(new sf::Packet());
 
 	for(auto& connection : m_clientConnections) {
-		while(connection->receive(*packet) == sf::Socket::Status::Done) {
+		if (connection->receive(*packet) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
 			Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
@@ -207,10 +202,11 @@ void NetworkManagerServer::receiveTCPPackets() {
 			//////////////////////////////////////////////////////////////////////////////
 			case Packet::TCPPacket::JUSTJOINED: {
 					Player::EncodedPlayerData playerData = Player::EncodedPlayerData();
-
+					sf::Uint16 port;
 					*packet >> playerData.playerName;
+					*packet >> port;
 
-					m_clientIPs.insert(std::make_pair(playerData.playerName, connection.get()->getRemoteAddress()));
+					m_clientIPs.insert({ playerData.playerName, {connection.get()->getRemoteAddress(), port}});
 					m_server.addPlayer(playerData);
 					sendPacket(Packet::TCPPacket::DATA_WORLD);
 					sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
@@ -252,7 +248,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 	unsigned short port{ Packet::Port_UDP_Server };
 
 	for (auto& client : m_clientIPs) {
-		while (m_udpSocket.receive(*packet, client.second, port) == sf::Socket::Status::Done) {
+		if (m_udpSocket.receive(*packet, client.second.ipAddress, port) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
 			Packet::UDPPacket packetType{ Packet::toUDPType(packetCode) };
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
@@ -273,7 +269,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 
 				m_server.updateOtherPlayers(playerData);
 
-				sendPacket(Packet::UDPPacket::DATA_PLAYER, client.second);
+				sendPacket(Packet::UDPPacket::DATA_PLAYER, client.second.ipAddress);
 				break;
 				}
 			//////////////////////////////////////////////////////////////////////////////

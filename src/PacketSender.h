@@ -35,7 +35,7 @@ class PacketSender : public Singleton<PacketSender> {
 		PacketSender();
 
 		void send(sf::TcpSocket* _socket, PacketSharedPtr _packet);
-		void send(sf::UdpSocket* _socket, PacketSharedPtr _packet, sf::IpAddress _recipient, const int _port);
+		void send(sf::UdpSocket* _socket, PacketSharedPtr _packet, sf::IpAddress _recipient, unsigned short _port);
 		void update();
 
 	private:

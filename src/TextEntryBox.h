@@ -29,7 +29,7 @@ class TextEntryBox : public sf::Drawable {
         float getHeightAsPixels() const;
         float getHeightAsRatio(sf::Vector2u _windowSize) const;
 
-	//inline void setText(std::string _str){m_text.setString(_str);};
+		inline void setText(std::string _str){m_text.setString(_str);};
 	////////////////////////////////////////////////////////////////////
     private:
         void onResize(sf::Vector2u _newSize);

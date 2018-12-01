@@ -40,11 +40,23 @@ class NetworkManagerServer {
 		void accept();
 		void update();
 	private:
+		//Since the clients that connect to us via UDP will have varying
+		//port, we'll use IPInfo to conveniently store it alongside their IP
+		struct IPInfo {
+			IPInfo(sf::IpAddress _i,
+				unsigned short _p) :
+				ipAddress{ _i },
+				port{ _p }{};
+
+			sf::IpAddress ipAddress;
+			unsigned short port;
+		};
+
 		Server& m_server;
 		sf::TcpListener m_listener;
 		sf::UdpSocket m_udpSocket;
 		std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
-		std::map<std::string, sf::IpAddress> m_clientIPs;
+		std::map<std::string, IPInfo> m_clientIPs;
 		std::vector<std::pair<std::string, std::string>> m_messages;
 };
 

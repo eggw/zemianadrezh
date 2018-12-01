@@ -22,7 +22,7 @@ void PacketSender::send(sf::TcpSocket* _socket, PacketSharedPtr _packet) {
 //packet with UDP sockets.
 void PacketSender::send(sf::UdpSocket* _socket, PacketSharedPtr _packet, 
 						sf::IpAddress _recipient, 
-						const int _port) {
+						unsigned short _port) {
 
 	_socket->send(*_packet, _recipient, _port);
 }
