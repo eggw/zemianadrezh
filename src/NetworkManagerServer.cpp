@@ -147,6 +147,10 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 				*packet << playerData.playerName;
 
 				/*
+				NOTE: this doesn't work atm because I cannot differentiate
+				between local as in same process, or local as in connected
+				to LocalHost. I've commented it out for now.
+
 				//Here we do a quick check to see if the playerdata generated
 				//belongs to the recipient's player; if it does, we'll cancel
 				//and not redundantly send it back to them
@@ -191,7 +195,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 	PacketUPtr packet(new sf::Packet());
 
 	for(auto& connection : m_clientConnections) {
-		if(connection->receive(*packet) == sf::Socket::Status::Done) {
+		while(connection->receive(*packet) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
 			Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
@@ -248,7 +252,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 	unsigned short port{ Packet::Port_UDP_Server };
 
 	for (auto& client : m_clientIPs) {
-		if (m_udpSocket.receive(*packet, client.second, port) == sf::Socket::Status::Done) {
+		while (m_udpSocket.receive(*packet, client.second, port) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
 			Packet::UDPPacket packetType{ Packet::toUDPType(packetCode) };
 			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,

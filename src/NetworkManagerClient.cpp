@@ -109,7 +109,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
 
-	if(m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
+	while(m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
 		*packet >> packetCode;
 		Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
@@ -172,7 +172,7 @@ void NetworkManagerClient::receiveUDPPackets() {
 
 	sf::IpAddress address{ m_serverConnection.getRemoteAddress() };
 
-	if (m_udpSocket.receive(*packet, address, port) == sf::Socket::Status::Done) {
+	while (m_udpSocket.receive(*packet, address, port) == sf::Socket::Status::Done) {
 		*packet >> packetCode;
 		Packet::UDPPacket packetType{ Packet::toUDPType(packetCode) };
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
