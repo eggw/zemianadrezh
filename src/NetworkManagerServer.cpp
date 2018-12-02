@@ -279,7 +279,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 }
 
 void NetworkManagerServer::sendMessage(std::string _message, std::string _sender) {
-	if(m_messages.size() == 50) {
+	if(m_messages.size() >= 50) {
 		m_messages.clear();
 	}
 
@@ -302,25 +302,20 @@ void NetworkManagerServer::listen() {
 }
 
 void NetworkManagerServer::accept() {
-	m_clientConnections.push_back(std::unique_ptr<sf::TcpSocket>(new sf::TcpSocket()));
-	m_clientConnections.back()->setBlocking(false);
+	auto socket{ std::unique_ptr<sf::TcpSocket>(new sf::TcpSocket()) };
+	socket->setBlocking(false);
 
-	sf::Socket::Status status = m_listener.accept(*m_clientConnections.back());
-	if(status != sf::Socket::Done) {
-		//LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
-		//LoggerNetwork::LOG_MESSAGE::CONNECTION_FAILURE);
-		m_clientConnections.pop_back();
-	}
-	else {
-		if (m_clientConnections.back()->getRemoteAddress() != sf::IpAddress::LocalHost
+	sf::Socket::Status status = m_listener.accept(*socket);
+	if (status == sf::Socket::Done) {
+		if (socket->getRemoteAddress() != sf::IpAddress::LocalHost
 				&&
 				!m_server.connectionsAllowed()) {
 			LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 											  LoggerNetwork::LOG_MESSAGE::CONNECTION_BLOCKED);
-			m_clientConnections.pop_back();
 			return;
 		}
-
+		 
+		m_clientConnections.push_back(std::move(socket));
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
 	}
