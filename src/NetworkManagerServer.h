@@ -15,11 +15,6 @@ class NetworkManagerServer {
 	public:
 		NetworkManagerServer(Server& _server);
 
-		//The second and third arguments here are optional.
-		//Depending on whether _exclude is true or false,
-		//the packet will either be sent to everyone but the
-		//specificed recipient (true), or only include the specified
-		//recipient (false, default).
 		void sendPacket(Packet::TCPPacket _type,
 						sf::TcpSocket* _recipient = nullptr,
 						bool _exclude = false);
@@ -41,7 +36,7 @@ class NetworkManagerServer {
 		void update();
 	private:
 		//Since the clients that connect to us via UDP will have varying
-		//port, we'll use IPInfo to conveniently store it alongside their IP
+		//ports, we'll use IPInfo to conveniently store it alongside their IP
 		struct IPInfo {
 			IPInfo(sf::IpAddress _i,
 				unsigned short _p) :
@@ -51,6 +46,40 @@ class NetworkManagerServer {
 			sf::IpAddress ipAddress;
 			unsigned short port;
 		};
+
+		//---------------------------------------------------------------------
+		//Generally, our recipients are either going to be:
+		//one specific recipient,
+		//all recipients,
+		//or all but one recipient.
+		//
+		//These functions take in a target recipient, defaulting to nullptr,
+		//and a boolean, defaulting to false.
+		//
+		//If the recipient is null, they will return all possible recipients.
+		//If _exclude is false, they will only return the recipient specified.
+		//If _exclude is true, they will return all recipients except the one
+		//specified.
+		//
+		//These functions are used in the sendPacket() functions.
+		//---------------------------------------------------------------------
+
+		std::vector<sf::TcpSocket*> getTCPRecipients(sf::TcpSocket* _recipient = nullptr,
+													 bool _exclude = false);
+
+		std::vector<IPInfo> 		getUDPRecipients(sf::IpAddress _recipient = sf::IpAddress::None,
+													 bool _exclude = false);
+		//---------------------------------------------------------------------
+
+		//Note: the reason we have m_clientIPs and m_clientConnections in seperate
+		//data structures is because when sf::TcpListener accepts a socket, we only
+		//have access to the socket, and can't send or access any other data alongside
+		//it (in our case, we need the player's name and port the client is using).
+		//When a connection is accepted, it is pushed back to m_clientConnections.
+		//
+		//When a client sends a JUST_JOINED packet, we can then send data with it - the
+		//player's name and port. It is then that the IPInfo containing the player's
+		//name and client's port is pushed back to m_clientIPs.
 
 		Server& m_server;
 		sf::TcpListener m_listener;

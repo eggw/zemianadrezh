@@ -28,25 +28,7 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _recipient, bool _exclude) {
 	int packetCode = Packet::toInt(_type);
 
-	std::vector<sf::TcpSocket*> recipients;
-
-	if(_recipient == nullptr) {
-		for(auto& client : m_clientConnections) {
-			recipients.push_back(client.get());
-		}
-	}
-	else {
-		if(!_exclude) {
-			recipients.push_back(_recipient);
-		}
-		else {
-			for(auto& client : m_clientConnections) {
-				if(client.get() != _recipient) {
-					recipients.push_back(client.get());
-				}
-			}
-		}
-	}
+	auto recipients{ getTCPRecipients(_recipient, _exclude) };
 
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
@@ -112,29 +94,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 
 	int packetCode = Packet::toInt(_type);
 
-	std::vector<IPInfo> recipients;
-
-	if (_recipient == sf::IpAddress::None) {
-		for (auto& client : m_clientIPs) {
-			recipients.push_back(client.second);
-		}
-	}
-	else {
-		if (!_exclude) {
-			for (auto& client : m_clientIPs) {
-				if (client.second.ipAddress == _recipient) {
-					recipients.push_back(client.second);
-				}
-			}
-		}
-		else {
-			for (auto& client : m_clientIPs) {
-				if (client.second.ipAddress != _recipient) {
-					recipients.push_back(client.second);
-				}
-			}
-		}
-	}
+	auto recipients{ getUDPRecipients(_recipient, _exclude) };
 
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
@@ -170,7 +130,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 				*packet << playerData.velocityY;
 				*packet << playerData.positionX;
 				*packet << playerData.positionY;
-	
+
 				PacketSender::get_instance().send(&m_udpSocket, packet, recipient.ipAddress, recipient.port);
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
@@ -314,7 +274,7 @@ void NetworkManagerServer::accept() {
 											  LoggerNetwork::LOG_MESSAGE::CONNECTION_BLOCKED);
 			return;
 		}
-		 
+
 		m_clientConnections.push_back(std::move(socket));
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_SUCCESS);
@@ -324,3 +284,58 @@ void NetworkManagerServer::accept() {
 void NetworkManagerServer::update() {
 	PacketSender::get_instance().update();
 }
+
+std::vector<sf::TcpSocket*> NetworkManagerServer::getTCPRecipients(sf::TcpSocket* _recipient, bool _exclude) {
+    std::vector<sf::TcpSocket*> recipients{};
+
+    if(_recipient == nullptr) {
+		for(auto& client : m_clientConnections) {
+			recipients.push_back(client.get());
+		}
+	}
+	else {
+		if(!_exclude) {
+			recipients.push_back(_recipient);
+		}
+		else {
+			for(auto& client : m_clientConnections) {
+				if(client.get() != _recipient) {
+					recipients.push_back(client.get());
+				}
+			}
+		}
+	}
+
+	return recipients;
+}
+
+std::vector<NetworkManagerServer::IPInfo> NetworkManagerServer::getUDPRecipients(sf::IpAddress _recipient, bool _exclude) {
+	std::vector<IPInfo> recipients{};
+
+	if (_recipient == sf::IpAddress::None) {
+		for (auto& client : m_clientIPs) {
+			recipients.push_back(client.second);
+		}
+	}
+	else {
+		if (!_exclude) {
+			for (auto& client : m_clientIPs) {
+				if (client.second.ipAddress == _recipient) {
+					recipients.push_back(client.second);
+				}
+			}
+		}
+		else {
+			for (auto& client : m_clientIPs) {
+				if (client.second.ipAddress != _recipient) {
+					recipients.push_back(client.second);
+				}
+			}
+		}
+	}
+
+	return recipients;
+}
+
+
+
