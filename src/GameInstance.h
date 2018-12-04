@@ -16,7 +16,6 @@ class GameInstance {
 		const World::EncodedWorldData encodeWorldData() const;
 		void parseWorldData(World::EncodedWorldData& _data);
 
-		virtual void update();
 		//////////////////////////////////////////////////////////////////////////
 		//Server and Client both have different implementations of these functions
 

@@ -47,10 +47,6 @@ void Client::update() {
 	m_networkManager.update();
 
 	m_chatBox.update();
-
-	if(!isLocal()) {
-		GameInstance::update();
-	}
 }
 
 void Client::sendPackets() {
