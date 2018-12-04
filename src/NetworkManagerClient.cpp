@@ -181,7 +181,7 @@ void NetworkManagerClient::receiveUDPPackets() {
 			*packet >> playerData.positionX;
 			*packet >> playerData.positionY;
 
-			m_client.updateOtherPlayers(playerData);
+			m_client.updatePlayer(playerData);
 			break;
 		}
 		//////////////////////////////////////////////////////////////////////////////

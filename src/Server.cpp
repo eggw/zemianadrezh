@@ -5,14 +5,14 @@ Server::Server(bool _allowConnections)
 	 m_networkManager(*this),
 	 m_allowConnections(_allowConnections) {
 
-	m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
+	m_players = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
 					 (new std::vector<std::unique_ptr<Player>>());
 
 	m_world.addChunk(2, true);
 }
 
-void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
-	for(auto& player : *m_otherPlayers) {
+void Server::updatePlayer(Player::EncodedPlayerData _data) {
+	for(auto& player : *m_players) {
 		if(player->getName() == _data.playerName) {
 			player->parseData(_data);
 		}
@@ -21,7 +21,7 @@ void Server::updateOtherPlayers(Player::EncodedPlayerData _data) {
 
 void Server::addPlayer(Player::EncodedPlayerData _data) {
 	auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
-	m_otherPlayers->push_back(std::move(newPlayer));
+	m_players->push_back(std::move(newPlayer));
 }
 
 void Server::receivePackets() {
@@ -30,8 +30,8 @@ void Server::receivePackets() {
 }
 
 void Server::update() {
-	if(m_otherPlayers != nullptr) {
-		for(auto& player : *m_otherPlayers) {
+	if(m_players != nullptr) {
+		for(auto& player : *m_players) {
 			player->update();
 		}
 	}

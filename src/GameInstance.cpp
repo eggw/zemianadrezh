@@ -2,7 +2,7 @@
 
 GameInstance::GameInstance()
 	:m_world(),
-	 m_otherPlayers(nullptr) {
+	 m_players(nullptr) {
 
 }
 
@@ -10,8 +10,8 @@ const World& GameInstance::getWorld() const {
 	return m_world;
 }
 
-const std::shared_ptr<std::vector<std::unique_ptr<Player>>> GameInstance::getOtherPlayers() const {
-	return m_otherPlayers;
+const std::shared_ptr<std::vector<std::unique_ptr<Player>>> GameInstance::getPlayers() const {
+	return m_players;
 }
 
 const World::EncodedWorldData GameInstance::encodeWorldData() const {

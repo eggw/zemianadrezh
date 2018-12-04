@@ -101,7 +101,7 @@ void ProgramState_Play::renderUpdatedChunks() {
 
 //TODO: refactor this shit
 void ProgramState_Play::renderNewPlayers() {
-	for(auto& player : *m_client.getOtherPlayers()) {
+	for(auto& player : *m_client.getPlayers()) {
 		if(player->getName() != m_client.getPlayer()->getName()) {
 			m_rendererPlayer.addObject(player.get());
 		}

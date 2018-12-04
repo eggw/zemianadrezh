@@ -104,7 +104,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 	case Packet::UDPPacket::DATA_PLAYER: {
 
 		for (auto& recipient : recipients) {
-			for (auto& player : *m_server.getOtherPlayers()) {
+			for (auto& player : *m_server.getPlayers()) {
 				Player::EncodedPlayerData playerData = player->encodeData();
 
 				*packet << playerData.playerName;
@@ -227,7 +227,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 				*packet >> playerData.positionX;
 				*packet >> playerData.positionY;
 
-				m_server.updateOtherPlayers(playerData);
+				m_server.updatePlayer(playerData);
 
 				sendPacket(Packet::UDPPacket::DATA_PLAYER, client.second.ipAddress);
 				break;
@@ -245,10 +245,6 @@ void NetworkManagerServer::sendMessage(std::string _message, std::string _sender
 
 	m_messages.push_back(std::make_pair(_message, _sender));
 	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
-}
-
-const std::vector<std::unique_ptr<sf::TcpSocket>>& NetworkManagerServer::getClients() {
-	return m_clientConnections;
 }
 
 void NetworkManagerServer::listen() {

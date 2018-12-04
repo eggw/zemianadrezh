@@ -23,7 +23,7 @@ class Client : public GameInstance {
 
 		void getInput(sf::Event& _event);
 		void update();
-		void updateOtherPlayers(Player::EncodedPlayerData _data);
+		void updatePlayer(Player::EncodedPlayerData _data);
 		void addPlayer(Player::EncodedPlayerData _data);
 
 		void respawnPlayer();

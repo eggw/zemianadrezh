@@ -29,8 +29,6 @@ class NetworkManagerServer {
 		//Sends a message to all connected players
 		void sendMessage(std::string _message, std::string _sender);
 
-		const std::vector<std::unique_ptr<sf::TcpSocket>>& getClients();
-
 		void listen();
 		void accept();
 		void update();

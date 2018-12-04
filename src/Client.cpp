@@ -16,13 +16,13 @@ Client::Client(	sf::RenderWindow& _window,
 
 	if(m_localServer != nullptr) {
 		m_world = m_localServer->getWorld();
-		m_otherPlayers = m_localServer->getOtherPlayers();
+		m_players = m_localServer->getPlayers();
 
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
 	}
 	else{
-        m_otherPlayers = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
+        m_players = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
 					 (new std::vector<std::unique_ptr<Player>>());
 	}
 
@@ -36,8 +36,8 @@ void Client::getInput(sf::Event& _event) {
 void Client::update() {
 	m_player.update();
 
-	if(m_otherPlayers != nullptr) {
-		for(auto& player : *m_otherPlayers) {
+	if(m_players != nullptr) {
+		for(auto& player : *m_players) {
 			player->update();
 		}
 	}
@@ -62,14 +62,14 @@ void Client::receivePackets() {
 	m_networkManager.receiveTCPPackets();
 }
 
-void Client::updateOtherPlayers(Player::EncodedPlayerData _data) {
+void Client::updatePlayer(Player::EncodedPlayerData _data) {
 	if(_data.playerName == m_player.getName()) {
 		return;
 	}
 
 	bool found{false};
 
-	for(auto& player : *m_otherPlayers) {
+	for(auto& player : *m_players) {
 		if(player->getName() == _data.playerName) {
 			player->parseData(_data);
 			found = true;
@@ -88,7 +88,7 @@ void Client::addPlayer(Player::EncodedPlayerData _data) {
 
 	auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
 	newPlayer->parseData(_data);
-	m_otherPlayers->push_back(std::move(newPlayer));
+	m_players->push_back(std::move(newPlayer));
 }
 
 void Client::respawnPlayer() {

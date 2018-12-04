@@ -12,7 +12,7 @@ class Server : public GameInstance {
 		//todo: pass world settings to constructor
 		Server(bool _allowConnections);
 
-		void updateOtherPlayers(Player::EncodedPlayerData _data);
+		void updatePlayer(Player::EncodedPlayerData _data);
 		void addPlayer(Player::EncodedPlayerData _data);
 
 		void receivePackets();
