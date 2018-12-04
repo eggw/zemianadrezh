@@ -1,7 +1,6 @@
 #include "NetworkManagerServer.h"
 
 #include "LoggerNetwork.h"
-#include <iostream>
 #include "Server.h"
 
 NetworkManagerServer::NetworkManagerServer(Server& _server)
@@ -14,7 +13,6 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	if (m_udpSocket.bind(Packet::Port_UDP_Server) != sf::Socket::Done) {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
 		LoggerNetwork::LOG_MESSAGE::BIND_PORT_FAILURE);
-		std::cout << "NetworkManagerServer: m_udpSocket bound to " << m_udpSocket.getLocalPort() << std::endl;
 	}
 	else {
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::SERVER,
@@ -148,6 +146,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 void NetworkManagerServer::receiveTCPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
+	const sf::TcpSocket* toRemove{ nullptr };
 
 	for(auto& connection : m_clientConnections) {
 		if (connection->receive(*packet) == sf::Socket::Status::Done) {
@@ -166,11 +165,18 @@ void NetworkManagerServer::receiveTCPPackets() {
 					*packet >> playerData.playerName;
 					*packet >> port;
 
-					m_clientIPs.insert({ playerData.playerName, {*connection.get(), port}});
+					m_clientIPs.insert({ connection.get(), {playerData.playerName, *connection.get(), port}});
 					m_server.addPlayer(playerData);
 					sendPacket(Packet::TCPPacket::DATA_WORLD);
 					sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
 					sendMessage("Welcome, " + playerData.playerName + "!", "Server");
+					break;
+				}
+			//////////////////////////////////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////////////////////////////////
+			case Packet::TCPPacket::QUIT: {
+					toRemove = connection.get();
 					break;
 				}
 			//////////////////////////////////////////////////////////////////////////////
@@ -199,6 +205,12 @@ void NetworkManagerServer::receiveTCPPackets() {
 				break;
 			}
 		}
+	}
+
+	if(toRemove != nullptr){
+		std::string name { m_clientIPs.at(toRemove).playerName };
+        removeConnection(toRemove);
+        sendMessage("Goodbye, " + name + "!", "Server");
 	}
 }
 
@@ -333,5 +345,25 @@ std::vector<NetworkManagerServer::IPInfo> NetworkManagerServer::getUDPRecipients
 	return recipients;
 }
 
+void NetworkManagerServer::removeConnection(const sf::TcpSocket* _con) {
+    m_clientConnections.erase(std::remove_if(
+						   m_clientConnections.begin(),
+						   m_clientConnections.end(),
+	[&](const auto& con) {
+		//return true to have it removed
+		return (con.get() == _con);
+	}), m_clientConnections.end());
+
+
+	for(auto it{ m_clientIPs.begin() }; it != m_clientIPs.end(); ) {
+		if(it->first == _con) {
+			it = m_clientIPs.erase(it);
+			return;
+		}
+		else{
+			++it;
+		}
+    }
+}
 
 

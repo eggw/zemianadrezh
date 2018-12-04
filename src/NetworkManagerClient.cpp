@@ -1,9 +1,8 @@
 #include "NetworkManagerClient.h"
 
 #include <sstream>
-#include <iostream>
-#include "LoggerNetwork.h"
 
+#include "LoggerNetwork.h"
 #include "Client.h"
 
 NetworkManagerClient::NetworkManagerClient(Client& _client)
@@ -20,8 +19,6 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 		LoggerNetwork::get_instance().log(LoggerNetwork::LOG_SENDER::CLIENT,
 			LoggerNetwork::LOG_MESSAGE::BIND_PORT_SUCCESS);
 	}
-
-	std::cout << "NetworkManagerClient: m_udpSocket bound to " << m_udpSocket.getLocalPort() << std::endl;
 
 	m_serverConnection.setBlocking(false);
 }

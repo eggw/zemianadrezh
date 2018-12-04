@@ -36,13 +36,14 @@ class NetworkManagerServer {
 		//Since the clients that connect to us via UDP will have varying
 		//ports, we'll use IPInfo to conveniently store it alongside their IP
 		struct IPInfo {
-			IPInfo(	const sf::TcpSocket& _t,
+			IPInfo(	std::string _n,
+					sf::TcpSocket& _t,
 					unsigned short _p) :
-				tcpSocket{ _t },
+				playerName{ _n },
 				ipAddress{ _t.getRemoteAddress() },
 				port{ _p }{};
 
-            const sf::TcpSocket& tcpSocket;
+			std::string playerName;
 			sf::IpAddress ipAddress;
 			unsigned short port;
 		};
@@ -71,6 +72,11 @@ class NetworkManagerServer {
 													 bool _exclude = false);
 		//---------------------------------------------------------------------
 
+		//This is used to remove the matching TcpSocket from m_clientConnections
+		//as well as the associated IPInfo in m_clientIPs
+		//---------------------------------------------------------------------
+		void removeConnection(const sf::TcpSocket* _con);
+		//---------------------------------------------------------------------
 		//Note: the reason we have m_clientIPs and m_clientConnections in seperate
 		//data structures is because when sf::TcpListener accepts a socket, we only
 		//have access to the socket, and can't send or access any other data alongside
@@ -85,7 +91,7 @@ class NetworkManagerServer {
 		sf::TcpListener m_listener;
 		sf::UdpSocket m_udpSocket;
 		std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
-		std::map<std::string, IPInfo> m_clientIPs;
+		std::map<const sf::TcpSocket*, IPInfo> m_clientIPs;
 		std::vector<std::pair<std::string, std::string>> m_messages;
 };
 

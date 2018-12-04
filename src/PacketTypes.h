@@ -12,6 +12,7 @@ namespace Packet {
 	enum class TCPPacket
 	{
 		JUSTJOINED,
+		QUIT,
 		//Used when sending messages
 		CHAT_MESSAGE,
 		//Used by the client to send
