@@ -36,11 +36,13 @@ class NetworkManagerServer {
 		//Since the clients that connect to us via UDP will have varying
 		//ports, we'll use IPInfo to conveniently store it alongside their IP
 		struct IPInfo {
-			IPInfo(sf::IpAddress _i,
-				unsigned short _p) :
-				ipAddress{ _i },
+			IPInfo(	const sf::TcpSocket& _t,
+					unsigned short _p) :
+				tcpSocket{ _t },
+				ipAddress{ _t.getRemoteAddress() },
 				port{ _p }{};
 
+            const sf::TcpSocket& tcpSocket;
 			sf::IpAddress ipAddress;
 			unsigned short port;
 		};

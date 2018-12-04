@@ -166,7 +166,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 					*packet >> playerData.playerName;
 					*packet >> port;
 
-					m_clientIPs.insert({ playerData.playerName, {connection.get()->getRemoteAddress(), port}});
+					m_clientIPs.insert({ playerData.playerName, {*connection.get(), port}});
 					m_server.addPlayer(playerData);
 					sendPacket(Packet::TCPPacket::DATA_WORLD);
 					sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
