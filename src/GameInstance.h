@@ -11,7 +11,7 @@ class GameInstance {
 		GameInstance();
 
 		const World& getWorld() const;
-		const std::shared_ptr<std::vector<std::unique_ptr<Player>>> getPlayers() const;
+		const std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers() const;
 
 		const World::EncodedWorldData encodeWorldData() const;
 		void parseWorldData(World::EncodedWorldData& _data);
@@ -48,7 +48,12 @@ class GameInstance {
 		//of a local server, we're going to bypass packet communication completely
 		//and simply assign the client's resources to the memory address of the
 		//server's.
-		std::shared_ptr<std::vector<std::unique_ptr<Player>>> m_players;
+
+		//The reason we used a vector of shared pointers instead of uptrs is
+		//because we will pass weak pointers of all the players into RendererDrawable.
+		//When a player is removed, the shared_ptr will go out of scope. This is where
+		//the weak_ptr comes in and removes itself from the Renderer.
+		std::shared_ptr<std::vector<std::shared_ptr<Player>>> m_players;
 };
 
 #endif // GAMEINSTANCE_H_INCLUDED

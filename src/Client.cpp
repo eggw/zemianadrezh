@@ -22,8 +22,8 @@ Client::Client(	sf::RenderWindow& _window,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
 	}
 	else{
-        m_players = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
-					 (new std::vector<std::unique_ptr<Player>>());
+        m_players = std::shared_ptr<std::vector<std::shared_ptr<Player>>>
+					 (new std::vector<std::shared_ptr<Player>>());
 	}
 
 }

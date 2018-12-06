@@ -5,8 +5,8 @@ Server::Server(bool _allowConnections)
 	 m_networkManager(*this),
 	 m_allowConnections(_allowConnections) {
 
-	m_players = std::shared_ptr<std::vector<std::unique_ptr<Player>>>
-					 (new std::vector<std::unique_ptr<Player>>());
+	m_players = std::shared_ptr<std::vector<std::shared_ptr<Player>>>
+					 (new std::vector<std::shared_ptr<Player>>());
 
 	m_world.addChunk(2, true);
 }

@@ -10,7 +10,7 @@ const World& GameInstance::getWorld() const {
 	return m_world;
 }
 
-const std::shared_ptr<std::vector<std::unique_ptr<Player>>> GameInstance::getPlayers() const {
+const std::shared_ptr<std::vector<std::shared_ptr<Player>>> GameInstance::getPlayers() const {
 	return m_players;
 }
 
