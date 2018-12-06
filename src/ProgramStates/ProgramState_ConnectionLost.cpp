@@ -5,5 +5,6 @@ ProgramState_ConnectionLost::ProgramState_ConnectionLost(Program& _program)
 	addMenuItem("Connection to remote server was lost!");
 	addGap();
 	addMenuItem("Back",
-				&Program::returnToMainMenu);
+				&Program::returnToMainMenu,
+				sf::Keyboard::Escape);
 }

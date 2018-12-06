@@ -6,5 +6,6 @@ ProgramState_MPJoinFailed::ProgramState_MPJoinFailed(Program& _program,
 	addMenuItem("Could not connect to " + _ip);
 	addGap();
 	addMenuItem("Back",
-				&Program::popState);
+				&Program::popState,
+				sf::Keyboard::Escape);
 }

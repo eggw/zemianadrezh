@@ -16,7 +16,8 @@ ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
 	:ProgramState_Menu(_program),
 	 m_IPEntry(18, 45) {
 	addMenuItem("Connect",
-				&Program::pushState_Play_MP_Join);
+				&Program::pushState_Play_MP_Join,
+				sf::Keyboard::Enter);
 
 	addGap();
 	addMenuItem("Back to Main Menu",
@@ -39,13 +40,6 @@ void ProgramState_MPJoinMenu::update() {
 	ProgramState_Menu::update();
 	m_IPEntry.update();
 	m_program.setIpAddress(m_IPEntry.getCurrentString());
-
-	//Simulate a click on the "connect" button after the user
-	//presses enter
-	if(m_IPEntry.inputComplete()) {
-		(m_program.*std::get<1>(m_menuItems[0]))();
-        return;
-	}
 }
 
 void ProgramState_MPJoinMenu::draw() {

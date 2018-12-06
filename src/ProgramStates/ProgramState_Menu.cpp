@@ -33,6 +33,9 @@ bool lmbPressed(sf::Event& _event) {
 When a left click is registered, this function checks if any
 menu items are selected (via their boolean value). It then
 calls the function pointer, if it's not null.
+
+Also checks if a MenuItem's keyboard shortcut was pressed,
+and calls its function pointer if so.
 */
 void ProgramState_Menu::getInput(sf::Event& _event) {
 	ProgramState::getInput(_event);
@@ -40,6 +43,20 @@ void ProgramState_Menu::getInput(sf::Event& _event) {
 	if(lmbPressed(_event)) {
 		for(auto& menuItem : m_menuItems) {
 			if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
+				(m_program.*std::get<1>(menuItem))();
+				return;
+			}
+		}
+	}
+
+	if(_event.type == sf::Event::KeyPressed) {
+		for(auto& menuItem : m_menuItems) {
+			int key { std::get<3>(menuItem) };
+			if(key == sf::Keyboard::Unknown) {
+				continue;
+			}
+
+			if(_event.key.code == key && !isFunctionNull(menuItem)) {
 				(m_program.*std::get<1>(menuItem))();
 				return;
 			}
@@ -84,7 +101,9 @@ void ProgramState_Menu::draw() {
 	}
 }
 
-void ProgramState_Menu::addMenuItem(const std::string _string, void(Program::*f)()) {
+void ProgramState_Menu::addMenuItem(const std::string _string,
+									void(Program::*f)(),
+									int _keyCode) {
 	sf::Text menuItem;
 	float verticalSpacing{40.0f};
 
@@ -93,7 +112,7 @@ void ProgramState_Menu::addMenuItem(const std::string _string, void(Program::*f)
 	menuItem.setOrigin(menuItem.getGlobalBounds().width / 2,
 					   menuItem.getGlobalBounds().height / 2);
 
-	m_menuItems.push_back(std::make_tuple(false, f, menuItem));
+	m_menuItems.push_back(std::make_tuple(false, f, menuItem, _keyCode));
 
 	int index = floor(m_menuItems.size() / 2);
 

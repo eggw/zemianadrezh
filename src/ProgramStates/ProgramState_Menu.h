@@ -14,13 +14,15 @@ class ProgramState_Menu : public ProgramState {
 		virtual void update();
 		virtual void draw();
 
-		void addMenuItem(const std::string _string, void(Program::*f)() = nullptr);
+		void addMenuItem(const std::string _string,
+						 void(Program::*f)() = nullptr,
+						 int _keyCode = sf::Keyboard::Unknown);
 		void addGap();
 
 	protected:
 		virtual void onResize(sf::Vector2u _newSize);
 	protected:
-		typedef std::tuple<bool, void(Program::*)(), sf::Text> MenuItem;
+		typedef std::tuple<bool, void(Program::*)(), sf::Text, int> MenuItem;
 		bool isMousedOver(MenuItem _menuItem);
 		bool isFunctionNull(MenuItem _menuItem);
 		//We'll represent the menu items with a vector of tuples.
@@ -31,8 +33,13 @@ class ProgramState_Menu : public ProgramState {
 		//The second element, a function pointer, will be used to
 		//determine what happens when the item is clicked on
 		//
-		//The last element, an sf::Text object, is what the user
+		//The third element, an sf::Text object, is what the user
 		//sees on the menu screen
+		//
+		//The fourth and final element will be an integer representing
+		//a key (sf::Keyboard). This is optional and can be used as a
+		//shortcut to simulate a click on this MenuItem
+
 		std::vector<MenuItem> m_menuItems;
 		sf::View m_view;
 };

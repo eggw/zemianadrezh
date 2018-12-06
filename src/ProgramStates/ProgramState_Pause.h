@@ -6,8 +6,6 @@
 class ProgramState_Pause : public ProgramState_Menu {
 	public:
 		ProgramState_Pause(Program& _program);
-
-		void getInput(sf::Event& _event);
 };
 
 #endif // PROGRAMSTATE_PAUSE_H_INCLUDED
