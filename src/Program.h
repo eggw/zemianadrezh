@@ -30,6 +30,7 @@ class Program : public Singleton<Program> {
 		void pushState_MPJoinMenu();
 
 		void pushState_MPJoinFailed();
+		void pushState_MPConnectionLost();
 
 		void returnToMainMenu();
 

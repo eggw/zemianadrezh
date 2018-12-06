@@ -7,6 +7,7 @@
 #include "ProgramState_MPHostMenu.h"
 #include "ProgramState_MPJoinMenu.h"
 #include "ProgramState_MPJoinFailed.h"
+#include "ProgramState_ConnectionLost.h"
 
 Program::Program() {
 	m_window = std::unique_ptr<sf::RenderWindow>
@@ -101,6 +102,10 @@ void Program::pushState_MPJoinMenu() {
 
 void Program::pushState_MPJoinFailed() {
 	m_states.push_back(std::unique_ptr<ProgramState_MPJoinFailed>(new ProgramState_MPJoinFailed(*this, m_ipAddress)));
+}
+
+void Program::pushState_MPConnectionLost() {
+	m_states.push_back(std::unique_ptr<ProgramState_ConnectionLost>(new ProgramState_ConnectionLost(*this)));
 }
 
 bool Program::localServerInitialised() {

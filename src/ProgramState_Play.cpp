@@ -58,7 +58,7 @@ void ProgramState_Play::update() {
 	m_client.sendPackets();
 
 	if(!m_client.isConnected()) {
-        m_program.returnToMainMenu();
+        m_program.pushState_MPConnectionLost();
 	}
 }
 
