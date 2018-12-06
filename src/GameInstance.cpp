@@ -21,3 +21,13 @@ const World::EncodedWorldData GameInstance::encodeWorldData() const {
 void GameInstance::parseWorldData(World::EncodedWorldData& _data) {
 	m_world.parseData(_data);
 }
+
+void GameInstance::removePlayer(std::string _name) {
+	m_players->erase(std::remove_if(
+						   m_players->begin(),
+						   m_players->end(),
+	[&](const auto& p) {
+		//return true to have it removed
+		return (p.get()->getName() == _name);
+	}), m_players->end());
+}

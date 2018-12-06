@@ -6,7 +6,8 @@
 NetworkManagerServer::NetworkManagerServer(Server& _server)
 	: m_server(_server),
 	  m_listener(),
-	  m_udpSocket(){
+	  m_udpSocket(),
+	  m_lastRemovedPlayer{}{
 
 	m_udpSocket.setBlocking(false);
 
@@ -32,6 +33,22 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 	*packet << packetCode;
 
 	switch(_type) {
+	//////////////////////////////////////////////////////////////////////////////
+	case Packet::TCPPacket::QUIT: {
+			*packet << m_lastRemovedPlayer;
+
+			for(auto& recipient : recipients) {
+				PacketSender::get_instance().send(recipient, packet);
+			}
+
+			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+					packetCode);
+
+			break;
+		}
+    //////////////////////////////////////////////////////////////////////////////
+
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::DATA_WORLD: {
 
@@ -211,6 +228,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 		std::string name { m_clientIPs.at(toRemove).playerName };
         removeConnection(toRemove);
         sendMessage("Goodbye, " + name + "!", "Server");
+        notifyRemoved(name);
 	}
 }
 
@@ -257,6 +275,11 @@ void NetworkManagerServer::sendMessage(std::string _message, std::string _sender
 
 	m_messages.push_back(std::make_pair(_message, _sender));
 	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
+}
+
+void NetworkManagerServer::notifyRemoved(std::string _name) {
+	m_lastRemovedPlayer = _name;
+	sendPacket(Packet::TCPPacket::QUIT);
 }
 
 void NetworkManagerServer::listen() {

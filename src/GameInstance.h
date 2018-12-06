@@ -40,6 +40,8 @@ class GameInstance {
 		virtual void addPlayer(Player::EncodedPlayerData _data) = 0;
 		//////////////////////////////////////////////////////////////////////////
 
+		void removePlayer(std::string _name);
+
 	protected:
 		World m_world;
 		//The reason we use a shared pointer here is because in the case

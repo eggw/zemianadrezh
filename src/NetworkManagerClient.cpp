@@ -118,6 +118,18 @@ void NetworkManagerClient::receiveTCPPackets() {
 
 		switch(packetType) {
 		//////////////////////////////////////////////////////////////////////////////
+		case Packet::TCPPacket::QUIT: {
+				std::string name{};
+				*packet >> name;
+				//TODO;
+				//Deal with dangling ptr in RendererDrawable::m_objects
+				//when Client::removePlayer() is called.
+				//m_client.removePlayer(name);
+				break;
+			}
+		//////////////////////////////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////////////////////////////
 		case Packet::TCPPacket::DATA_WORLD: {
 
 				World::EncodedWorldData worldData;

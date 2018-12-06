@@ -28,6 +28,9 @@ class NetworkManagerServer {
 
 		//Sends a message to all connected players
 		void sendMessage(std::string _message, std::string _sender);
+		//Sends a "QUIT" packet to all connected players containing
+		//the name of the player who quit
+		void notifyRemoved(std::string _name);
 
 		void listen();
 		void accept();
@@ -93,6 +96,9 @@ class NetworkManagerServer {
 		std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
 		std::map<const sf::TcpSocket*, IPInfo> m_clientIPs;
 		std::vector<std::pair<std::string, std::string>> m_messages;
+        //m_lastRemovedPlayer contains the name of the last player to
+        //be removed from the server
+		std::string m_lastRemovedPlayer;
 };
 
 
