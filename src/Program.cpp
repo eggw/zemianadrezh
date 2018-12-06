@@ -1,13 +1,13 @@
 #include "Program.h"
 
-#include "ProgramState_Play.h"
-#include "ProgramState_Pause.h"
-#include "ProgramState_MainMenu.h"
-#include "ProgramState_MPMenu.h"
-#include "ProgramState_MPHostMenu.h"
-#include "ProgramState_MPJoinMenu.h"
-#include "ProgramState_MPJoinFailed.h"
-#include "ProgramState_ConnectionLost.h"
+#include "ProgramStates/ProgramState_Play.h"
+#include "ProgramStates/ProgramState_Pause.h"
+#include "ProgramStates/ProgramState_MainMenu.h"
+#include "ProgramStates/ProgramState_MPMenu.h"
+#include "ProgramStates/ProgramState_MPHostMenu.h"
+#include "ProgramStates/ProgramState_MPJoinMenu.h"
+#include "ProgramStates/ProgramState_MPJoinFailed.h"
+#include "ProgramStates/ProgramState_ConnectionLost.h"
 
 Program::Program() {
 	m_window = std::unique_ptr<sf::RenderWindow>
