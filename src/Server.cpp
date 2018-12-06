@@ -5,8 +5,7 @@ Server::Server(bool _allowConnections)
 	 m_networkManager(*this),
 	 m_allowConnections(_allowConnections) {
 
-	m_players = std::shared_ptr<std::vector<std::shared_ptr<Player>>>
-					 (new std::vector<std::shared_ptr<Player>>());
+	m_players = std::make_shared<std::vector<std::shared_ptr<Player>>>();
 
 	m_world.addChunk(2, true);
 }
@@ -20,7 +19,7 @@ void Server::updatePlayer(Player::EncodedPlayerData _data) {
 }
 
 void Server::addPlayer(Player::EncodedPlayerData _data) {
-	auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
+	auto newPlayer {std::make_shared<Player>(_data.playerName)};
 	m_players->push_back(std::move(newPlayer));
 }
 

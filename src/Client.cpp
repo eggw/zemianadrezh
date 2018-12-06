@@ -22,8 +22,7 @@ Client::Client(	sf::RenderWindow& _window,
 										  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
 	}
 	else{
-        m_players = std::shared_ptr<std::vector<std::shared_ptr<Player>>>
-					 (new std::vector<std::shared_ptr<Player>>());
+        m_players = std::make_shared<std::vector<std::shared_ptr<Player>>>();
 	}
 
 }
@@ -88,7 +87,7 @@ void Client::addPlayer(Player::EncodedPlayerData _data) {
 		return;
 	}
 
-	auto newPlayer = std::unique_ptr<Player>(new Player(_data.playerName));
+	auto newPlayer {std::make_shared<Player>(_data.playerName)};
 	newPlayer->parseData(_data);
 	m_players->push_back(std::move(newPlayer));
 }
