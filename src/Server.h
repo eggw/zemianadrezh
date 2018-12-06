@@ -11,6 +11,7 @@ class Server : public GameInstance {
 	public:
 		//todo: pass world settings to constructor
 		Server(bool _allowConnections);
+		~Server();
 
 		void updatePlayer(Player::EncodedPlayerData _data);
 		void addPlayer(Player::EncodedPlayerData _data);

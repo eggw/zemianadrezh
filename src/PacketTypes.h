@@ -13,6 +13,7 @@ namespace Packet {
 	{
 		JUSTJOINED,
 		QUIT,
+		CONNECTIONLOST,
 		//Used when sending messages
 		CHAT_MESSAGE,
 		//Used by the client to send

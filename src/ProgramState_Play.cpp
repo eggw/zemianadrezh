@@ -56,6 +56,10 @@ void ProgramState_Play::update() {
 
 	m_client.update();
 	m_client.sendPackets();
+
+	if(!m_client.isConnected()) {
+        m_program.returnToMainMenu();
+	}
 }
 
 void ProgramState_Play::draw() {

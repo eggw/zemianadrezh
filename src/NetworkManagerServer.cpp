@@ -49,6 +49,20 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 		}
     //////////////////////////////////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////
+	case Packet::TCPPacket::CONNECTIONLOST: {
+			for(auto& recipient : recipients) {
+				PacketSender::get_instance().send(recipient, packet);
+			}
+
+			LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+					packetCode);
+
+			break;
+		}
+    //////////////////////////////////////////////////////////////////////////////
+
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::DATA_WORLD: {
 

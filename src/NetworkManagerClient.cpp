@@ -1,13 +1,15 @@
 #include "NetworkManagerClient.h"
 
+#include <iostream>
 #include <sstream>
 
 #include "LoggerNetwork.h"
 #include "Client.h"
 
 NetworkManagerClient::NetworkManagerClient(Client& _client)
-	:m_client(_client),
-	 m_udpSocket(){
+	:m_client{ _client },
+	 m_connectionActive{ true },
+	 m_udpSocket{} {
 
 	m_udpSocket.setBlocking(false);
 
@@ -127,6 +129,13 @@ void NetworkManagerClient::receiveTCPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////////
+		case Packet::TCPPacket::CONNECTIONLOST: {
+                m_connectionActive = false;
+				break;
+			}
+		//////////////////////////////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////////////////////////////
 		case Packet::TCPPacket::DATA_WORLD: {
 
 				World::EncodedWorldData worldData;
@@ -226,7 +235,7 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, unsigned short _port) {
 }
 
 bool NetworkManagerClient::connectionActive() const {
-	return m_serverConnection.getRemoteAddress() != sf::IpAddress::None;
+	return m_connectionActive;
 }
 
 bool NetworkManagerClient::receivedMessage(std::pair<std::string, std::string>* _ptr) {

@@ -10,6 +10,10 @@ Server::Server(bool _allowConnections)
 	m_world.addChunk(2, true);
 }
 
+Server::~Server() {
+    m_networkManager.sendPacket(Packet::TCPPacket::CONNECTIONLOST);
+}
+
 void Server::updatePlayer(Player::EncodedPlayerData _data) {
 	for(auto& player : *m_players) {
 		if(player->getName() == _data.playerName) {
