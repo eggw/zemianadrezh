@@ -3,7 +3,6 @@
 #include "Keybinds.h"
 #include "LoggerNetwork.h"
 
-#include <iostream>
 
 ProgramState_Play::ProgramState_Play(Program& _program,
 									 sf::IpAddress _ipAddress)
@@ -15,8 +14,9 @@ ProgramState_Play::ProgramState_Play(Program& _program,
 				_ipAddress,
 				m_program.getServer()),
 	   m_rendererChunk(*m_program.m_window),
-	   m_rendererPlayer(*m_program.m_window),
+	   m_rendererClientPlayer(*m_program.m_window),
 	   m_rendererChatbox(*m_program.m_window),
+	   m_rendererOtherPlayers(*m_program.m_window),
 	   m_view{sf::FloatRect(0, 0,
 							float(m_program.m_window->getSize().x),
 							float(m_program.m_window->getSize().y))} {
@@ -25,7 +25,7 @@ ProgramState_Play::ProgramState_Play(Program& _program,
 	m_client.m_networkManager.connect(_ipAddress, Packet::Port_TCP_Server);
 
 	m_rendererChatbox.addObject(m_client.getChatBox());
-	m_rendererPlayer.addObject(m_client.getPlayer());
+	m_rendererClientPlayer.addObject(m_client.getPlayer());
 
 }
 
@@ -47,11 +47,6 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 }
 
 void ProgramState_Play::update() {
-	if(!m_client.isConnected()) {
-		std::cout << "Not connected!"  << std::endl;
-		return;
-	}
-
 	m_view.setCenter(m_client.getPlayer()->getPosition());
 
 	m_client.receivePackets();
@@ -65,7 +60,8 @@ void ProgramState_Play::update() {
 
 void ProgramState_Play::draw() {
 	m_program.m_window->setView(m_view);
-	m_rendererPlayer.draw();
+	m_rendererClientPlayer.draw();
+	m_rendererOtherPlayers.draw();
 	m_rendererChunk.draw();
 	m_rendererChatbox.draw();
 }
@@ -103,7 +99,7 @@ void ProgramState_Play::renderUpdatedChunks() {
 void ProgramState_Play::renderNewPlayers() {
 	for(auto& player : *m_client.getPlayers()) {
 		if(player->getName() != m_client.getPlayer()->getName()) {
-			m_rendererPlayer.addObject(player.get());
+			m_rendererOtherPlayers.addObject(player);
 		}
 	}
 }

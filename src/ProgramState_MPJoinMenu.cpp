@@ -2,8 +2,6 @@
 
 #include "FontManager.h"
 
-#include <iostream>
-
 //Here are the variables we'll use to initialise the IP entry box
 //in the correct position. It will take 20% of the screen width and
 //be located just above the first item in m_menuItems (which should be

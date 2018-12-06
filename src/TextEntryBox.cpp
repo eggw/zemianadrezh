@@ -5,8 +5,6 @@
 #include "FontManager.h"
 #include "InputLocker.h"
 
-#include <iostream>
-
 const bool keyPressed(sf::Keyboard::Key _key) {
 	return sf::Keyboard::isKeyPressed(_key);
 }

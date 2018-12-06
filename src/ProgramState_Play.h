@@ -7,6 +7,7 @@
 #include "Client.h"
 #include "RendererChunk.h"
 #include "RendererDrawable.h"
+#include "RendererSharedDrawable.h"
 
 class ProgramState_Play : public ProgramState {
     public:
@@ -26,8 +27,17 @@ class ProgramState_Play : public ProgramState {
     private:
         Client m_client;
         RendererChunk m_rendererChunk;
-        RendererDrawable<Player> m_rendererPlayer;
+        RendererDrawable<Player> m_rendererClientPlayer;
         RendererDrawable<ChatBox> m_rendererChatbox;
+
+        //The client's player and the chatbox will always be drawn.
+        //However, other players come and go. m_rendererPeers will use
+        //weak_ptrs (to GameInstance::m_players) to draw them. When a player
+        //is removed from m_players (via GameInstance::removePlayer()), and
+        //thus goes out of scope, it will be detected by the weak_ptrs in
+        //weak_ptr.expired(), and we can then remove it from m_objects, avoiding
+        //a dangling pointer.
+        RendererSharedDrawable<Player> m_rendererOtherPlayers;
 
         sf::View m_view;
 
