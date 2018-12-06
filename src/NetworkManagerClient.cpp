@@ -235,7 +235,8 @@ void NetworkManagerClient::connect(sf::IpAddress _ip, unsigned short _port) {
 }
 
 bool NetworkManagerClient::connectionActive() const {
-	return m_connectionActive;
+	bool invalidHost { m_serverConnection.getRemoteAddress() == sf::IpAddress::None };
+	return m_connectionActive && !invalidHost;
 }
 
 bool NetworkManagerClient::receivedMessage(std::pair<std::string, std::string>* _ptr) {

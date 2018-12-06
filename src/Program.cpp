@@ -31,7 +31,7 @@ void Program::init() {
 void Program::gameLoop() {
 	while(m_window->isOpen()) {
 		m_window->clear(sf::Color(53,80,200));
-        monitorWindowClosing();
+        getInput();
 
 		if(localServerInitialised()) {
 			m_localServer->receivePackets();
@@ -50,11 +50,15 @@ void Program::gameLoop() {
 	}
 }
 
-void Program::monitorWindowClosing() {
+void Program::getInput() {
     sf::Event event;
     while(m_window->pollEvent(event)) {
         if(event.type == sf::Event::Closed) {
             m_window->close();
+        }
+
+        if(m_states.back()->isVisibleOverPreviousState()) {
+			m_states.end()[-2]->getInput(event);
         }
 
         m_states.back()->getInput(event);
