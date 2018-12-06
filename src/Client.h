@@ -21,6 +21,8 @@ class Client : public GameInstance {
 				sf::IpAddress _serverIP,
 				Server* _localServer = nullptr);
 
+		~Client();
+
 		void getInput(sf::Event& _event);
 		void update();
 		void updatePlayer(Player::EncodedPlayerData _data);

@@ -28,6 +28,12 @@ Client::Client(	sf::RenderWindow& _window,
 
 }
 
+Client::~Client() {
+    if(!isLocal()) {
+		m_networkManager.sendPacket(Packet::TCPPacket::QUIT);
+    }
+}
+
 void Client::getInput(sf::Event& _event) {
 	m_player.getInput();
 	m_chatBox.getInput(_event);
