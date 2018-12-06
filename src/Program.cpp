@@ -41,6 +41,7 @@ void Program::gameLoop() {
 		m_states.back()->update();
 
 		if(m_states.back()->isVisibleOverPreviousState()) {
+			m_states.end()[-2]->update();
 			m_states.end()[-2]->draw();
 		}
 		m_states.back()->draw();
