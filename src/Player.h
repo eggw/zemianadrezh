@@ -20,7 +20,7 @@ class Player : public EntityMoving, public sf::Drawable {
 		const std::string& getName() const;
 
 		void getInput();
-		void update();
+		void update(int _timeslice);
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 		const EncodedPlayerData encodeData() const;

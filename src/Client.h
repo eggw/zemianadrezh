@@ -24,7 +24,7 @@ class Client : public GameInstance {
 		~Client();
 
 		void getInput(sf::Event& _event);
-		void update();
+		void update(int _timeslice);
 		void updatePlayer(const Player::EncodedPlayerData& _data);
 		void addPlayer(const Player::EncodedPlayerData& _data);
 

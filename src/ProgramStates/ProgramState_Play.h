@@ -16,7 +16,7 @@ class ProgramState_Play : public ProgramState {
         ~ProgramState_Play();
 
         void getInput(sf::Event& _event);
-        void update();
+        void update(int _timeslice);
         void draw();
 
         bool clientConnected() const;

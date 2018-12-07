@@ -78,12 +78,12 @@ void Player::getInput() {
 
 	if(sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
 		m_facingLeft = true;
-		m_velocity.x = -3;
+		m_velocity.x = -0.2;
 	}
 
 	else if(sf::Keyboard::isKeyPressed(Key::RIGHT_KEY)) {
 		m_facingLeft = false;
-		m_velocity.x = 3;
+		m_velocity.x = 0.2;
 
 	}
 	else {
@@ -91,7 +91,9 @@ void Player::getInput() {
 	}
 }
 
-void Player::update() {
+void Player::update(int _timeslice) {
+	EntityMoving::update(_timeslice);
+
 	if(m_facingLeft) {
 		m_animationSheet.setAnimationRange(0, 10);
 	}
@@ -99,8 +101,11 @@ void Player::update() {
 		m_animationSheet.setAnimationRange(11, 21);
 	}
 
-	m_animationSheet.setAnimationSpeed(abs(m_velocity.x) * 0.01f);
-	m_position = {m_position.x + m_velocity.x, m_position.y};
+	float effectiveSpeed{ m_velocity.x };
+	if(effectiveSpeed < 0) {
+		effectiveSpeed *= -1;
+	}
+	m_animationSheet.setAnimationSpeed(effectiveSpeed / 10);
 	m_animationSheet.update();
 
 	m_sprite = m_animationSheet.getSprite();

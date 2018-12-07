@@ -46,7 +46,7 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 	m_client.getInput(_event);
 }
 
-void ProgramState_Play::update() {
+void ProgramState_Play::update(int _timeslice) {
 	m_view.setCenter(m_client.getPlayer()->getPosition());
 
 	m_client.receivePackets();
@@ -54,7 +54,7 @@ void ProgramState_Play::update() {
 	renderUpdatedChunks();
 	renderNewPlayers();
 
-	m_client.update();
+	m_client.update(_timeslice);
 	m_client.sendPackets();
 
 	if(!m_client.isConnected()) {

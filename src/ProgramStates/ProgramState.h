@@ -12,7 +12,7 @@ class ProgramState {
 		virtual ~ProgramState() = 0;
 
 		virtual void getInput(sf::Event& _event);
-		virtual void update() = 0;
+		virtual void update(int _timeslice) = 0;
 		virtual void draw() = 0;
 
 		bool isVisibleOverPreviousState() const;

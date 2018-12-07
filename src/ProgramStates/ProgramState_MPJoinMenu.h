@@ -9,7 +9,7 @@ class ProgramState_MPJoinMenu : public ProgramState_Menu {
 	public:
 		ProgramState_MPJoinMenu (Program& _program);
 		void getInput(sf::Event& _event);
-		void update();
+		void update(int _timeslice);
 		void draw();
 	protected:
 		void onResize(sf::Vector2u _newSize);

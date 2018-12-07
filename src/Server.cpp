@@ -32,10 +32,10 @@ void Server::receivePackets() {
 	m_networkManager.receiveTCPPackets();
 }
 
-void Server::update() {
+void Server::update(int _timeslice) {
 	if(m_players != nullptr) {
 		for(auto& player : *m_players) {
-			player->update();
+			player->update(_timeslice);
 		}
 	}
 

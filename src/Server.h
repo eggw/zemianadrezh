@@ -18,7 +18,7 @@ class Server : public GameInstance {
 
 		void receivePackets();
 
-		void update();
+		void update(int _timeslice);
 
 		bool connectionsAllowed();
 	public:

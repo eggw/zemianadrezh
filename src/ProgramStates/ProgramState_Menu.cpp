@@ -79,7 +79,7 @@ bool ProgramState_Menu::isFunctionNull(ProgramState_Menu::MenuItem _menuItem) {
 	return std::get<1>(_menuItem) == nullptr;
 }
 
-void ProgramState_Menu::update() {
+void ProgramState_Menu::update(int _timeslice) {
 	for(auto& menuItem : m_menuItems) {
 		if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
 			std::get<0>(menuItem) = true;

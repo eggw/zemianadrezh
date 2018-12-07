@@ -38,12 +38,12 @@ void Client::getInput(sf::Event& _event) {
 	m_chatBox.getInput(_event);
 }
 
-void Client::update() {
-	m_player.update();
+void Client::update(int _timeslice) {
+	m_player.update(_timeslice);
 
 	if(m_players != nullptr) {
 		for(auto& player : *m_players) {
-			player->update();
+			player->update(_timeslice);
 		}
 	}
 

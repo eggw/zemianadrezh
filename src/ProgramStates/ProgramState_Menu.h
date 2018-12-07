@@ -11,7 +11,7 @@ class ProgramState_Menu : public ProgramState {
 		~ProgramState_Menu();
 
 		virtual void getInput(sf::Event& _event);
-		virtual void update();
+		virtual void update(int _timeslice);
 		virtual void draw();
 
 		void addMenuItem(const std::string& _string,

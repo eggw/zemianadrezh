@@ -52,6 +52,12 @@ class Program : public Singleton<Program> {
 		//getInput() is responsibile for detecting the window being
 		//closed, and, of course, calling the current state's getInput()
 	    void getInput();
+	    //Update and draw simply call the current gamestate's version of
+	    //those functions, as well as checking if they should do so for
+	    //the previous state.
+	    void update(int _timeslice);
+	    void draw();
+
 		bool isAtMainMenu();
 		std::unique_ptr<Server> m_localServer{nullptr};
 		//Due to the way menu items work (ProgramState_Menu),

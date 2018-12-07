@@ -36,8 +36,8 @@ void ProgramState_MPJoinMenu::getInput(sf::Event& _event) {
 	m_IPEntry.getInput(_event);
 }
 
-void ProgramState_MPJoinMenu::update() {
-	ProgramState_Menu::update();
+void ProgramState_MPJoinMenu::update(int _timeslice) {
+	ProgramState_Menu::update(_timeslice);
 	m_IPEntry.update();
 	m_program.setIpAddress(m_IPEntry.getCurrentString());
 }

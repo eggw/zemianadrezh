@@ -9,6 +9,8 @@
 #include "ProgramStates/ProgramState_MPJoinFailed.h"
 #include "ProgramStates/ProgramState_ConnectionLost.h"
 
+constexpr int FIXED_TIMESLICE { 16 };
+
 Program::Program() {
 	m_window = std::unique_ptr<sf::RenderWindow>
 			   (new sf::RenderWindow(sf::VideoMode(800,600),
@@ -29,24 +31,27 @@ void Program::init() {
 }
 
 void Program::gameLoop() {
+	int simulationTime { 0 }; //as milliseconds
+	sf::Clock timesliceClock{};
+
 	while(m_window->isOpen()) {
 		m_window->clear(sf::Color(53,80,200));
+
         getInput();
 
-		if(localServerInitialised()) {
-			m_localServer->receivePackets();
-			m_localServer->update();
+		int realTime{ timesliceClock.getElapsedTime().asMilliseconds() };
+		while (simulationTime < realTime){
+			simulationTime += FIXED_TIMESLICE;
+
+			if(localServerInitialised()) {
+				m_localServer->receivePackets();
+				m_localServer->update(FIXED_TIMESLICE);
+			}
+
+			update(FIXED_TIMESLICE);
 		}
 
-		m_states.back()->update();
-
-		if(m_states.back()->isVisibleOverPreviousState()) {
-			m_states.end()[-2]->update();
-			m_states.end()[-2]->draw();
-		}
-		m_states.back()->draw();
-
-		m_window->display();
+		draw();
 	}
 }
 
@@ -72,6 +77,21 @@ void Program::getInput() {
 
         m_states.back()->getInput(event);
     }
+}
+
+void Program::update(int _timeslice) {
+	if(m_states.back()->isVisibleOverPreviousState()) {
+		m_states.end()[-2]->update(_timeslice);
+	}
+	m_states.back()->update(_timeslice);
+}
+
+void Program::draw() {
+	if(m_states.back()->isVisibleOverPreviousState()) {
+		m_states.end()[-2]->draw();
+	}
+	m_states.back()->draw();
+	m_window->display();
 }
 
 void Program::pushState_Play_SP() {
