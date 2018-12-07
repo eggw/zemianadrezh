@@ -14,7 +14,7 @@ class ProgramState_Menu : public ProgramState {
 		virtual void update();
 		virtual void draw();
 
-		void addMenuItem(const std::string _string,
+		void addMenuItem(const std::string& _string,
 						 void(Program::*f)() = nullptr,
 						 int _keyCode = sf::Keyboard::Unknown);
 		void addGap();

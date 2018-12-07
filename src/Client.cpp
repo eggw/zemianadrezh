@@ -63,7 +63,7 @@ void Client::receivePackets() {
 	m_networkManager.receiveTCPPackets();
 }
 
-void Client::updatePlayer(Player::EncodedPlayerData _data) {
+void Client::updatePlayer(const Player::EncodedPlayerData& _data) {
 	if(_data.playerName == m_player.getName()) {
 		return;
 	}
@@ -82,7 +82,7 @@ void Client::updatePlayer(Player::EncodedPlayerData _data) {
 	}
 }
 
-void Client::addPlayer(Player::EncodedPlayerData _data) {
+void Client::addPlayer(const Player::EncodedPlayerData& _data) {
 	if(_data.playerName == m_player.getName()) {
 		return;
 	}
@@ -93,7 +93,8 @@ void Client::addPlayer(Player::EncodedPlayerData _data) {
 }
 
 void Client::respawnPlayer() {
-    m_player.setPosition({m_world.getCenter().x, 0});
+	sf::Vector2f worldCenter { m_world.getCenter().x, 0 };
+	m_player.setPosition(worldCenter);
 }
 
 

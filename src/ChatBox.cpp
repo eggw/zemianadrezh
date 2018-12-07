@@ -140,7 +140,7 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 	target.setView(m_view);
 	if(!messagesTransparent()) {
-		for(auto& message : m_messages) {
+		for(const auto& message : m_messages) {
 			target.draw(message, states);
 		}
 	}

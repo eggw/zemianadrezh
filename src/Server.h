@@ -13,8 +13,8 @@ class Server : public GameInstance {
 		Server(bool _allowConnections);
 		~Server();
 
-		void updatePlayer(Player::EncodedPlayerData _data);
-		void addPlayer(Player::EncodedPlayerData _data);
+		void updatePlayer(const Player::EncodedPlayerData& _data);
+		void addPlayer(const Player::EncodedPlayerData& _data);
 
 		void receivePackets();
 

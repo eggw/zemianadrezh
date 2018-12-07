@@ -85,7 +85,7 @@ void ProgramState_Play::renderUpdatedChunks() {
 
 	if(m_client.m_networkManager.chunkDataReceived(ptr.get())) {
 		auto worldData = m_client.getWorld().getChunks();
-		for(auto& chunk : worldData) {
+		for(const auto& chunk : worldData) {
 			auto result = std::find(std::begin(*ptr),
 									std::end(*ptr),
 									chunk.getID());
@@ -101,7 +101,7 @@ void ProgramState_Play::renderUpdatedChunks() {
 
 //TODO: refactor this shit
 void ProgramState_Play::renderNewPlayers() {
-	for(auto& player : *m_client.getPlayers()) {
+	for(const auto& player : *m_client.getPlayers()) {
 		if(player->getName() != m_client.getPlayer()->getName()) {
 			m_rendererOtherPlayers.addObject(player);
 		}

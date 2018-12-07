@@ -41,7 +41,7 @@ void ProgramState_Menu::getInput(sf::Event& _event) {
 	ProgramState::getInput(_event);
 
 	if(lmbPressed(_event)) {
-		for(auto& menuItem : m_menuItems) {
+		for(const auto& menuItem : m_menuItems) {
 			if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
 				(m_program.*std::get<1>(menuItem))();
 				return;
@@ -50,7 +50,7 @@ void ProgramState_Menu::getInput(sf::Event& _event) {
 	}
 
 	if(_event.type == sf::Event::KeyPressed) {
-		for(auto& menuItem : m_menuItems) {
+		for(const auto& menuItem : m_menuItems) {
 			int key { std::get<3>(menuItem) };
 			if(key == sf::Keyboard::Unknown) {
 				continue;
@@ -96,12 +96,12 @@ void ProgramState_Menu::update() {
 
 void ProgramState_Menu::draw() {
 	m_program.m_window->setView(m_view);
-	for(auto& menuItem : m_menuItems) {
+	for(const auto& menuItem : m_menuItems) {
 		m_program.m_window->draw(std::get<2>(menuItem));
 	}
 }
 
-void ProgramState_Menu::addMenuItem(const std::string _string,
+void ProgramState_Menu::addMenuItem(const std::string& _string,
 									void(Program::*f)(),
 									int _keyCode) {
 	sf::Text menuItem;

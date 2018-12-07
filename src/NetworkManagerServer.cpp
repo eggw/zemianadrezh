@@ -24,7 +24,9 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	listen();
 }
 
-void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _recipient, bool _exclude) {
+void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
+									  sf::TcpSocket* _recipient,
+									  bool _exclude) {
 	int packetCode = Packet::toInt(_type);
 
 	auto recipients{ getTCPRecipients(_recipient, _exclude) };
@@ -37,7 +39,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 	case Packet::TCPPacket::QUIT: {
 			*packet << m_lastRemovedPlayer;
 
-			for(auto& recipient : recipients) {
+			for(const auto& recipient : recipients) {
 				PacketSender::get_instance().send(recipient, packet);
 			}
 
@@ -51,7 +53,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 
     //////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::CONNECTIONLOST: {
-			for(auto& recipient : recipients) {
+			for(const auto& recipient : recipients) {
 				PacketSender::get_instance().send(recipient, packet);
 			}
 
@@ -68,7 +70,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 
 			World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
-			for(auto& recipient : recipients) {
+			for(const auto& recipient : recipients) {
 				*packet << worldData.chunkIDs;
 				*packet << worldData.invisibleBlocks;
 				PacketSender::get_instance().send(recipient, packet);
@@ -89,7 +91,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 			*packet << message;
 			*packet << sender;
 
-			for(auto& recipient : recipients) {
+			for(const auto& recipient : recipients) {
 				PacketSender::get_instance().send(recipient, packet);
 			}
 
@@ -103,7 +105,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 
     //////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::RESPAWN_PLAYER: {
-			for(auto& recipient : recipients) {
+			for(const auto& recipient : recipients) {
 				PacketSender::get_instance().send(recipient, packet);
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 						LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
@@ -118,7 +120,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type, sf::TcpSocket* _r
 }
 
 void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
-										sf::IpAddress _recipient,
+										const sf::IpAddress& _recipient,
 										bool _exclude) {
 
 	int packetCode = Packet::toInt(_type);
@@ -132,8 +134,8 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::UDPPacket::DATA_PLAYER: {
 
-		for (auto& recipient : recipients) {
-			for (auto& player : *m_server.getPlayers()) {
+		for (const auto& recipient : recipients) {
+			for (const auto& player : *m_server.getPlayers()) {
 				Player::EncodedPlayerData playerData = player->encodeData();
 
 				*packet << playerData.playerName;
@@ -179,7 +181,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 	PacketUPtr packet(new sf::Packet());
 	const sf::TcpSocket* toRemove{ nullptr };
 
-	for(auto& connection : m_clientConnections) {
+	for(const auto& connection : m_clientConnections) {
 		if (connection->receive(*packet) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
 			Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
@@ -282,7 +284,8 @@ void NetworkManagerServer::receiveUDPPackets() {
 	}
 }
 
-void NetworkManagerServer::sendMessage(std::string _message, std::string _sender) {
+void NetworkManagerServer::sendMessage(const std::string& _message,
+									   const std::string& _sender) {
 	if(m_messages.size() >= 50) {
 		m_messages.clear();
 	}
@@ -291,7 +294,7 @@ void NetworkManagerServer::sendMessage(std::string _message, std::string _sender
 	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 }
 
-void NetworkManagerServer::notifyRemoved(std::string _name) {
+void NetworkManagerServer::notifyRemoved(const std::string& _name) {
 	m_lastRemovedPlayer = _name;
 	sendPacket(Packet::TCPPacket::QUIT);
 }
@@ -334,7 +337,7 @@ std::vector<sf::TcpSocket*> NetworkManagerServer::getTCPRecipients(sf::TcpSocket
     std::vector<sf::TcpSocket*> recipients{};
 
     if(_recipient == nullptr) {
-		for(auto& client : m_clientConnections) {
+		for(const auto& client : m_clientConnections) {
 			recipients.push_back(client.get());
 		}
 	}
@@ -343,7 +346,7 @@ std::vector<sf::TcpSocket*> NetworkManagerServer::getTCPRecipients(sf::TcpSocket
 			recipients.push_back(_recipient);
 		}
 		else {
-			for(auto& client : m_clientConnections) {
+			for(const auto& client : m_clientConnections) {
 				if(client.get() != _recipient) {
 					recipients.push_back(client.get());
 				}
@@ -358,20 +361,20 @@ std::vector<NetworkManagerServer::IPInfo> NetworkManagerServer::getUDPRecipients
 	std::vector<IPInfo> recipients{};
 
 	if (_recipient == sf::IpAddress::None) {
-		for (auto& client : m_clientIPs) {
+		for (const auto& client : m_clientIPs) {
 			recipients.push_back(client.second);
 		}
 	}
 	else {
 		if (!_exclude) {
-			for (auto& client : m_clientIPs) {
+			for (const auto& client : m_clientIPs) {
 				if (client.second.ipAddress == _recipient) {
 					recipients.push_back(client.second);
 				}
 			}
 		}
 		else {
-			for (auto& client : m_clientIPs) {
+			for (const auto& client : m_clientIPs) {
 				if (client.second.ipAddress != _recipient) {
 					recipients.push_back(client.second);
 				}

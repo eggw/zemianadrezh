@@ -20,7 +20,7 @@ class World {
 
 		const std::vector<WorldChunk>& getChunks() const;
 		const EncodedWorldData encodeData() const;
-		void parseData(EncodedWorldData& _data);
+		void parseData(const EncodedWorldData& _data);
 	private:
 		std::vector<WorldChunk> m_chunks;
 };

@@ -20,17 +20,18 @@ class NetworkManagerServer {
 						bool _exclude = false);
 
 		void sendPacket(Packet::UDPPacket _type,
-						sf::IpAddress _recipient = sf::IpAddress::None,
+						const sf::IpAddress& _recipient = sf::IpAddress::None,
 						bool _exclude = false);
 
 		void receiveTCPPackets();
 		void receiveUDPPackets();
 
 		//Sends a message to all connected players
-		void sendMessage(std::string _message, std::string _sender);
+		void sendMessage(const std::string& _message,
+						 const std::string& _sender);
 		//Sends a "QUIT" packet to all connected players containing
 		//the name of the player who quit
-		void notifyRemoved(std::string _name);
+		void notifyRemoved(const std::string& _name);
 
 		void listen();
 		void accept();

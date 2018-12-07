@@ -14,7 +14,7 @@ Server::~Server() {
     m_networkManager.sendPacket(Packet::TCPPacket::CONNECTIONLOST);
 }
 
-void Server::updatePlayer(Player::EncodedPlayerData _data) {
+void Server::updatePlayer(const Player::EncodedPlayerData& _data) {
 	for(auto& player : *m_players) {
 		if(player->getName() == _data.playerName) {
 			player->parseData(_data);
@@ -22,7 +22,7 @@ void Server::updatePlayer(Player::EncodedPlayerData _data) {
 	}
 }
 
-void Server::addPlayer(Player::EncodedPlayerData _data) {
+void Server::addPlayer(const Player::EncodedPlayerData& _data) {
 	auto newPlayer {std::make_shared<Player>(_data.playerName)};
 	m_players->push_back(std::move(newPlayer));
 }

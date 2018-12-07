@@ -24,7 +24,7 @@ typedef std::unique_ptr<sf::Packet> PacketUPtr;
 class PacketSender : public Singleton<PacketSender> {
 	public:
 		struct TCPPacket {
-			TCPPacket(sf::TcpSocket* _socket, PacketSharedPtr _packet)
+			TCPPacket(sf::TcpSocket* _socket, const PacketSharedPtr _packet)
 				:   m_socket{_socket},
 					m_packet{_packet} {}
 
@@ -34,8 +34,13 @@ class PacketSender : public Singleton<PacketSender> {
 
 		PacketSender();
 
-		void send(sf::TcpSocket* _socket, PacketSharedPtr _packet);
-		void send(sf::UdpSocket* _socket, PacketSharedPtr _packet, sf::IpAddress _recipient, unsigned short _port);
+		void send(sf::TcpSocket* _socket, const PacketSharedPtr _packet);
+
+		void send(sf::UdpSocket* _socket,
+				  const PacketSharedPtr _packet,
+				  const sf::IpAddress& _recipient,
+				  unsigned short _port);
+
 		void update();
 
 	private:

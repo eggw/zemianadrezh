@@ -18,7 +18,7 @@ const World::EncodedWorldData GameInstance::encodeWorldData() const {
 	return m_world.encodeData();
 }
 
-void GameInstance::parseWorldData(World::EncodedWorldData& _data) {
+void GameInstance::parseWorldData(const World::EncodedWorldData& _data) {
 	m_world.parseData(_data);
 }
 

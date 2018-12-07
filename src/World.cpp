@@ -80,13 +80,13 @@ const World::EncodedWorldData World::encodeData() const {
 	return data;
 }
 
-void World::parseData(World::EncodedWorldData& _data) {
+void World::parseData(const World::EncodedWorldData& _data) {
 	m_chunks.clear();
 	std::vector<int> chunkIDs;
 
 	std::string currentNumber;
 
-	for(char& c : _data.chunkIDs) {
+	for(const char& c : _data.chunkIDs) {
 		if(c != '%') {
 			currentNumber += c;
 		}
@@ -109,7 +109,7 @@ void World::parseData(World::EncodedWorldData& _data) {
 	int currentChunkID{*it};
 
 
-	for(char& c : _data.invisibleBlocks) {
+	for(const char& c : _data.invisibleBlocks) {
 		if(c == '.') {
 			int id = std::stoi(currentNumber);
 			currentNumber.clear();

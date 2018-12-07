@@ -11,7 +11,7 @@ const bool keyPressed(sf::Keyboard::Key _key) {
 
 const bool keysPressedTogether(std::vector<sf::Keyboard::Key> _keys) {
 	bool allPressed{true};
-	for(auto& key : _keys) {
+	for(const auto& key : _keys) {
 		if(!keyPressed(key)) {
 			allPressed = false;
 			break;
@@ -232,11 +232,11 @@ bool TextEntryBox::inputComplete() {
 	return false;
 }
 
-std::string TextEntryBox::getLastString() const {
+const std::string TextEntryBox::getLastString() const {
 	return m_lastString;
 }
 
-std::string TextEntryBox::getCurrentString() const {
+const std::string TextEntryBox::getCurrentString() const {
 	return m_text.getString();
 }
 

@@ -6,7 +6,7 @@
 
 #include "InputLocker.h"
 
-Player::Player(std::string _name)
+Player::Player(const std::string& _name)
 	:m_sprite(),
 	 m_animationSheet(TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER)),
 	 m_playerName{_name} {
@@ -124,7 +124,7 @@ const Player::EncodedPlayerData Player::encodeData() const {
 	return data;
 }
 
-void Player::parseData(Player::EncodedPlayerData& _data) {
+void Player::parseData(const Player::EncodedPlayerData& _data) {
 	m_playerName = _data.playerName;
 	m_facingLeft = _data.facingLeft;
 	m_velocity.x = _data.velocityX;

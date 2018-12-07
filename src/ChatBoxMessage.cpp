@@ -9,8 +9,8 @@ void removeNewlines(std::string& _str) {
 	}
 }
 
-ChatBoxMessage::ChatBoxMessage(std::string _sender,
-                               std::string _message,
+ChatBoxMessage::ChatBoxMessage(const std::string& _sender,
+                               const std::string& _message,
                                const sf::Font& _font,
                                unsigned int _charSize)
     :m_text{},

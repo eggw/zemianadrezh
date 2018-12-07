@@ -15,7 +15,7 @@ class Player : public EntityMoving, public sf::Drawable {
 			float positionY;
 		};
 
-		Player(std::string _name);
+		Player(const std::string& _name);
 
 		const std::string& getName() const;
 
@@ -24,7 +24,7 @@ class Player : public EntityMoving, public sf::Drawable {
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 		const EncodedPlayerData encodeData() const;
-		void parseData(EncodedPlayerData& _data);
+		void parseData(const EncodedPlayerData& _data);
 	private:
 		sf::Sprite m_sprite;
 		Animation m_animationSheet;

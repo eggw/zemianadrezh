@@ -14,7 +14,7 @@ class GameInstance {
 		const std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers() const;
 
 		const World::EncodedWorldData encodeWorldData() const;
-		void parseWorldData(World::EncodedWorldData& _data);
+		void parseWorldData(const World::EncodedWorldData& _data);
 
 		//////////////////////////////////////////////////////////////////////////
 		//Server and Client both have different implementations of these functions
@@ -28,7 +28,7 @@ class GameInstance {
 		//is done.
 		//Additionally, if the _data.playerName does not match any existing player
 		//in m_players, addPlayer() is called.
-		virtual void updatePlayer(Player::EncodedPlayerData _data) = 0;
+		virtual void updatePlayer(const Player::EncodedPlayerData& _data) = 0;
 
 		//addPlayer():
 		//The server creates a new player, sets its position to spawn, and appends
@@ -37,7 +37,7 @@ class GameInstance {
 		//The client creates a new player with all the information contained in _data,
 		//and appends it to m_players, if _data.playerName isn't the same as the
 		//client's own player
-		virtual void addPlayer(Player::EncodedPlayerData _data) = 0;
+		virtual void addPlayer(const Player::EncodedPlayerData& _data) = 0;
 		//////////////////////////////////////////////////////////////////////////
 
 		void removePlayer(std::string _name);

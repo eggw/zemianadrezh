@@ -22,7 +22,7 @@ class RendererDrawable : public RendererBase<T> {
 		};
 
 		void draw() const {
-			for(auto& object : m_objects) {
+			for(const auto& object : m_objects) {
 				RendererBase<T>::m_window.draw(*object);
 			}
 		};

@@ -211,7 +211,7 @@ void NetworkManagerClient::receiveUDPPackets() {
 	}
 }
 
-void NetworkManagerClient::connect(sf::IpAddress _ip, unsigned short _port) {
+void NetworkManagerClient::connect(const sf::IpAddress& _ip, unsigned short _port) {
 	bool successfullyConnected{false};
 
 	m_serverConnection.setBlocking(true);

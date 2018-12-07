@@ -10,8 +10,8 @@ TODO: add functions/make stuff private
 
 class ChatBoxMessage : public sf::Drawable {
 	public:
-		ChatBoxMessage(std::string _sender,
-					   std::string _message,
+		ChatBoxMessage(const std::string& _sender,
+					   const std::string& _message,
 					   const sf::Font& _font,
 					   unsigned int _charSize);
 

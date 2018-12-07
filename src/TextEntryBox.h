@@ -8,7 +8,7 @@ class TextEntryBox : public sf::Drawable {
         TextEntryBox(unsigned int _charSize = 18,
                      unsigned int _maxChars = 255);
 
-        void initialise(sf::Vector2u _windowSize,
+        void initialise( sf::Vector2u _windowSize,
                          sf::FloatRect _viewPort);
 
         void getInput(sf::Event& _event);
@@ -18,8 +18,8 @@ class TextEntryBox : public sf::Drawable {
         bool enteringText() const;
         bool inputComplete();
 
-        std::string getLastString() const;
-        std::string getCurrentString() const;
+        const std::string getLastString() const;
+        const std::string getCurrentString() const;
 
         void setActive();
         void setInactive();
@@ -29,7 +29,7 @@ class TextEntryBox : public sf::Drawable {
         float getHeightAsPixels() const;
         float getHeightAsRatio(sf::Vector2u _windowSize) const;
 
-		inline void setText(std::string _str){m_text.setString(_str);};
+        inline void setText(std::string _str){m_text.setString(_str);};
 	////////////////////////////////////////////////////////////////////
     private:
         void onResize(sf::Vector2u _newSize);

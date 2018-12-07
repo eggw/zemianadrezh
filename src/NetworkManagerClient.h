@@ -19,7 +19,7 @@ class NetworkManagerClient {
 		void receiveUDPPackets();
 
 
-		void connect(sf::IpAddress _ip, unsigned short _port);
+		void connect(const sf::IpAddress& _ip, unsigned short _port);
 
 		bool connectionActive() const;
 

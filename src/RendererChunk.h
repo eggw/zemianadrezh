@@ -26,7 +26,7 @@ class RendererChunk : public RendererBase<WorldChunk> {
 
 			int xOffset = CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * _chunk->getID();
 
-			for(auto& block : blocks) {
+			for(const auto& block : blocks) {
 				if(!block.getVisibility()) {
 					vertexIndex += 6;
 					continue;
@@ -97,7 +97,7 @@ class RendererChunk : public RendererBase<WorldChunk> {
 		};
 
 		void draw() const {
-			for(auto& vertexArray : m_vertexMap) {
+			for(const auto& vertexArray : m_vertexMap) {
 				RendererBase<WorldChunk>::m_window.draw(vertexArray.second);
 			}
 		};
