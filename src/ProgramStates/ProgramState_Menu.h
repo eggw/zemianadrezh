@@ -42,6 +42,12 @@ class ProgramState_Menu : public ProgramState {
 
 		std::vector<MenuItem> m_menuItems;
 		sf::View m_view;
+
+		static sf::Text m_titleText;
+
+	private:
+		void detectMouseClicks();
+		void updateTitleText(int _timeslice);
 };
 
 #endif // PROGRAMSTATE_MENU_H_INCLUDED

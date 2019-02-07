@@ -1,8 +1,19 @@
 #include "ProgramState_Menu.h"
 
 #include <cmath>
+#include <random>
+#include <chrono>
 
 #include "FontManager.h"
+
+const std::string	TITLE_TEXT{"zemianadrezh"};
+
+sf::Text ProgramState_Menu::m_titleText;
+
+//The safe way to compare floats
+bool almostEqual(float _a, float _b, float _magnitude = 0.001) {
+	return (fabs(_a - _b) < _a * _magnitude);
+}
 
 ProgramState_Menu::ProgramState_Menu(Program& _program, bool _visibleOverPreviousState)
 	:ProgramState(_program, _visibleOverPreviousState),
@@ -12,6 +23,22 @@ ProgramState_Menu::ProgramState_Menu(Program& _program, bool _visibleOverPreviou
 
 	m_program.m_window->setView(m_view);
 
+	//This is a somewhat hacky way to check if we've already initialised m_titleText.
+	//If we set its position again, it's going to jerk around a bit because of
+	//the imprecise nature of floats. We'll just skip everything to do with setting up
+	//m_titleText, since it's static, if it's already been done once.
+	if(m_titleText.getString() == TITLE_TEXT) {
+		return;
+	}
+
+	m_titleText.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
+	m_titleText.setCharacterSize(64);
+	m_titleText.setString(TITLE_TEXT);
+	m_titleText.setOutlineThickness(1);
+	m_titleText.setOrigin(m_titleText.getGlobalBounds().width / 2,
+						  m_titleText.getGlobalBounds().height / 2);
+	m_titleText.setPosition({float(m_program.m_window->getSize().x / 2),
+							 float(m_program.m_window->getSize().y * 0.13)});
 }
 
 ProgramState_Menu::~ProgramState_Menu() {
@@ -80,18 +107,8 @@ bool ProgramState_Menu::isFunctionNull(ProgramState_Menu::MenuItem _menuItem) {
 }
 
 void ProgramState_Menu::update(int _timeslice) {
-	for(auto& menuItem : m_menuItems) {
-		if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
-			std::get<0>(menuItem) = true;
-			std::get<2>(menuItem).setFillColor(sf::Color::Yellow);
-			std::get<2>(menuItem).setScale({1.2f, 1.2f});
-		}
-		else {
-			std::get<0>(menuItem) = false;
-			std::get<2>(menuItem).setFillColor(sf::Color::White);
-			std::get<2>(menuItem).setScale({1.0f, 1.0f});
-		}
-	}
+	detectMouseClicks();
+	updateTitleText(_timeslice);
 }
 
 void ProgramState_Menu::draw() {
@@ -99,6 +116,8 @@ void ProgramState_Menu::draw() {
 	for(const auto& menuItem : m_menuItems) {
 		m_program.m_window->draw(std::get<2>(menuItem));
 	}
+
+	m_program.m_window->draw(m_titleText);
 }
 
 void ProgramState_Menu::addMenuItem(const std::string& _string,
@@ -153,4 +172,75 @@ void ProgramState_Menu::onResize(sf::Vector2u _newSize) {
 	ProgramState::onResize(_newSize);
 	m_view.setSize({float(_newSize.x),
                     float(_newSize.y)});
+}
+
+void ProgramState_Menu::detectMouseClicks() {
+	for(auto& menuItem : m_menuItems) {
+		if(isMousedOver(menuItem) && !isFunctionNull(menuItem)) {
+			std::get<0>(menuItem) = true;
+			std::get<2>(menuItem).setFillColor(sf::Color::Yellow);
+			std::get<2>(menuItem).setScale({1.2f, 1.2f});
+		}
+		else {
+			std::get<0>(menuItem) = false;
+			if(std::get<1>(menuItem) == nullptr) {
+				std::get<2>(menuItem).setFillColor(sf::Color(255,255,255,100));
+				std::get<2>(menuItem).setOutlineColor(sf::Color(0,0,0,100));
+			}
+			else{
+				std::get<2>(menuItem).setFillColor(sf::Color::White);
+			}
+			std::get<2>(menuItem).setScale({1.0f, 1.0f});
+		}
+	}
+}
+
+void ProgramState_Menu::updateTitleText(int _timeslice) {
+	//randomize fill color every half second
+	static sf::Clock clock;
+
+	if(clock.getElapsedTime().asMilliseconds() >= _timeslice * 30) {
+		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+		static std::mt19937 mt_rand(seed);
+		std::uniform_int_distribution<int> uniform_dist(0, 255);
+		int r = uniform_dist(mt_rand);
+		int g = uniform_dist(mt_rand);
+		int b = uniform_dist(mt_rand);
+
+		int rx = uniform_dist(mt_rand);
+		int gx = uniform_dist(mt_rand);
+		int bx = uniform_dist(mt_rand);
+
+		m_titleText.setFillColor(sf::Color(r,g,b));
+		m_titleText.setOutlineColor(sf::Color(rx,gx,bx));
+
+		clock.restart();
+	}
+	//-------------------------------------------------
+
+	//make the text dance
+	//TODO:
+	//		-also make it zoom in/out,
+	//		-tie it to _timeslice
+	static float swingRotation{12};
+	static bool rotatingLeft = false;
+	float delta{0};
+	const float rotation = m_titleText.getRotation();
+
+	if(almostEqual(rotation, swingRotation)) {
+		rotatingLeft = true;
+	}
+	else if(almostEqual(rotation, (360 - swingRotation))){
+		rotatingLeft = false;
+	}
+
+	if(rotatingLeft) {
+		delta = -0.1;
+	}
+	else {
+		delta = 0.1;
+	}
+
+	m_titleText.rotate(delta);
+	//-------------------------------------------------
 }
