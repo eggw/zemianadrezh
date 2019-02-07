@@ -105,9 +105,11 @@ void ProgramState_Menu::addMenuItem(const std::string& _string,
 									void(Program::*f)(),
 									int _keyCode) {
 	sf::Text menuItem;
-	float verticalSpacing{40.0f};
+	float verticalSpacing{45.0f};
 
 	menuItem.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
+	menuItem.setOutlineThickness(1);
+	menuItem.setCharacterSize(34);
 	menuItem.setString(_string);
 	menuItem.setOrigin(menuItem.getGlobalBounds().width / 2,
 					   menuItem.getGlobalBounds().height / 2);

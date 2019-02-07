@@ -28,6 +28,8 @@ class ChatBox : public sf::Drawable {
 		bool messagesTransparent() const;
 		void updateShadedRectangleTransparency();
 		void updateMessageTransparency();
+		void updateMessageAlertTransparency();
+		void setNewMessageAlert(bool _b);
 		/////////////////////////////////////////
 
 		//View-related

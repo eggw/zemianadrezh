@@ -49,8 +49,8 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
 	appendMessage("message9", "Test");
 	*/
 
+	m_shadedRectangle.setOutlineColor(sf::Color(255,165,0));
 	snapToBottom();
-
 }
 
 void ChatBox::appendMessage(const std::string _message,
@@ -67,10 +67,16 @@ void ChatBox::appendMessage(const std::string _message,
 	positionMessage(m_messages.size() - 1);
 	m_clock.restart();
 
-	if(m_anchoredToBottom){
+
+	if(m_anchoredToBottom) {
         snapToBottom();
 	}
-	////////////////////////////////////////////////////////
+
+	//If we get a new message and we're not anchored to the bottom, we make sure to
+	//enable the visual notification of a new unviewed message
+	else {
+		setNewMessageAlert(true);
+	}
 }
 
 void ChatBox::getInput(sf::Event& _event) {
@@ -130,6 +136,7 @@ void ChatBox::update() {
 	}
 	updateShadedRectangleTransparency();
 	updateMessageTransparency();
+	updateMessageAlertTransparency();
 }
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -223,6 +230,37 @@ void ChatBox::updateMessageTransparency() {
 	}
 }
 
+void ChatBox::updateMessageAlertTransparency() {
+	static bool alphaDecreasing{true};
+	static int alphaValue{255};
+
+	if(alphaDecreasing) {
+		alphaValue -= 5;
+		if(alphaValue <= 0) {
+			alphaDecreasing = false;
+		}
+	}
+	else {
+		alphaValue += 5;
+		if(alphaValue >= 255) {
+			alphaDecreasing = true;
+		}
+	}
+
+	sf::Color color = m_shadedRectangle.getOutlineColor();
+	color.a = alphaValue;
+	m_shadedRectangle.setOutlineColor(color);
+
+}
+
+void ChatBox::setNewMessageAlert(bool _b) {
+	if(_b) {
+		m_shadedRectangle.setOutlineThickness(-1);
+	}
+	else {
+		m_shadedRectangle.setOutlineThickness(0);
+	}
+}
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
 	sf::FloatRect textEntryViewport{
@@ -326,6 +364,10 @@ void ChatBox::snapToBottom() {
 
 		m_view.setCenter(newCenter);
 	}
+
+	//We can safely assume that all new messages are "viewed" after having
+	//snapped to the bottom; therefore, we call this.
+	setNewMessageAlert(false);
 }
 
 float ChatBox::getUpperViewBound() const {
