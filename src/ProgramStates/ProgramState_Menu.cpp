@@ -196,6 +196,9 @@ void ProgramState_Menu::detectMouseClicks() {
 }
 
 void ProgramState_Menu::updateTitleText(int _timeslice) {
+	float f_timeslice {float(_timeslice)};
+
+	//-------------------------------------------------
 	//randomize fill color every half second
 	static sf::Clock clock;
 
@@ -217,30 +220,53 @@ void ProgramState_Menu::updateTitleText(int _timeslice) {
 		clock.restart();
 	}
 	//-------------------------------------------------
+	//Rotate the title text
 
-	//make the text dance
-	//TODO:
-	//		-also make it zoom in/out,
-	//		-tie it to _timeslice
-	static float swingRotation{12};
-	static bool rotatingLeft = false;
-	float delta{0};
-	const float rotation = m_titleText.getRotation();
+	static float 	rotationDegrees	{10};
+	static bool 	rotatingLeft	{false};
+	float 			deltaRotation	{0};
+	const float 	curRotation		{m_titleText.getRotation()};
 
-	if(almostEqual(rotation, swingRotation)) {
+	if(almostEqual(curRotation, rotationDegrees)) {
 		rotatingLeft = true;
 	}
-	else if(almostEqual(rotation, (360 - swingRotation))){
+	else if(almostEqual(curRotation, (360 - rotationDegrees))){
 		rotatingLeft = false;
 	}
 
 	if(rotatingLeft) {
-		delta = -0.1;
+		deltaRotation = -1 * (f_timeslice / 1000.f);
 	}
 	else {
-		delta = 0.1;
+		deltaRotation = (f_timeslice / 1000.f);
 	}
+	m_titleText.rotate(deltaRotation);
 
-	m_titleText.rotate(delta);
+	//-------------------------------------------------
+	//Scale the title text
+
+	static sf::Vector2f	 	minScale	{0.75, 0.75};
+	static sf::Vector2f 	maxScale	{1.25, 1.25};
+	static bool 			scalingDown {false};
+	static sf::Vector2f 	deltaScale	{1,1};
+
+    if(maxScale.x <= deltaScale.x) {
+		scalingDown = true;
+    }
+    else if(minScale.x >= deltaScale.x) {
+		scalingDown = false;
+    }
+
+    if(scalingDown) {
+		deltaScale.x -= f_timeslice / 10000.f;
+		deltaScale.y -= f_timeslice / 10000.f;
+	}
+	else {
+		deltaScale.x += f_timeslice / 10000.f;
+		deltaScale.y += f_timeslice / 10000.f;
+	}
+	m_titleText.setScale(deltaScale);
+
+	//std::cout << "maxScale.x = " << maxScale.x << ", " << "deltaScale.x = " << deltaScale.x << std::endl;
 	//-------------------------------------------------
 }

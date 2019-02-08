@@ -62,19 +62,6 @@ void Program::getInput() {
             m_window->close();
         }
 
-        //TODO
-        //At the moment, pressing "Escape" while paused will
-        //create a second escape menu on top of the existing
-        //one, thus preventing the closing of the pause menu
-        //to work using ProgramState::Menu's keyboard shortcuts.
-
-        //All I really want is for the previous state to fix itself
-        //if the screen is resized. I'll revisit this later.
-
-        //if(m_states.back()->isVisibleOverPreviousState()) {
-			//m_states.end()[-2]->getInput(event);
-        //}
-
         m_states.back()->getInput(event);
     }
 }
