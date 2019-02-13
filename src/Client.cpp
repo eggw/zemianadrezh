@@ -55,7 +55,14 @@ void Client::update(int _timeslice) {
 }
 
 void Client::sendPackets() {
-	m_networkManager.sendPacket(Packet::UDPPacket::DATA_PLAYER);
+	//Ensure that a reasonable rate of packet sending is maintained.
+	static sf::Clock c;
+	static float secondsBetweenPackets{0.015};
+
+	if(c.getElapsedTime().asSeconds() >= secondsBetweenPackets) {
+		m_networkManager.sendPacket(Packet::UDPPacket::DATA_PLAYER);
+		c.restart();
+	}
 }
 
 void Client::receivePackets() {

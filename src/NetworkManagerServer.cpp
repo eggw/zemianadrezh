@@ -1,5 +1,7 @@
 #include "NetworkManagerServer.h"
 
+#include <iostream>
+
 #include "LoggerNetwork.h"
 #include "Server.h"
 
@@ -139,33 +141,23 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 				Player::EncodedPlayerData playerData = player->encodeData();
 
 				*packet << playerData.playerName;
-
-				/*
-				NOTE: this doesn't work atm because I cannot differentiate
-				between local as in same process, or local as in connected
-				to LocalHost. I've commented it out for now.
-
-				//Here we do a quick check to see if the playerdata generated
-				//belongs to the recipient's player; if it does, we'll cancel
-				//and not redundantly send it back to them
-				auto i = m_clientIPs.find(playerData.playerName);
-				if (i != m_clientIPs.end()) {
-					if (i->second == recipient) {
-						continue;
-					}
-				}
-				*/
-
 				*packet << playerData.facingLeft;
 				*packet << playerData.velocityX;
 				*packet << playerData.velocityY;
 				*packet << playerData.positionX;
 				*packet << playerData.positionY;
 
-				PacketSender::get_instance().send(&m_udpSocket, packet, recipient.ipAddress, recipient.port);
-				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+				//Here we do a quick check to see if the playerdata generated
+				//belongs to the recipient's player; if it does, we'll cancel
+				//and not redundantly send it back to them
+				//TODO: confirm this works!
+
+				if(recipient.playerName != playerData.playerName) {
+					PacketSender::get_instance().send(&m_udpSocket, packet, recipient.ipAddress, recipient.port);
+					LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 					LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
 					packetCode);
+				}
 			}
 		}
 

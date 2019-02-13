@@ -178,6 +178,15 @@ void NetworkManagerClient::receiveTCPPackets() {
 }
 
 void NetworkManagerClient::receiveUDPPackets() {
+	static sf::Clock clock{};
+    static int receivedCount{0};
+    if(clock.getElapsedTime().asSeconds() >= 1) {
+		std::cout << "[CLIENT] UDP packets received: " << receivedCount << std::endl;
+		std::cout << "-----------------------------------------------" << std::endl;
+		receivedCount = 0;
+		clock.restart();
+    }
+    //--------------------------------------------------------------------------
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
 	unsigned short port{ m_udpSocket.getLocalPort() };
@@ -185,6 +194,7 @@ void NetworkManagerClient::receiveUDPPackets() {
 	sf::IpAddress address{ m_serverConnection.getRemoteAddress() };
 
 	while (m_udpSocket.receive(*packet, address, port) == sf::Socket::Status::Done) {
+		receivedCount++;
 		*packet >> packetCode;
 		Packet::UDPPacket packetType{ Packet::toUDPType(packetCode) };
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
