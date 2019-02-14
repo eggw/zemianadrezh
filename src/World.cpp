@@ -1,5 +1,18 @@
 #include "World.h"
 
+#include <SFML/Network.hpp>
+
+//Packet operator overloading
+//----------------------------------------------------------------------------------------------------------------
+sf::Packet& operator <<(sf::Packet& _p, const World::EncodedWorldData& _d) {
+	return _p << _d.chunkIDs << _d.invisibleBlocks;
+};
+
+sf::Packet& operator >>(sf::Packet& _p, World::EncodedWorldData& _d) {
+	return _p >> _d.chunkIDs >> _d.invisibleBlocks;
+};
+//----------------------------------------------------------------------------------------------------------------
+
 World::World() {
 
 }

@@ -73,8 +73,8 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 			World::EncodedWorldData worldData = m_server.getWorld().encodeData();
 
 			for(const auto& recipient : recipients) {
-				*packet << worldData.chunkIDs;
-				*packet << worldData.invisibleBlocks;
+				*packet << worldData;
+
 				PacketSender::get_instance().send(recipient, packet);
 				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
 						LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
@@ -140,12 +140,7 @@ void NetworkManagerServer::sendPacket(	Packet::UDPPacket _type,
 			for (const auto& player : *m_server.getPlayers()) {
 				Player::EncodedPlayerData playerData = player->encodeData();
 
-				*packet << playerData.playerName;
-				*packet << playerData.facingLeft;
-				*packet << playerData.velocityX;
-				*packet << playerData.velocityY;
-				*packet << playerData.positionX;
-				*packet << playerData.positionY;
+				*packet << playerData;
 
 				//Here we do a quick check to see if the playerdata generated
 				//belongs to the recipient's player; if it does, we'll cancel
@@ -258,12 +253,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 			case Packet::UDPPacket::DATA_PLAYER: {
 				Player::EncodedPlayerData playerData;
 
-				*packet >> playerData.playerName;
-				*packet >> playerData.facingLeft;
-				*packet >> playerData.velocityX;
-				*packet >> playerData.velocityY;
-				*packet >> playerData.positionX;
-				*packet >> playerData.positionY;
+				*packet >> playerData;
 
 				m_server.updatePlayer(playerData);
 

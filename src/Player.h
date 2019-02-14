@@ -14,7 +14,7 @@ class Player : public EntityMoving, public sf::Drawable {
 			float positionX;
 			float positionY;
 		};
-
+			
 		Player(const std::string& _name);
 
 		const std::string& getName() const;
@@ -32,5 +32,11 @@ class Player : public EntityMoving, public sf::Drawable {
 		bool m_spawned{false};
 };
 
-
+//Forward declare Packet here and define the overloading in Player.cpp, so
+//we don't have to include SFML/Networking.hpp in Player.h
+namespace sf {
+	class Packet;
+}
+sf::Packet& operator <<(sf::Packet& _p, const Player::EncodedPlayerData& _d);
+sf::Packet& operator >>(sf::Packet& _p, Player::EncodedPlayerData& _d);
 #endif // PLAYER_H_INCLUDED

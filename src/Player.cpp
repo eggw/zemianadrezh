@@ -1,10 +1,21 @@
 #include "Player.h"
 
+#include <SFML/Network.hpp>
+
 #include "TextureManager.h"
-
 #include "Keybinds.h"
-
 #include "InputLocker.h"
+
+//Packet operator overloading
+//----------------------------------------------------------------------------------------------------------------
+sf::Packet& operator <<(sf::Packet& _p, const Player::EncodedPlayerData& _d) {
+	return _p << _d.playerName << _d.facingLeft << _d.velocityX << _d.velocityY << _d.positionX << _d.positionY;
+};
+
+sf::Packet& operator >>(sf::Packet& _p, Player::EncodedPlayerData& _d) {
+	return _p >> _d.playerName >> _d.facingLeft >> _d.velocityX >> _d.velocityY >> _d.positionX >> _d.positionY;
+};
+//----------------------------------------------------------------------------------------------------------------
 
 Player::Player(const std::string& _name)
 	:m_sprite(),

@@ -1,8 +1,6 @@
 #ifndef WORLD_H_INCLUDED
 #define WORLD_H_INCLUDED
 
-#include <SFML/Network.hpp>
-
 #include "WorldChunk.h"
 
 class World {
@@ -26,4 +24,11 @@ class World {
 };
 
 
+//Forward declare Packet here and define the overloading in World.cpp, so
+//we don't have to include SFML/Networking.hpp in World.h
+namespace sf {
+	class Packet;
+}
+sf::Packet& operator <<(sf::Packet& _p, const World::EncodedWorldData& _d);
+sf::Packet& operator >>(sf::Packet& _p, World::EncodedWorldData& _d);
 #endif // WORLD_H_INCLUDED

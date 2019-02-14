@@ -91,12 +91,7 @@ void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::UDPPacket::DATA_PLAYER: {
 		Player::EncodedPlayerData playerData = m_client.getPlayer()->encodeData();
-		*packet << playerData.playerName;
-		*packet << playerData.facingLeft;
-		*packet << playerData.velocityX;
-		*packet << playerData.velocityY;
-		*packet << playerData.positionX;
-		*packet << playerData.positionY;
+		*packet << playerData;
 
 		PacketSender::get_instance().send(&m_udpSocket, packet, m_serverConnection.getRemoteAddress(), port);
 
@@ -140,8 +135,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 
 				World::EncodedWorldData worldData;
 
-				*packet >> worldData.chunkIDs;
-				*packet >> worldData.invisibleBlocks;
+				*packet >> worldData;
 
 				m_client.parseWorldData(worldData);
 
@@ -205,13 +199,7 @@ void NetworkManagerClient::receiveUDPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::UDPPacket::DATA_PLAYER: {
 			Player::EncodedPlayerData playerData;
-
-			*packet >> playerData.playerName;
-			*packet >> playerData.facingLeft;
-			*packet >> playerData.velocityX;
-			*packet >> playerData.velocityY;
-			*packet >> playerData.positionX;
-			*packet >> playerData.positionY;
+			*packet >> playerData;
 
 			m_client.updatePlayer(playerData);
 			break;
