@@ -3,6 +3,7 @@
 #include "Keybinds.h"
 #include "LoggerNetwork.h"
 
+#include <iostream>
 
 ProgramState_Play::ProgramState_Play(Program& _program,
 									 sf::IpAddress _ipAddress)
@@ -40,6 +41,15 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 		if(_event.key.code == Key::PAUSE_KEY) {
 			m_program.pushState_Pause();
 			return;
+		}
+	}
+
+	else if (_event.type == sf::Event::MouseButtonPressed) {
+		if (_event.key.code == sf::Mouse::Left) {
+			//Temporary; to be used later
+			sf::Vector2i coords{ sf::Mouse::getPosition(*m_program.m_window) };
+			sf::Vector2i coordsInWorld{ m_program.m_window->mapPixelToCoords(coords) };
+			std::cout << "LMB pressed at " << coordsInWorld.x << ", " << coordsInWorld.y << std::endl;
 		}
 	}
 

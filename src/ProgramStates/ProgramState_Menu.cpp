@@ -23,22 +23,14 @@ ProgramState_Menu::ProgramState_Menu(Program& _program, bool _visibleOverPreviou
 
 	m_program.m_window->setView(m_view);
 
-	//This is a somewhat hacky way to check if we've already initialised m_titleText.
-	//If we set its position again, it's going to jerk around a bit because of
-	//the imprecise nature of floats. We'll just skip everything to do with setting up
-	//m_titleText, since it's static, if it's already been done once.
-	if(m_titleText.getString() == TITLE_TEXT) {
-		return;
-	}
-
 	m_titleText.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_titleText.setCharacterSize(64);
 	m_titleText.setString(TITLE_TEXT);
 	m_titleText.setOutlineThickness(1);
-	m_titleText.setOrigin(m_titleText.getGlobalBounds().width / 2,
-						  m_titleText.getGlobalBounds().height / 2);
-	m_titleText.setPosition({float(m_program.m_window->getSize().x / 2),
-							 float(m_program.m_window->getSize().y * 0.13)});
+	m_titleText.setOrigin(m_titleText.getLocalBounds().width / 2,
+						  m_titleText.getLocalBounds().height / 2);
+	
+	onResize(m_program.m_window->getSize());
 }
 
 ProgramState_Menu::~ProgramState_Menu() {
@@ -172,6 +164,9 @@ void ProgramState_Menu::onResize(sf::Vector2u _newSize) {
 	ProgramState::onResize(_newSize);
 	m_view.setSize({float(_newSize.x),
                     float(_newSize.y)});
+
+	float newTitleY{ m_view.getCenter().y - m_program.m_window->getSize().y / 3};
+	m_titleText.setPosition({m_view.getCenter().x,  newTitleY});
 }
 
 void ProgramState_Menu::detectMouseClicks() {
