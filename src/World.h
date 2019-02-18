@@ -1,6 +1,8 @@
 #ifndef WORLD_H_INCLUDED
 #define WORLD_H_INCLUDED
 
+#include <string>
+
 #include "WorldChunk.h"
 
 class World {

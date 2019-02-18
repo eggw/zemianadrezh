@@ -10,11 +10,11 @@
 //----------------------------------------------------------------------------------------------------------------
 sf::Packet& operator <<(sf::Packet& _p, const Player::EncodedPlayerData& _d) {
 	return _p << _d.playerName << _d.facingLeft << _d.velocityX << _d.velocityY << _d.positionX << _d.positionY;
-};
+}
 
 sf::Packet& operator >>(sf::Packet& _p, Player::EncodedPlayerData& _d) {
 	return _p >> _d.playerName >> _d.facingLeft >> _d.velocityX >> _d.velocityY >> _d.positionX >> _d.positionY;
-};
+}
 //----------------------------------------------------------------------------------------------------------------
 
 Player::Player(const std::string& _name)
