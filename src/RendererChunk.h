@@ -61,27 +61,27 @@ class RendererChunk : public RendererBase<WorldChunk> {
 
 				//top right
 				vertexArray[vertexIndex].position = topRight;
-				vertexArray[vertexIndex].texCoords = {BLOCK_DIMENSIONS_X, 0};
+				vertexArray[vertexIndex].texCoords = {float(BLOCK_DIMENSIONS_X), 0.f};
 				vertexIndex += 1;
 
 				//bottom right
 				vertexArray[vertexIndex].position = bottomRight;
-				vertexArray[vertexIndex].texCoords = {BLOCK_DIMENSIONS_X, BLOCK_DIMENSIONS_Y};
+				vertexArray[vertexIndex].texCoords = {float(BLOCK_DIMENSIONS_X), float(BLOCK_DIMENSIONS_Y)};
 				vertexIndex += 1;
 
 				//bottom right
 				vertexArray[vertexIndex].position = bottomRight;
-				vertexArray[vertexIndex].texCoords = {BLOCK_DIMENSIONS_X, BLOCK_DIMENSIONS_Y};
+				vertexArray[vertexIndex].texCoords = {float(BLOCK_DIMENSIONS_X), float(BLOCK_DIMENSIONS_Y)};
 				vertexIndex += 1;
 
 				//bottom left
 				vertexArray[vertexIndex].position = bottomLeft;
-				vertexArray[vertexIndex].texCoords = {0, BLOCK_DIMENSIONS_Y};
+				vertexArray[vertexIndex].texCoords = {0.f, float(BLOCK_DIMENSIONS_Y)};
 				vertexIndex += 1;
 
 				//top left
 				vertexArray[vertexIndex].position = topLeft;
-				vertexArray[vertexIndex].texCoords = {0, 0};
+				vertexArray[vertexIndex].texCoords = {0.f, 0.f};
 				vertexIndex += 1;
 			}
 
