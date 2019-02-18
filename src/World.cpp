@@ -79,7 +79,7 @@ const World::EncodedWorldData World::encodeData() const {
 
 		for(size_t z{0}; z < blocks.size(); z++) {
 
-			if(!blocks[z].getVisibility()) {
+			if(!blocks[z].getData().getVisible()) {
 				data.invisibleBlocks += std::to_string(z);
 				data.invisibleBlocks += ".";
 			}
@@ -126,7 +126,7 @@ void World::parseData(const World::EncodedWorldData& _data) {
 		if(c == '.') {
 			int id = std::stoi(currentNumber);
 			currentNumber.clear();
-			m_chunks[currentChunkID].toggleVisibility(id, false);
+			m_chunks[currentChunkID].setBlockType(id, BlockData::Type::AIR);
 		}
 
 		else if(c == '%') {

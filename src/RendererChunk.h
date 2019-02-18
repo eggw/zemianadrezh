@@ -6,7 +6,17 @@
 #include "RendererBase.h"
 #include "WorldChunk.h"
 
+/*
+TODO:
+use a different VertexArray for each texture type (VertexArrays)
+*/
+
 class RendererChunk : public RendererBase<WorldChunk> {
+	private:
+		struct VertexArrays {
+			std::map<sf::Texture, sf::VertexArray> vertexArrayMap;
+		};
+
 	public:
 		RendererChunk(sf::RenderWindow& _window)
 			:RendererBase<WorldChunk>(_window) {
@@ -26,8 +36,8 @@ class RendererChunk : public RendererBase<WorldChunk> {
 
 			int xOffset = CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * _chunk->getID();
 
-			for(const auto& block : blocks) {
-				if(!block.getVisibility()) {
+			for(auto& block : blocks) {
+				if(!block.getData().getVisible()) {
 					vertexIndex += 6;
 					continue;
 				}
@@ -46,33 +56,32 @@ class RendererChunk : public RendererBase<WorldChunk> {
 
 				//top left
 				vertexArray[vertexIndex].position = topLeft;
-				vertexArray[vertexIndex].color = sf::Color::Green;
+				vertexArray[vertexIndex].texCoords = {0, 0};
 				vertexIndex += 1;
 
 				//top right
 				vertexArray[vertexIndex].position = topRight;
-				vertexArray[vertexIndex].color = sf::Color::Red;
+				vertexArray[vertexIndex].texCoords = {BLOCK_DIMENSIONS_X, 0};
 				vertexIndex += 1;
 
 				//bottom right
 				vertexArray[vertexIndex].position = bottomRight;
-				vertexArray[vertexIndex].color = sf::Color::Blue;
+				vertexArray[vertexIndex].texCoords = {BLOCK_DIMENSIONS_X, BLOCK_DIMENSIONS_Y};
 				vertexIndex += 1;
 
 				//bottom right
 				vertexArray[vertexIndex].position = bottomRight;
-				vertexArray[vertexIndex].color = sf::Color::Blue;
+				vertexArray[vertexIndex].texCoords = {BLOCK_DIMENSIONS_X, BLOCK_DIMENSIONS_Y};
 				vertexIndex += 1;
 
 				//bottom left
 				vertexArray[vertexIndex].position = bottomLeft;
-				vertexArray[vertexIndex].color = sf::Color::Yellow;
+				vertexArray[vertexIndex].texCoords = {0, BLOCK_DIMENSIONS_Y};
 				vertexIndex += 1;
 
 				//top left
 				vertexArray[vertexIndex].position = topLeft;
-				vertexArray[vertexIndex].color = sf::Color::Green;
-
+				vertexArray[vertexIndex].texCoords = {0, 0};
 				vertexIndex += 1;
 			}
 

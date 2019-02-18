@@ -15,8 +15,7 @@ class WorldChunk {
 		int getID() const;
 
 		const std::vector<Block>& getBlocks() const;
-
-		void toggleVisibility(int _id, bool _v);
+		void setBlockType(int _id, BlockData::Type _t);
 
 	private:
 		int m_id;

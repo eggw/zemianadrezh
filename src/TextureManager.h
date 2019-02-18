@@ -10,15 +10,21 @@ class TextureManager : public Singleton<TextureManager> {
 	public:
 		TextureManager();
 
-		enum class Type
-		{
+		enum class Type {
 			PLAYER
 		};
 
+		enum class Block {
+			AIR,
+			DIRT
+		};
+
 		const sf::Texture& getTexture(Type _type);
+		const sf::Texture& getTexture(int _index, Block _block);
 
 	private:
 		std::map<Type, sf::Texture> m_textures;
+		std::map<std::pair<int, Block>, sf::Texture> m_blockTextures;
 
 };
 

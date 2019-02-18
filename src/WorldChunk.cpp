@@ -5,10 +5,17 @@
 
 WorldChunk::WorldChunk(int _id, bool _randomiseVisibility)
 	:m_id{_id} {
+
+	//index represents a block's position in the chunk.
+	//First, the x axis is filled out, then the y, so
+	//it looks like this:
+
+	int index{0};
+
 	for(int y{0}; y < CHUNK_DIMENSIONS_Y; y++) {
 		for(int x{0}; x < CHUNK_DIMENSIONS_X; x++) {
 
-			bool visible{true};
+			bool dirt{true};
 
 			if(_randomiseVisibility) {
 				auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -17,13 +24,23 @@ WorldChunk::WorldChunk(int _id, bool _randomiseVisibility)
 				int mean = uniform_dist(mt_rand);
 
 				if(mean == 1) {
-					visible = false;
+					dirt = false;
 				}
 			}
 
-			Block block{visible};
+			BlockData::Type t;
+			if(dirt) {
+				t = BlockData::Type::DIRT;
+			}
+			else {
+				t = BlockData::Type::AIR;
+			}
+
+			Block block{index, t};
 			block.m_position.x = x;
 			block.m_position.y = y;
+
+			++index;
 
 			m_blocks.push_back(block);
 		}
@@ -38,6 +55,6 @@ const std::vector<Block>& WorldChunk::getBlocks() const {
 	return m_blocks;
 }
 
-void WorldChunk::toggleVisibility(int _id, bool _v) {
-	m_blocks[_id].setVisibility(_v);
+void WorldChunk::setBlockType(int _id, BlockData::Type _t) {
+	m_blocks[_id].setType(_t);
 }
