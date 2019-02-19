@@ -18,9 +18,6 @@ This way, each block only needs to have an index, specifying its position
 in its chunk (m_id), a block type (m_type), and its damage level (m_damageLevel).
 */
 
-constexpr int BLOCK_DIMENSIONS_X = 16;
-constexpr int BLOCK_DIMENSIONS_Y = 16;
-
 class Block : public Entity {
 	public:
 		Block(	int _id,
@@ -28,7 +25,7 @@ class Block : public Entity {
 
 		void setType(BlockData::Type _t);
 		const BlockData& getData() const;
-		sf::Texture& getTexture() const;
+		sf::FloatRect getTextureRect() const;
 	private:
 		int 			m_id;
 		BlockData::Type m_type;

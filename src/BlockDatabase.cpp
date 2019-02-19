@@ -5,8 +5,10 @@
 BlockDatabase::BlockDatabase() :
 		m_database{} {
 
-	m_database.insert({BlockData::Type::AIR, {"air", false, TextureManager::Block::AIR}});
-	m_database.insert({BlockData::Type::DIRT, {"dirt", true, TextureManager::Block::DIRT}});
+	//temp: air has the same texture indeces as level 6 dirt, testing
+	m_database.insert({BlockData::Type::AIR, {"air", true, {6,0}}});
+	m_database.insert({BlockData::Type::DIRT, {"dirt", true, {0,0}}});
+
 }
 
 const BlockData& BlockDatabase::getData(BlockData::Type _t) {
