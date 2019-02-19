@@ -10,7 +10,7 @@ constexpr int CHUNK_DIMENSIONS_Y = 32;
 
 class WorldChunk {
 	public:
-		WorldChunk(int _id, bool _randomiseVisibility = false);
+		WorldChunk(int _id, bool _empty);
 
 		int getID() const;
 

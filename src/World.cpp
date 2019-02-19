@@ -5,11 +5,11 @@
 //Packet operator overloading
 //----------------------------------------------------------------------------------------------------------------
 sf::Packet& operator <<(sf::Packet& _p, const World::EncodedWorldData& _d) {
-	return _p << _d.chunkIDs << _d.invisibleBlocks;
+	return _p << _d.chunkIDs << _d.blocks;
 }
 
 sf::Packet& operator >>(sf::Packet& _p, World::EncodedWorldData& _d) {
-	return _p >> _d.chunkIDs >> _d.invisibleBlocks;
+	return _p >> _d.chunkIDs >> _d.blocks;
 }
 //----------------------------------------------------------------------------------------------------------------
 
@@ -40,9 +40,9 @@ const sf::Vector2f World::getCenter() const {
 	return {xPos,yPos};
 }
 
-void World::addChunk(int _num, bool _randomiseVisibility) {
+void World::addChunk(int _num, bool _empty) {
 	for(int i{0}; i < _num; i++) {
-		WorldChunk w{ int(m_chunks.size()), _randomiseVisibility };
+		WorldChunk w{ int(m_chunks.size()), _empty};
 		m_chunks.push_back(w);
 	}
 }
@@ -56,17 +56,18 @@ const World::EncodedWorldData World::encodeData() const {
 	chunkIDs will contain the IDs of each chunk, delimited
 	by % (ex: 0%1%2%3%4)
 
-	invisibleBlocks will contain the position blocks in the chunk
-	that are invisible, with the positions delimited by . and the
-	corresponding chunks delimited by %
-
+	blocks will contain both the type (BlockData::Type enum)
+	and position of all non-air (non-0) blocks in the chunk,
+	with the block types delimited by , and positions delimited
+	by .
 	For example:
 
-	14.156.332.745.1020%599.766.923.1004%...
+	1,14.1,156.1,332.1,745.1,1020%1,599.1,766.1,923.1,1004%...
 
 	all the blocks before the first % symbol would correspond to the
 	chunk with the ID 0, the blocks after the symbol to the chunk with
-	ID 1, and so on.
+	ID 1, and so on. All the blocks in the example are of type 1, which
+	corresponds to BlockData::Type::DIRT, so they will be dirt blocks.
 	*/
 
 	EncodedWorldData data;
@@ -78,15 +79,16 @@ const World::EncodedWorldData World::encodeData() const {
 		auto blocks = m_chunks[i].getBlocks();
 
 		for(size_t z{0}; z < blocks.size(); z++) {
-
-			if(!blocks[z].getData().getVisible()) {
-				data.invisibleBlocks += std::to_string(z);
-				data.invisibleBlocks += ".";
+			int type {blocks[z].getType()};
+			if(type != 0) {
+				data.blocks += std::to_string(type);
+				data.blocks += ",";
+				data.blocks += std::to_string(z);
+				data.blocks += ".";
 			}
 		}
 
-
-		data.invisibleBlocks += "%";
+		data.blocks += "%";
 
 	}
 
@@ -106,8 +108,7 @@ void World::parseData(const World::EncodedWorldData& _data) {
 		else {
 			int id = std::stoi(currentNumber);
 			currentNumber.clear();
-			//std::cout << "adding index " << id << std::endl;
-			m_chunks.push_back(id);
+			m_chunks.push_back({id, true});
 			chunkIDs.push_back(id);
 		}
 	}
@@ -121,12 +122,22 @@ void World::parseData(const World::EncodedWorldData& _data) {
 	auto it = chunkIDs.begin();
 	int currentChunkID{*it};
 
+	int currentType;
+	std::string currentTypeStr{""};
+	bool readingType{true};
 
-	for(const char& c : _data.invisibleBlocks) {
-		if(c == '.') {
+	for(const char& c : _data.blocks) {
+		if(c == ',') {
+			readingType = false;
+			currentType = std::stoi(currentTypeStr);
+			currentTypeStr.clear();
+		}
+
+		else if(c == '.') {
 			int id = std::stoi(currentNumber);
 			currentNumber.clear();
-			m_chunks[currentChunkID].setBlockType(id, BlockData::Type::AIR);
+			m_chunks[currentChunkID].setBlockType(id, BlockData::Type(currentType));
+			readingType = true;
 		}
 
 		else if(c == '%') {
@@ -136,32 +147,30 @@ void World::parseData(const World::EncodedWorldData& _data) {
 			}
 		}
 
-		else {
+		else if(readingType) {
+			currentTypeStr += c;
+		}
+
+		else if(!readingType) {
 			currentNumber += c;
 		}
 	}
 }
 
-
 /*
 This is useful for debugging inconsistencies between encoded/decoded
 world data, just keeping it as a comment in case it's ever needed
 again
-
 #include <fstream>
 #include <map>
 #include <string>
 #include <iostream>
-
 void tempLog(std::string _str) {
 	std::ofstream output;
 	output.open("log_world.txt", std::fstream::app);
 	output << _str;
-
 	output << "\n";
-
 	output.close();
-
 	return;
 }
 */

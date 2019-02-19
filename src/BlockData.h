@@ -24,9 +24,9 @@ of the block.
 
 class BlockData {
 	public:
-		enum class Type {
-			AIR,
-			DIRT
+		enum Type {
+			AIR = 0,
+			DIRT = 1
 		};
 
 		BlockData(	std::string _name,

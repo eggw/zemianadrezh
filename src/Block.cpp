@@ -11,6 +11,10 @@ Block::Block(int _id,
 
 }
 
+BlockData::Type Block::getType() const {
+	return m_type;
+}
+
 void Block::setType(BlockData::Type _t) {
 	m_type = _t;
 }

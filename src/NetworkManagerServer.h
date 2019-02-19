@@ -76,8 +76,8 @@ class NetworkManagerServer {
 													 bool _exclude = false);
 		//---------------------------------------------------------------------
 
-		//This is used to remove the matching TcpSocket from m_clientConnections
-		//as well as the associated IPInfo in m_clientIPs
+		//removeConnection() is used to remove the matching TcpSocket from
+		//m_clientConnections as well as the associated IPInfo in m_clientIPs
 		//---------------------------------------------------------------------
 		void removeConnection(const sf::TcpSocket* _con);
 		//---------------------------------------------------------------------

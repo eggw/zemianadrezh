@@ -137,7 +137,14 @@ void NetworkManagerClient::receiveTCPPackets() {
 
 				*packet >> worldData;
 
-				m_client.parseWorldData(worldData);
+				//We won't want to parse the world data
+				//if we're local, since the world will
+				//be a shared pointer anyway, and re-parsing
+				//will involve calling addChunks and mess up
+				//the world by un-randomizing it
+				if(!m_client.isLocal()) {
+					m_client.parseWorldData(worldData);
+				}
 
 				stringIDsToVector(worldData.chunkIDs);
 				setChunkDataProcessed(false);

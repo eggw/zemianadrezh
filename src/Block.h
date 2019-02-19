@@ -23,6 +23,7 @@ class Block : public Entity {
 		Block(	int _id,
 				BlockData::Type _type);
 
+		BlockData::Type getType() const;
 		void setType(BlockData::Type _t);
 		const BlockData& getData() const;
 		sf::FloatRect getTextureRect() const;

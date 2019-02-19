@@ -3,7 +3,7 @@
 #include <random>
 #include <chrono>
 
-WorldChunk::WorldChunk(int _id, bool _randomiseVisibility)
+WorldChunk::WorldChunk(int _id, bool _empty)
 	:m_id{_id} {
 
 	//index represents a block's position in the chunk.
@@ -15,21 +15,26 @@ WorldChunk::WorldChunk(int _id, bool _randomiseVisibility)
 	for(int y{0}; y < CHUNK_DIMENSIONS_Y; y++) {
 		for(int x{0}; x < CHUNK_DIMENSIONS_X; x++) {
 
-			bool dirt{true};
+			bool air{false};
 
-			if(_randomiseVisibility) {
+			if(_empty) {
+				air = true;
+			}
+
+			else {
 				auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 				static std::mt19937 mt_rand(seed);
 				std::uniform_int_distribution<int> uniform_dist(1, 20);
 				int mean = uniform_dist(mt_rand);
 
 				if(mean == 1) {
-					dirt = false;
+					air = true;
 				}
 			}
 
+
 			BlockData::Type t;
-			if(dirt) {
+			if(!air) {
 				t = BlockData::Type::DIRT;
 			}
 			else {

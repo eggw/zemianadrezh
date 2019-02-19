@@ -7,7 +7,7 @@ Server::Server(bool _allowConnections)
 
 	m_players = std::make_shared<std::vector<std::shared_ptr<Player>>>();
 
-	m_world.addChunk(2, true);
+	m_world.addChunk(2, false);
 }
 
 Server::~Server() {

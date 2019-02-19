@@ -7,10 +7,6 @@
 #include "WorldChunk.h"
 #include "TextureManager.h"
 
-/*
-
-*/
-
 class RendererChunk : public RendererBase<WorldChunk> {
 	public:
 		RendererChunk(sf::RenderWindow& _window)
@@ -32,13 +28,6 @@ class RendererChunk : public RendererBase<WorldChunk> {
 			int xOffset = CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * _chunk->getID();
 
 			for(auto& block : blocks) {
-				/*
-				if(!block.getData().getVisible()) {
-					vertexIndex += 6;
-					continue;
-				}
-				*/
-
 				sf::Vector2f topLeft{   block.m_position.x * BLOCK_DIMENSIONS_X + xOffset,
 										block.m_position.y * BLOCK_DIMENSIONS_Y};
 
@@ -121,9 +110,9 @@ class RendererChunk : public RendererBase<WorldChunk> {
 		};
 
 		void draw() const {
-			auto blocks {TextureManager::get_instance().getTexture(TextureManager::Type::BLOCKS)};
-			for(const auto& vertexArray : m_vertexMap) {
-				RendererBase<WorldChunk>::m_window.draw(vertexArray.second, &blocks);
+			static auto blocks {TextureManager::get_instance().getTexture(TextureManager::Type::BLOCKS)};
+			for(const auto& element : m_vertexMap) {
+				RendererBase<WorldChunk>::m_window.draw(element.second, &blocks);
 			}
 		};
 

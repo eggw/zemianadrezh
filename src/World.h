@@ -9,14 +9,14 @@ class World {
 	public:
 		struct EncodedWorldData {
 			std::string chunkIDs;
-			std::string invisibleBlocks;
+			std::string blocks;
 		};
 
 		World();
 
 		const sf::Vector2f getCenter() const;
 
-		void addChunk(int _num = 1, bool _randomiseVisibility = false);
+		void addChunk(int _num, bool _empty);
 
 		const std::vector<WorldChunk>& getChunks() const;
 		const EncodedWorldData encodeData() const;
