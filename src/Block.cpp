@@ -51,5 +51,5 @@ sf::FloatRect Block::getTextureRect() const {
 	float newX{textureCoordinates.x + (damageIndex * BLOCK_DIMENSIONS_X)};
 
 	return	{newX, textureCoordinates.y,
-			BLOCK_DIMENSIONS_X, BLOCK_DIMENSIONS_Y};
+			float(BLOCK_DIMENSIONS_X), float(BLOCK_DIMENSIONS_Y)};
 }
