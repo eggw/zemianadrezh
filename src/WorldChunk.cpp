@@ -113,8 +113,6 @@ const WorldChunk::EncodedChunkData WorldChunk::encodeData() const {
 }
 
 void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
-	m_blocks.clear();
-
 	m_id = _data.id;
 	std::string currentNumber;
 
