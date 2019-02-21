@@ -13,8 +13,8 @@ class GameInstance {
 		const World& getWorld() const;
 		const std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers() const;
 
-		const World::EncodedWorldData encodeWorldData() const;
-		void parseWorldData(const World::EncodedWorldData& _data);
+		const encodedChunks encodeWorldChunks() const;
+		void parseWorldChunk(const WorldChunk::EncodedChunkData& _data);
 
 		//////////////////////////////////////////////////////////////////////////
 		//Server and Client both have different implementations of these functions

@@ -1,36 +1,22 @@
 #ifndef WORLD_H_INCLUDED
 #define WORLD_H_INCLUDED
 
-#include <string>
-
 #include "WorldChunk.h"
+
+typedef std::vector<WorldChunk::EncodedChunkData> encodedChunks;
 
 class World {
 	public:
-		struct EncodedWorldData {
-			std::string chunkIDs;
-			std::string blocks;
-		};
-
 		World();
 
 		const sf::Vector2f getCenter() const;
-
-		void addChunk(int _num, bool _empty);
-
+		void addChunk(int _beginID, int _num, bool _empty);
 		const std::vector<WorldChunk>& getChunks() const;
-		const EncodedWorldData encodeData() const;
-		void parseData(const EncodedWorldData& _data);
+
+		const encodedChunks encodeChunks() const;
+		void parseChunk(const WorldChunk::EncodedChunkData& _data);
 	private:
 		std::vector<WorldChunk> m_chunks;
 };
 
-
-//Forward declare Packet here and define the overloading in World.cpp, so
-//we don't have to include SFML/Networking.hpp in World.h
-namespace sf {
-	class Packet;
-}
-sf::Packet& operator <<(sf::Packet& _p, const World::EncodedWorldData& _d);
-sf::Packet& operator >>(sf::Packet& _p, World::EncodedWorldData& _d);
 #endif // WORLD_H_INCLUDED

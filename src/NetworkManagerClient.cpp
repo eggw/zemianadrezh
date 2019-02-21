@@ -106,7 +106,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 	int packetCode;
 	PacketUPtr packet(new sf::Packet());
 
-	if (m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
+	while (m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
 		*packet >> packetCode;
 		Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
 		LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::CLIENT,
@@ -133,9 +133,9 @@ void NetworkManagerClient::receiveTCPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::TCPPacket::DATA_WORLD: {
 
-				World::EncodedWorldData worldData;
+				WorldChunk::EncodedChunkData chunkData;
 
-				*packet >> worldData;
+				*packet >> chunkData;
 
 				//We won't want to parse the world data
 				//if we're local, since the world will
@@ -143,10 +143,13 @@ void NetworkManagerClient::receiveTCPPackets() {
 				//will involve calling addChunks and mess up
 				//the world by un-randomizing it
 				if(!m_client.isLocal()) {
-					m_client.parseWorldData(worldData);
+					m_client.parseWorldChunk(chunkData);
 				}
 
-				stringIDsToVector(worldData.chunkIDs);
+
+				m_lastReceivedChunks.push_back(chunkData.id);
+
+				m_chunkDataReceived = true;
 				setChunkDataProcessed(false);
 				break;
 			}
@@ -274,16 +277,4 @@ void NetworkManagerClient::setChunkDataProcessed(bool _val) {
 
 void NetworkManagerClient::update() {
 	PacketSender::get_instance().update();
-}
-
-
-void NetworkManagerClient::stringIDsToVector(std::string _ids) {
-	m_lastReceivedChunks.clear();
-
-	std::replace(_ids.begin(), _ids.end(), '%', ' ' );
-
-	std::stringstream ss(_ids);
-	std::copy(	std::istream_iterator<int>(ss),
-				std::istream_iterator<int>(),
-				back_inserter(m_lastReceivedChunks));
 }

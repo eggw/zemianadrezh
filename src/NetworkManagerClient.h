@@ -53,10 +53,6 @@ class NetworkManagerClient {
 		//m_lastReceivedChunks
 		bool m_chunkDataReceived{false};
 		std::vector<int> m_lastReceivedChunks;
-		//Since the world data is sent by packets as a string, this function
-		//will do the work of converting it into a vector of ints and setting
-		//m_lastReceivedChunks
-		void stringIDsToVector(std::string _ids);
 
 
 		std::pair<std::string, std::string> m_lastReceivedMessage;

@@ -14,12 +14,12 @@ const std::shared_ptr<std::vector<std::shared_ptr<Player>>> GameInstance::getPla
 	return m_players;
 }
 
-const World::EncodedWorldData GameInstance::encodeWorldData() const {
-	return m_world.encodeData();
+const encodedChunks GameInstance::encodeWorldChunks() const {
+	return m_world.encodeChunks();
 }
 
-void GameInstance::parseWorldData(const World::EncodedWorldData& _data) {
-	m_world.parseData(_data);
+void GameInstance::parseWorldChunk(const WorldChunk::EncodedChunkData& _data) {
+	m_world.parseChunk(_data);
 }
 
 void GameInstance::removePlayer(std::string _name) {

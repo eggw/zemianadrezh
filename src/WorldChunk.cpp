@@ -3,6 +3,19 @@
 #include <random>
 #include <chrono>
 
+#include <SFML/Network.hpp>
+
+//Packet operator overloading
+//----------------------------------------------------------------------------------------------------------------
+sf::Packet& operator <<(sf::Packet& _p, const WorldChunk::EncodedChunkData& _d) {
+	return _p << _d.id << _d.blocks;
+}
+
+sf::Packet& operator >>(sf::Packet& _p, WorldChunk::EncodedChunkData& _d) {
+	return _p >> _d.id >> _d.blocks;
+}
+//----------------------------------------------------------------------------------------------------------------
+
 WorldChunk::WorldChunk(int _id, bool _empty)
 	:m_id{_id} {
 
@@ -62,4 +75,73 @@ const std::vector<Block>& WorldChunk::getBlocks() const {
 
 void WorldChunk::setBlockType(int _id, BlockData::Type _t) {
 	m_blocks[_id].setType(_t);
+}
+
+const WorldChunk::EncodedChunkData WorldChunk::encodeData() const {
+	/*
+	chunkID will contain the chunk's ID
+
+	blocks will contain both the type (BlockData::Type enum)
+	and position of all non-air (non-0) blocks in the chunk,
+	with the block types delimited by , and positions delimited
+	by .
+	For example:
+
+	1,14.1,156.1,332.1,745.1,1020
+
+	All the blocks in the example are of type 1, which
+	corresponds to BlockData::Type::DIRT, so they will be dirt blocks.
+	*/
+
+	EncodedChunkData data;
+
+	data.id = sf::Uint16(m_id);
+
+	auto blocks =getBlocks();
+
+	for(size_t z{0}; z < blocks.size(); z++) {
+		int type {blocks[z].getType()};
+		if(type != 0) {
+			data.blocks += std::to_string(type);
+			data.blocks += ",";
+			data.blocks += std::to_string(z);
+			data.blocks += ".";
+		}
+	}
+
+	return data;
+}
+
+void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
+	m_blocks.clear();
+
+	m_id = _data.id;
+	std::string currentNumber;
+
+	int currentType;
+	std::string currentTypeStr{""};
+	bool readingType{true};
+
+	for(const char& c : _data.blocks) {
+		if(c == ',') {
+			readingType = false;
+			currentType = std::stoi(currentTypeStr);
+			currentTypeStr.clear();
+		}
+
+		else if(c == '.') {
+			int id = std::stoi(currentNumber);
+			currentNumber.clear();
+			setBlockType(id, BlockData::Type(currentType));
+			readingType = true;
+		}
+
+		else if(readingType) {
+			currentTypeStr += c;
+		}
+
+		else if(!readingType) {
+			currentNumber += c;
+		}
+	}
 }

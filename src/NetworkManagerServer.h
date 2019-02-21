@@ -23,6 +23,8 @@ class NetworkManagerServer {
 						const sf::IpAddress& _recipient = sf::IpAddress::None,
 						bool _exclude = false);
 
+		void sendChunkData(int _chunkID);
+
 		void receiveTCPPackets();
 		void receiveUDPPackets();
 

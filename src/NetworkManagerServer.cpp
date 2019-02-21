@@ -70,17 +70,24 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::DATA_WORLD: {
 
-			World::EncodedWorldData worldData = m_server.getWorld().encodeData();
+			encodedChunks worldData = m_server.getWorld().encodeChunks();
+			/*
+			At the moment, a packet is generated and sent for each chunk
+			to each player. In the future, chunks will be sent on an ID basis.
+			*/
+			for(auto& chunk : worldData) {
+				PacketSharedPtr p(new sf::Packet());
+				*p << packetCode;
+				*p << chunk;
+				for(const auto& recipient : recipients) {
+					PacketSender::get_instance().send(recipient, p);
+					LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
+							LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+							packetCode);
 
-			for(const auto& recipient : recipients) {
-				*packet << worldData;
-
-				PacketSender::get_instance().send(recipient, packet);
-				LoggerNetwork::get_instance().logConsole(LoggerNetwork::LOG_SENDER::SERVER,
-						LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-						packetCode);
-
+				}
 			}
+
 
 			break;
 		}
