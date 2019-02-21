@@ -9,10 +9,11 @@
 /*
 When using non-blocking TcpSockets, it is important to send
 the same packet object over again if TcpSocket.send() returns
-sf::Socket::Status::Partial. We'll use this class as a wrapper
-around all packet sending operations to ensure that packets
-are being sent properly, even if it takes several frames to
-do so.
+sf::Socket::Status::Partial (or if it's unable to send for \
+another reason, such as not being ready). We'll use this class
+as a wrapperaround all packet sending operations to ensure that
+packets are being sent properly, even if it takes several frames
+to do so.
 
 See the footnote on the following page for a detailed explanation:
 https://www.sfml-dev.org/tutorials/2.5/network-socket.php

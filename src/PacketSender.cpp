@@ -12,7 +12,7 @@ void PacketSender::send(sf::TcpSocket* _socket, const PacketSharedPtr _packet) {
 	TCPPacket data{_socket, _packet};
 
 	auto status = data.m_socket->send(*(data.m_packet));
-	if(status == sf::Socket::Status::Partial) {
+	if(status != sf::Socket::Status::Done) {
 		m_packetData.push_back(data);
 	}
 }
