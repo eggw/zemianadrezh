@@ -1,8 +1,11 @@
 #include "UserInterface.h"
 
+#include "Keybinds.h"
+
 UserInterface::UserInterface(sf::RenderWindow& _window)
 	:m_window{_window},
-	m_hotbarView()
+	m_hotbarView(),
+	m_activeHotbarSlot{nullptr}
 {
 	int hotbarRectWidth{40};
 	int hotbarRectHeight{40};
@@ -26,11 +29,61 @@ UserInterface::UserInterface(sf::RenderWindow& _window)
 		}
 	}
 
+	setActiveHotbarSlot(1);
+
 	onResize(m_window.getSize());
 }
 
 void UserInterface::getInput(sf::Event& _event) {
 	switch(_event.type) {
+
+	case sf::Event::KeyPressed: {
+
+		if(_event.key.code == Key::HOTBAR_1) {
+			setActiveHotbarSlot(1);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_2) {
+			setActiveHotbarSlot(2);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_3) {
+			setActiveHotbarSlot(3);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_4) {
+			setActiveHotbarSlot(4);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_5) {
+			setActiveHotbarSlot(5);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_6) {
+			setActiveHotbarSlot(6);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_7) {
+			setActiveHotbarSlot(7);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_8) {
+			setActiveHotbarSlot(8);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_9) {
+			setActiveHotbarSlot(9);
+			return;
+		}
+		else if(_event.key.code == Key::HOTBAR_0) {
+			setActiveHotbarSlot(0);
+			return;
+		}
+
+		else{
+			return;
+		}
+	}
 
 	case sf::Event::Resized: {
 			sf::Vector2u newSize{_event.size.width, _event.size.height};
@@ -63,4 +116,19 @@ void UserInterface::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 void UserInterface::onResize(sf::Vector2u _newSize) {
     m_hotbarView = sf::View({float(_newSize.x/2), float(_newSize.y/2)},
 							{float(_newSize.x), float(_newSize.y)});
+}
+
+void UserInterface::setActiveHotbarSlot(int _i) {
+	if(m_activeHotbarSlot != nullptr) {
+		m_activeHotbarSlot->m_rectangle.setOutlineColor(sf::Color::Black);
+	}
+
+    if(_i == 0) {
+		m_activeHotbarSlot = &m_hotbar[9];
+    }
+    else if(_i > 0 && _i <= 9) {
+		m_activeHotbarSlot = &m_hotbar[_i - 1];
+    }
+
+    m_activeHotbarSlot->m_rectangle.setOutlineColor(sf::Color::Yellow);
 }

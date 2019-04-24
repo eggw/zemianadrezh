@@ -17,6 +17,8 @@ public:
 
 
 private:
+	void setActiveHotbarSlot(int _i);
+
 	struct HotbarRect {
 		HotbarRect(	sf::RectangleShape _rectangle, int _number)
 				:	m_rectangle{_rectangle},
@@ -42,6 +44,8 @@ private:
 	sf::RenderWindow& m_window;
 	std::vector<HotbarRect> m_hotbar;
 	sf::View m_hotbarView;
+
+	HotbarRect* m_activeHotbarSlot;
 };
 
 #endif // USERINTERFACE_H_INCLUDED
