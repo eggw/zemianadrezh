@@ -5,6 +5,7 @@
 
 #include "GameInstance.h"
 #include "ChatBox.h"
+#include "UserInterface.h"
 
 /*
 The client class takes an optional pointer to a server.
@@ -35,6 +36,7 @@ class Client : public GameInstance {
 
 		const Player* getPlayer() const;
 		const ChatBox* getChatBox() const;
+		const UserInterface* getUserInterface() const;
 
 		bool isConnected() const;
 		bool isLocal() const;
@@ -46,7 +48,9 @@ class Client : public GameInstance {
 		sf::IpAddress m_serverIP;
 		Server* m_localServer;
 		Player m_player;
+
 		ChatBox m_chatBox;
+		UserInterface m_userInterface;
 
 		std::pair<std::string, std::string> m_pendingMessage;
 

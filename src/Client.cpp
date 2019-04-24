@@ -12,7 +12,8 @@ Client::Client(	sf::RenderWindow& _window,
 	 m_serverIP(_serverIP),
 	 m_localServer(_localServer),
 	 m_player(_localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
-	 m_chatBox(_window, m_player.getName()) {
+	 m_chatBox(_window, m_player.getName()),
+	 m_userInterface(_window) {
 
 	if(m_localServer != nullptr) {
 		m_world = m_localServer->getWorld();
@@ -36,6 +37,7 @@ Client::~Client() {
 void Client::getInput(sf::Event& _event) {
 	m_player.getInput();
 	m_chatBox.getInput(_event);
+	m_userInterface.getInput(_event);
 }
 
 void Client::update(int _timeslice) {
@@ -111,6 +113,10 @@ const Player* Client::getPlayer() const {
 
 const ChatBox* Client::getChatBox() const {
 	return &m_chatBox;
+}
+
+const UserInterface* Client::getUserInterface() const {
+	return &m_userInterface;
 }
 
 bool Client::isConnected() const {

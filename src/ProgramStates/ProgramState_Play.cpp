@@ -18,6 +18,7 @@ ProgramState_Play::ProgramState_Play(Program& _program,
 	   m_rendererClientPlayer(*m_program.m_window),
 	   m_rendererChatbox(*m_program.m_window),
 	   m_rendererOtherPlayers(*m_program.m_window),
+	   m_rendererUserInterface(*m_program.m_window),
 	   m_view{sf::FloatRect(0, 0,
 							float(m_program.m_window->getSize().x),
 							float(m_program.m_window->getSize().y))} {
@@ -27,6 +28,7 @@ ProgramState_Play::ProgramState_Play(Program& _program,
 
 	m_rendererChatbox.addObject(m_client.getChatBox());
 	m_rendererClientPlayer.addObject(m_client.getPlayer());
+	m_rendererUserInterface.addObject(m_client.getUserInterface());
 
 }
 
@@ -78,6 +80,8 @@ void ProgramState_Play::draw() {
 	m_rendererOtherPlayers.draw();
 	m_rendererChunk.draw();
 	m_rendererChatbox.draw();
+	m_rendererUserInterface.draw();
+
 }
 
 bool ProgramState_Play::clientConnected() const {

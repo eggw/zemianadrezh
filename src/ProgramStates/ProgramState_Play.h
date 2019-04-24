@@ -29,6 +29,7 @@ class ProgramState_Play : public ProgramState {
         RendererChunk m_rendererChunk;
         RendererDrawable<Player> m_rendererClientPlayer;
         RendererDrawable<ChatBox> m_rendererChatbox;
+        RendererDrawable<UserInterface> m_rendererUserInterface;
 
         //The client's player and the chatbox will always be drawn.
         //However, other players come and go. m_rendererPeers will use
