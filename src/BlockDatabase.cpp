@@ -5,9 +5,12 @@
 BlockDatabase::BlockDatabase() :
 		m_database{} {
 
-	//temp: air has the same texture indeces as level 6 dirt, testing
-	m_database.insert({BlockData::Type::AIR, {"air", true, {6,0}}});
-	m_database.insert({BlockData::Type::DIRT, {"dirt", true, {0,0}}});
+	//Since air has an opacity of 0, it's not really worth creating
+	//an exception for it in the code logic to not take in texture
+	//indeces. Instead, we can just give it any index because it
+	//doesn't matter.
+	m_database.insert({BlockData::Type::AIR, {"air", 0, {0,0}}});
+	m_database.insert({BlockData::Type::DIRT, {"dirt", 100, {0,0}}});
 
 }
 

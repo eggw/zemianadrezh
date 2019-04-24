@@ -60,31 +60,37 @@ class RendererChunk : public RendererBase<WorldChunk> {
 
 				//top left
 				vertexArray[vertexIndex].position = topLeft;
+				vertexArray[vertexIndex].color.a = block.getData().getOpacityAlpha();
 				vertexArray[vertexIndex].texCoords = textureTopLeft;
 				vertexIndex += 1;
 
 				//top right
 				vertexArray[vertexIndex].position = topRight;
+				vertexArray[vertexIndex].color.a = block.getData().getOpacityAlpha();
 				vertexArray[vertexIndex].texCoords = textureTopRight;
 				vertexIndex += 1;
 
 				//bottom right
 				vertexArray[vertexIndex].position = bottomRight;
+				vertexArray[vertexIndex].color.a = block.getData().getOpacityAlpha();
 				vertexArray[vertexIndex].texCoords = textureBottomRight;
 				vertexIndex += 1;
 
 				//bottom right
 				vertexArray[vertexIndex].position = bottomRight;
+				vertexArray[vertexIndex].color.a = block.getData().getOpacityAlpha();
 				vertexArray[vertexIndex].texCoords = textureBottomRight;
 				vertexIndex += 1;
 
 				//bottom left
 				vertexArray[vertexIndex].position = bottomLeft;
+				vertexArray[vertexIndex].color.a = block.getData().getOpacityAlpha();
 				vertexArray[vertexIndex].texCoords = textureBottomLeft;
 				vertexIndex += 1;
 
 				//top left
 				vertexArray[vertexIndex].position = topLeft;
+				vertexArray[vertexIndex].color.a = block.getData().getOpacityAlpha();
 				vertexArray[vertexIndex].texCoords = textureTopLeft;
 				vertexIndex += 1;
 			}

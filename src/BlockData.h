@@ -18,7 +18,7 @@ each damage level of the block.
 m_textureIndeces describes the coordinates for the first, or damage
 level 0, texture in the atlas. For example, our very first block would
 have an index of (0,0). If our second block was on the next row, its index
-would be (1,0). The indeces are automatically multiplied by the dimensions
+would be (0,1). The indeces are automatically multiplied by the dimensions
 of the block.
 */
 
@@ -29,16 +29,22 @@ class BlockData {
 			DIRT = 1
 		};
 
+		//Note:
+		//The opacity parameter in the constructor is taken in percentage
+		//because it makes more sense to specify it that way. Before
+		//m_opacity is set, that percentage is converted to the actual
+		//alpha value (0-255).
+
 		BlockData(	std::string _name,
-					bool _visibile,
+					int _opacity,
 					sf::Vector2f _textureIndeces);
 
 		const std::string& getName() const;
-		bool getVisible() const;
+		int getOpacityAlpha() const;
 		sf::Vector2f getTextureIndeces() const;
 	private:
 		std::string		m_name;
-		bool 			m_visible;
+		int 			m_opacityAlpha;
 		sf::Vector2f 	m_textureIndeces;
 };
 
