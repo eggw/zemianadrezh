@@ -30,6 +30,7 @@ class ProgramState_Play : public ProgramState {
         RendererDrawable<Player> m_rendererClientPlayer;
         RendererDrawable<ChatBox> m_rendererChatbox;
         RendererDrawable<UserInterface> m_rendererUserInterface;
+        RendererDrawable<sf::Sprite> m_rendererSunMoon;
 
         //The client's player and the chatbox will always be drawn.
         //However, other players come and go. m_rendererPeers will use
@@ -41,15 +42,23 @@ class ProgramState_Play : public ProgramState {
         RendererSharedDrawable<Player> m_rendererOtherPlayers;
 
         sf::View m_view;
+        sf::View m_skyView;
+
+        sf::Sprite m_sunMoonSprite;
 
         //This function is responsible for calling RendererChunk's update
         //function on chunks that have just had their data updated
-void renderUpdatedChunks();
+        void renderUpdatedChunks();
 
         //This function is responsible for calling RendererPlayer's add
         //function on players that have joined but are not being rendered
         //TODO: refactor it.
         void renderNewPlayers();
+
+        //This function will deal with managing either the sun or the moon's
+        //sprite and position, depending on the world time
+        void updateSunMoon();
+
 };
 
 #endif // PROGRAMSTATE_PLAY_H_INCLUDED

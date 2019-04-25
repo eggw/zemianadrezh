@@ -33,6 +33,9 @@ void Server::receivePackets() {
 }
 
 void Server::update(int _timeslice) {
+	//TODO: figure out how to keep server/client world times synced
+	//m_world.update(_timeslice);
+
 	if(m_players != nullptr) {
 		for(auto& player : *m_players) {
 			player->update(_timeslice);

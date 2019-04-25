@@ -2,8 +2,12 @@
 
 #include <iostream>
 
-World::World() {
+#include "TextureManager.h"
 
+World::World()
+
+: m_time{12, 0}
+{
 }
 
 const sf::Vector2f World::getCenter() const {
@@ -66,6 +70,22 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 	WorldChunk newChunk{_data.id, true};
 	newChunk.parseData(_data);
 	m_chunks.emplace_back(newChunk);
+}
+
+void World::update(int _timeslice) {
+	static sf::Clock clock;
+
+	//SunPos = Vector(Cos(time),Sin(Time);
+
+	if(clock.getElapsedTime().asSeconds() >= 0.001){
+		m_time.tick();
+		std::cout << "TIME: " << m_time.getString() << std::endl;
+		clock.restart();
+	}
+}
+
+const World::WorldTime World::getTime() const {
+	return m_time;
 }
 
 /*

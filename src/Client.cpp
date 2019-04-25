@@ -41,6 +41,7 @@ void Client::getInput(sf::Event& _event) {
 }
 
 void Client::update(int _timeslice) {
+	m_world.update(_timeslice);
 	m_player.update(_timeslice);
 
 	if(m_players != nullptr) {
