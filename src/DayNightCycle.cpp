@@ -1,6 +1,7 @@
 #include "DayNightCycle.h"
 
 #include "TextureManager.h"
+#include "FontManager.h"
 
 constexpr int DAY_BEGIN_HOUR {5};
 constexpr int DAY_END_HOUR {19};
@@ -11,9 +12,16 @@ constexpr int NIGHT_END_HOUR {5};
 DayNightCycle::DayNightCycle(const World& _world)
 : 	m_world{_world},
 	m_sunMoonSprite{},
+	m_timeText{},
 	m_targetWidth{0},
 	m_targetHeight{0}
 {
+	m_timeText.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
+	m_timeText.setCharacterSize(30);
+	m_timeText.setOutlineThickness(1);
+	m_timeText.setOrigin(m_timeText.getGlobalBounds().width / 2,
+						 m_timeText.getGlobalBounds().height / 2);
+
 	update();
 }
 
@@ -24,6 +32,8 @@ void DayNightCycle::update() {
 
 	static const double pi {std::atan(1)*4};
 	World::WorldTime worldTime = m_world.getTime();
+	m_timeText.setString(worldTime.getString());
+	m_timeText.setPosition(m_targetWidth - 1.2 * m_timeText.getGlobalBounds().width, 0);
 
 	int HOUR_START 	{DAY_BEGIN_HOUR};
 	int HOUR_END 	{DAY_END_HOUR};
@@ -99,4 +109,5 @@ void DayNightCycle::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 	m_targetWidth = target.getSize().x;
 	m_targetHeight = target.getSize().y;
 	target.draw(m_sunMoonSprite, states);
+	target.draw(m_timeText, states);
 }

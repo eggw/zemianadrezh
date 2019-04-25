@@ -27,6 +27,7 @@ class DayNightCycle : public sf::Drawable {
 	private:
 		const World& m_world;
         sf::Sprite m_sunMoonSprite;
+        sf::Text m_timeText;
         //In order to avoid having a lot of extra code to handle resizing, we'll
         //simply update these values to the values of the width and height of
         //the RenderTarget passed into the draw function.

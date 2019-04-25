@@ -1,7 +1,5 @@
 #include "World.h"
 
-#include <iostream>
-
 #include "TextureManager.h"
 
 World::World()
@@ -75,11 +73,8 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 void World::update(int _timeslice) {
 	static sf::Clock clock;
 
-	//SunPos = Vector(Cos(time),Sin(Time);
-
-	if(clock.getElapsedTime().asSeconds() >= 0.001){
+	if(clock.getElapsedTime().asSeconds() >= 0.05){
 		m_time.tick();
-		std::cout << "TIME: " << m_time.getString() << std::endl;
 		clock.restart();
 	}
 }
