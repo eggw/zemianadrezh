@@ -35,7 +35,7 @@ void Program::gameLoop() {
 	sf::Clock timesliceClock{};
 
 	while(m_window->isOpen()) {
-		m_window->clear(sf::Color(53,80,200));
+		m_window->clear(sf::Color(90,112,255));
 
         getInput();
 

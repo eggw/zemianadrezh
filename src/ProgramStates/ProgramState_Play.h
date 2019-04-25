@@ -8,6 +8,7 @@
 #include "RendererChunk.h"
 #include "RendererDrawable.h"
 #include "RendererSharedDrawable.h"
+#include "DayNightCycle.h"
 
 class ProgramState_Play : public ProgramState {
     public:
@@ -30,7 +31,8 @@ class ProgramState_Play : public ProgramState {
         RendererDrawable<Player> m_rendererClientPlayer;
         RendererDrawable<ChatBox> m_rendererChatbox;
         RendererDrawable<UserInterface> m_rendererUserInterface;
-        RendererDrawable<sf::Sprite> m_rendererSunMoon;
+        RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
+        DayNightCycle m_dayNightCycle;
 
         //The client's player and the chatbox will always be drawn.
         //However, other players come and go. m_rendererPeers will use
@@ -41,10 +43,10 @@ class ProgramState_Play : public ProgramState {
         //a dangling pointer.
         RendererSharedDrawable<Player> m_rendererOtherPlayers;
 
+        //m_view is the view used to draw chunks, players, items, etc.
         sf::View m_view;
+        //m_skyView is the view used to draw the background, sun/moon, etc.
         sf::View m_skyView;
-
-        sf::Sprite m_sunMoonSprite;
 
         //This function is responsible for calling RendererChunk's update
         //function on chunks that have just had their data updated
@@ -54,10 +56,6 @@ class ProgramState_Play : public ProgramState {
         //function on players that have joined but are not being rendered
         //TODO: refactor it.
         void renderNewPlayers();
-
-        //This function will deal with managing either the sun or the moon's
-        //sprite and position, depending on the world time
-        void updateSunMoon();
 
 };
 
