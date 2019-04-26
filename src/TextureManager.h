@@ -14,7 +14,9 @@ class TextureManager : public Singleton<TextureManager> {
 			PLAYER,
 			BLOCKS,
 			SUN,
-			MOON
+			MOON,
+			CYCLE_SKY_GRADIENT,
+			CYCLE_GLOW_GRADIENT
 		};
 
 		const sf::Texture& getTexture(Type _type);

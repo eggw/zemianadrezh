@@ -37,6 +37,9 @@ DayNightCycle::DayNightCycle(const World& _world)
 		std::cout << "ERROR!" << std::endl;
 	}
 
+	m_shader.setUniform("sky", TextureManager::get_instance().getTexture(TextureManager::Type::CYCLE_SKY_GRADIENT));
+	m_shader.setUniform("glow", TextureManager::get_instance().getTexture(TextureManager::Type::CYCLE_GLOW_GRADIENT));
+
 	update();
 }
 
@@ -123,12 +126,24 @@ void DayNightCycle::update() {
 
 	m_sunMoonSprite.setPosition(xPos, yPos);
 
+	//In SFML,	 the origin (0,0) is at the top left.
+	//In OpenGL, the origin (0,0) is in the middle.
+	//We'll do a couple of things to account for this
+	sf::Vector2f openGLCoordinates{ m_sunMoonSprite.getPosition() };
+	//First, since the sprite's x origin is at its rightmost point, we'll
+	//subtract half its width from the x coordinate.
+	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
+	//Next, we'll subtract half the screen width and add half the height
+	//to get the equivalent point in the OpenGL coordinate system
+	openGLCoordinates.x -= m_targetWidth / 2;
+	openGLCoordinates.y += m_targetHeight/ 2;
+
 	//TODO: further refine this
 	//We're going to let the shader determine the appropriate gradient from two
 	//files, sky.png and glow.png, that represent the sun's position in the sky
 	//over time
-	m_shader.setUniform("sunPosition", sf::Vector3f{float(xPos), float(yPos), 1.f});
-	m_shader.setUniform("sunProgress", float(progressInPercent));
+	m_shader.setUniform("sunPosition", sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
+	m_shader.setUniform("lightIntensity", float(sin(progressInPercent * pi)));
 
 }
 
@@ -146,6 +161,9 @@ void DayNightCycle::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 }
 
 void DayNightCycle::updateSkyVertices() {
+	//In SFML,	 the origin (0,0) is at the top left.
+	//In OpenGL, the origin (0,0) is in the middle.
+	//Therefore, we'll need to tweak some stuff.
 	//top left
 	m_skyBackground[0].position = { -m_targetWidth / 2, m_targetHeight / 2 };
 	m_skyBackground[0].texCoords = { -m_targetWidth / 2, m_targetHeight / 2 };

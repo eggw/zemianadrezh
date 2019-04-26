@@ -16,6 +16,14 @@ TextureManager::TextureManager() {
 	sf::Texture moon;
 	moon.loadFromFile("assets/gfx/moon.png");
 	m_textures.emplace(Type::MOON, moon);
+
+	sf::Texture sky;
+	sky.loadFromFile("assets/shaders/sky.png");
+	m_textures.emplace(Type::CYCLE_SKY_GRADIENT, sky);
+
+	sf::Texture glow;
+	glow.loadFromFile("assets/shaders/glow.png");
+	m_textures.emplace(Type::CYCLE_GLOW_GRADIENT, glow);
 }
 
 const sf::Texture& TextureManager::getTexture(Type _type) {
