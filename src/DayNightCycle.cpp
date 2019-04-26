@@ -3,6 +3,8 @@
 #include "TextureManager.h"
 #include "FontManager.h"
 
+#include <iostream>
+
 constexpr int DAY_BEGIN_HOUR {5};
 constexpr int DAY_END_HOUR {19};
 
@@ -12,15 +14,33 @@ constexpr int NIGHT_END_HOUR {5};
 DayNightCycle::DayNightCycle(const World& _world)
 : 	m_world{_world},
 	m_sunMoonSprite{},
+	m_skyBackground{ sf::PrimitiveType::Quads, 4 },
 	m_timeText{},
 	m_targetWidth{0},
-	m_targetHeight{0}
+	m_targetHeight{0},
+	m_shader{}
 {
 	m_timeText.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_timeText.setCharacterSize(30);
 	m_timeText.setOutlineThickness(1);
 	m_timeText.setOrigin(m_timeText.getGlobalBounds().width / 2,
 						 m_timeText.getGlobalBounds().height / 2);
+
+	//making the sky blue (temporary until shader is implemented properly)
+	/*
+	for(int i{0}; i < 4; ++i) {
+		m_skyBackground[i].color = sf::Color(90,112,255);
+	}
+	*/
+
+	//top left
+	m_skyBackground[0].position 	= {0,0};
+	m_skyBackground[0].texCoords 	= {0,0};
+
+
+	if (!m_shader.loadFromFile("assets/shaders/cycle_vertex.glsl", "assets/shaders/cycle_fragment.glsl")){
+		std::cout << "ERROR!" << std::endl;
+	}
 
 	update();
 }
@@ -29,6 +49,16 @@ void DayNightCycle::update() {
 	if(m_targetHeight == 0 || m_targetWidth == 0) {
 		return;
 	}
+
+	//top right
+	m_skyBackground[1].position 	= {m_targetWidth, 0};
+	m_skyBackground[1].texCoords	= {m_targetWidth, 0};
+	//bottom right
+	m_skyBackground[2].position 	= {m_targetWidth, m_targetHeight};
+	m_skyBackground[2].texCoords 	= {m_targetWidth, m_targetHeight};
+	//bottom left
+	m_skyBackground[3].position 	= {0, m_targetHeight};
+	m_skyBackground[3].texCoords 	= {0, m_targetHeight};
 
 	static const double pi {std::atan(1)*4};
 	World::WorldTime worldTime = m_world.getTime();
@@ -103,11 +133,24 @@ void DayNightCycle::update() {
 
 	m_sunMoonSprite.setPosition(xPos, yPos);
 
+	//TODO: further refine this
+	//We're going to let the shader determine the appropriate gradient from two
+	//files, sky.png and glow.png, that represent the sun's position in the sky
+	//over time
+	m_shader.setUniform("sunPosition", sf::Vector3f{float(xPos), float(yPos), 1.f});
+	m_shader.setUniform("sunProgress", float(progressInPercent));
+
 }
 
 void DayNightCycle::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	m_targetWidth = target.getSize().x;
 	m_targetHeight = target.getSize().y;
+
+	sf::RenderStates skyStates{&m_shader};
+	target.draw(m_skyBackground, skyStates);
+	//target.draw(m_skyBackground, states);
+
 	target.draw(m_sunMoonSprite, states);
 	target.draw(m_timeText, states);
+
 }
