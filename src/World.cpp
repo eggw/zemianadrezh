@@ -4,7 +4,7 @@
 
 World::World()
 
-: m_time{12, 0}
+: m_time{5, 0}
 {
 }
 
@@ -71,12 +71,12 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 }
 
 void World::update(int _timeslice) {
-	static sf::Clock clock;
+	//static sf::Clock clock;
 
-	if(clock.getElapsedTime().asSeconds() >= 0.05){
+	//if(clock.getElapsedTime().asSeconds() >= 0.05){
 		m_time.tick();
-		clock.restart();
-	}
+	//	clock.restart();
+	//}
 }
 
 const World::WorldTime World::getTime() const {
