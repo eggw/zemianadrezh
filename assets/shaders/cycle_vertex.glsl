@@ -6,8 +6,7 @@ layout(location = 0)in vec4 vertex;
 //uniform mat4 view;
 //uniform mat4 model;
 
-void main()
-{
+void main() {
     //gl_Position = projection * view * model * vertex;
 	gl_Position = vertex;
 }

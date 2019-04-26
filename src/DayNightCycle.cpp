@@ -33,11 +33,6 @@ DayNightCycle::DayNightCycle(const World& _world)
 	}
 	*/
 
-	//top left
-	m_skyBackground[0].position 	= {0,0};
-	m_skyBackground[0].texCoords 	= {0,0};
-
-
 	if (!m_shader.loadFromFile("assets/shaders/cycle_vertex.glsl", "assets/shaders/cycle_fragment.glsl")){
 		std::cout << "ERROR!" << std::endl;
 	}
@@ -46,22 +41,17 @@ DayNightCycle::DayNightCycle(const World& _world)
 }
 
 void DayNightCycle::update() {
+	//A draw call needs to be attempted at least once to set these values
+	//before updating can begin
 	if(m_targetHeight == 0 || m_targetWidth == 0) {
 		return;
 	}
 
-	//top right
-	m_skyBackground[1].position 	= {m_targetWidth, 0};
-	m_skyBackground[1].texCoords	= {m_targetWidth, 0};
-	//bottom right
-	m_skyBackground[2].position 	= {m_targetWidth, m_targetHeight};
-	m_skyBackground[2].texCoords 	= {m_targetWidth, m_targetHeight};
-	//bottom left
-	m_skyBackground[3].position 	= {0, m_targetHeight};
-	m_skyBackground[3].texCoords 	= {0, m_targetHeight};
+	updateSkyVertices();
 
 	static const double pi {std::atan(1)*4};
 	World::WorldTime worldTime = m_world.getTime();
+
 	m_timeText.setString(worldTime.getString());
 	m_timeText.setPosition(m_targetWidth - 1.2 * m_timeText.getGlobalBounds().width, 0);
 
@@ -89,7 +79,7 @@ void DayNightCycle::update() {
 	//HOUR_END = 5
 	//worldTime.hours = 0
 	//In such a case, the algorithm will get confused and not work as it should because of the way
-	//24h wrapping works. Adding 24 will fix the logic so that the correct number of hours are given
+	//24h wrapping works. Adding 24 will fix the logic so that the correct number of hours is given
 	if(HOUR_START > HOUR_END) {
         HOUR_END += 24;
 	}
@@ -153,4 +143,19 @@ void DayNightCycle::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 	target.draw(m_sunMoonSprite, states);
 	target.draw(m_timeText, states);
 
+}
+
+void DayNightCycle::updateSkyVertices() {
+	//top left
+	m_skyBackground[0].position = { -m_targetWidth / 2, m_targetHeight / 2 };
+	m_skyBackground[0].texCoords = { -m_targetWidth / 2, m_targetHeight / 2 };
+	//top right
+	m_skyBackground[1].position = { m_targetWidth / 2, m_targetHeight / 2 };
+	m_skyBackground[1].texCoords = { m_targetWidth / 2, m_targetHeight / 2 };
+	//bottom right
+	m_skyBackground[2].position = { m_targetWidth / 2, -m_targetHeight / 2 };
+	m_skyBackground[2].texCoords = { m_targetWidth / 2, -m_targetHeight / 2 };
+	//bottom left
+	m_skyBackground[3].position = { -m_targetWidth / 2, -m_targetHeight / 2 };
+	m_skyBackground[3].texCoords = { -m_targetWidth / 2, -m_targetHeight / 2 };
 }

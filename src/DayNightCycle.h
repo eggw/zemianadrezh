@@ -40,8 +40,9 @@ class DayNightCycle : public sf::Drawable {
         //the RenderTarget passed into the draw function.
         mutable float m_targetWidth;
         mutable float m_targetHeight;
-
         mutable sf::Shader m_shader;
+
+		void updateSkyVertices();
 };
 
 #endif // DAYNIGHTCYCLE_H_INCLUDED

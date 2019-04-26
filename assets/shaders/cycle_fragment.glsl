@@ -8,8 +8,7 @@ uniform float	sunProgress;
 
 out vec4 fragColor;
 
-void main()
-{
+void main() {
    	//vec3 V = normalize(vertex);
     //vec3 L = normalize(gl_LightSource[0].position.xyz);
 
