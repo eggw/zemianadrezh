@@ -14,7 +14,7 @@ constexpr int NIGHT_END_HOUR {5};
 DayNightCycle::DayNightCycle(const World& _world)
 : 	m_world{_world},
 	m_sunMoonSprite{},
-	m_skyBackground{ sf::PrimitiveType::Quads, 4 },
+	m_skyBackground{ sf::PrimitiveType::Triangles, 42 },
 	m_timeText{},
 	m_target{nullptr},
 	m_shader{}
@@ -170,9 +170,130 @@ void DayNightCycle::updateSkyVertices() {
 	//In SFML,	 the origin (0,0) is at the top left.
 	//In OpenGL, the origin (0,0) is in the middle.
 	//Therefore, we'll need to tweak some stuff.
-	//top left
+
+	/*
+	We're going to split the screen into 14 equally sized triangles
+	*/
+
 	float targetWidth = m_target->getSize().x;
 	float targetHeight = m_target->getSize().y;
+
+	sf::Vector2f center	 		{ 0, 0 };
+	sf::Vector2f centerLeft		{ -targetWidth / 2	, center.y };
+	sf::Vector2f centerRight	{ targetWidth / 2	, center.y };
+	sf::Vector2f centerMidLeft 	{ -targetWidth / 4	, center.y };
+	sf::Vector2f centerMidRight	{ targetWidth / 4	, center.y };
+
+	sf::Vector2f topLeft 		{ -targetWidth / 2, targetHeight / 2 };
+	sf::Vector2f topMidLeft		{ topLeft.x + targetWidth / 3, topLeft.y };
+	sf::Vector2f topMidRight	{ topMidLeft.x + targetWidth / 3, topLeft.y };
+	sf::Vector2f topRight 		{ targetWidth / 2, topLeft.y };
+
+	sf::Vector2f bottomLeft		{ -targetWidth / 2, -targetHeight / 2};
+	sf::Vector2f bottomMidLeft	{ bottomLeft.x + targetWidth / 3, bottomLeft.y};
+	sf::Vector2f bottomMidRight	{ bottomMidLeft.x + targetWidth / 3, bottomLeft.y};
+	sf::Vector2f bottomRight	{ targetWidth / 2, bottomLeft.y };
+
+	m_skyBackground[0].position 	= topLeft;
+	m_skyBackground[0].texCoords 	= topLeft;
+	m_skyBackground[1].position 	= centerMidLeft;
+	m_skyBackground[1].texCoords 	= centerMidLeft;
+	m_skyBackground[2].position 	= centerLeft;
+	m_skyBackground[2].texCoords 	= centerLeft;
+
+	m_skyBackground[3].position 	= topLeft;
+	m_skyBackground[3].texCoords 	= topLeft;
+	m_skyBackground[4].position 	= topMidLeft;
+	m_skyBackground[4].texCoords 	= topMidLeft;
+	m_skyBackground[5].position 	= centerMidLeft;
+	m_skyBackground[5].texCoords 	= centerMidLeft;
+
+	m_skyBackground[6].position 	= centerMidLeft;
+	m_skyBackground[6].texCoords 	= centerMidLeft;
+	m_skyBackground[7].position 	= topMidLeft;
+	m_skyBackground[7].texCoords 	= topMidLeft;
+	m_skyBackground[8].position 	= center;
+	m_skyBackground[8].texCoords 	= center;
+
+	m_skyBackground[9].position 	= topMidLeft;
+	m_skyBackground[9].texCoords 	= topMidLeft;
+	m_skyBackground[10].position 	= topMidRight;
+	m_skyBackground[10].texCoords 	= topMidRight;
+	m_skyBackground[11].position 	= center;
+	m_skyBackground[11].texCoords 	= center;
+
+	m_skyBackground[12].position 	= center;
+	m_skyBackground[12].texCoords 	= center;
+	m_skyBackground[13].position 	= topMidRight;
+	m_skyBackground[13].texCoords 	= topMidRight;
+	m_skyBackground[14].position 	= centerMidRight;
+	m_skyBackground[14].texCoords 	= centerMidRight;
+
+	m_skyBackground[15].position 	= topMidRight;
+	m_skyBackground[15].texCoords 	= topMidRight;
+	m_skyBackground[16].position 	= topRight;
+	m_skyBackground[16].texCoords 	= topRight;
+	m_skyBackground[17].position 	= centerMidRight;
+	m_skyBackground[17].texCoords 	= centerMidRight;
+
+	m_skyBackground[18].position 	= centerMidRight;
+	m_skyBackground[18].texCoords 	= centerMidRight;
+	m_skyBackground[19].position 	= topRight;
+	m_skyBackground[19].texCoords 	= topRight;
+	m_skyBackground[20].position 	= centerRight;
+	m_skyBackground[20].texCoords 	= centerRight;
+
+	m_skyBackground[21].position 	= centerLeft;
+	m_skyBackground[21].texCoords 	= centerLeft;
+	m_skyBackground[22].position 	= centerMidLeft;
+	m_skyBackground[22].texCoords 	= centerMidLeft;
+	m_skyBackground[23].position 	= bottomLeft;
+	m_skyBackground[23].texCoords 	= bottomLeft;
+
+	m_skyBackground[24].position 	= bottomLeft;
+	m_skyBackground[24].texCoords 	= bottomLeft;
+	m_skyBackground[25].position 	= centerMidLeft;
+	m_skyBackground[25].texCoords 	= centerMidLeft;
+	m_skyBackground[26].position 	= bottomMidLeft;
+	m_skyBackground[26].texCoords 	= bottomMidLeft;
+
+	m_skyBackground[27].position 	= centerMidLeft;
+	m_skyBackground[27].texCoords 	= centerMidLeft;
+	m_skyBackground[28].position 	= center;
+	m_skyBackground[28].texCoords 	= center;
+	m_skyBackground[29].position 	= bottomMidLeft;
+	m_skyBackground[29].texCoords 	= bottomMidLeft;
+
+	m_skyBackground[30].position 	= bottomMidLeft;
+	m_skyBackground[30].texCoords 	= bottomMidLeft;
+	m_skyBackground[31].position 	= center;
+	m_skyBackground[31].texCoords 	= center;
+	m_skyBackground[32].position 	= bottomMidRight;
+	m_skyBackground[32].texCoords 	= bottomMidRight;
+
+	m_skyBackground[33].position 	= center;
+	m_skyBackground[33].texCoords 	= center;
+	m_skyBackground[34].position 	= centerMidRight;
+	m_skyBackground[34].texCoords 	= centerMidRight;
+	m_skyBackground[35].position 	= bottomMidRight;
+	m_skyBackground[35].texCoords 	= bottomMidRight;
+
+	m_skyBackground[36].position 	= bottomMidRight;
+	m_skyBackground[36].texCoords 	= bottomMidRight;
+	m_skyBackground[37].position 	= centerMidRight;
+	m_skyBackground[37].texCoords 	= centerMidRight;
+	m_skyBackground[38].position 	= bottomRight;
+	m_skyBackground[38].texCoords 	= bottomRight;
+
+	m_skyBackground[39].position 	= centerMidRight;
+	m_skyBackground[39].texCoords 	= centerMidRight;
+	m_skyBackground[40].position 	= centerRight;
+	m_skyBackground[40].texCoords 	= centerRight;
+	m_skyBackground[41].position 	= bottomRight;
+	m_skyBackground[41].texCoords 	= bottomRight;
+
+	/*
+	Simply create a quad with vertices at the corners of the screen
 
 	m_skyBackground[0].position = { -targetWidth / 2, targetHeight / 2 };
 	m_skyBackground[0].texCoords = { -targetWidth / 2, targetHeight / 2 };
@@ -185,4 +306,5 @@ void DayNightCycle::updateSkyVertices() {
 	//bottom left
 	m_skyBackground[3].position = { -targetWidth / 2, -targetHeight / 2 };
 	m_skyBackground[3].texCoords = { -targetWidth / 2, -targetHeight / 2 };
+	*/
 }
