@@ -79,7 +79,7 @@ void World::update(int _timeslice) {
 	//}
 }
 
-const World::WorldTime World::getTime() const {
+const World::WorldTime& World::getTime() const {
 	return m_time;
 }
 

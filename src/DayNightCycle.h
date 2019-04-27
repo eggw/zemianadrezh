@@ -36,10 +36,9 @@ class DayNightCycle : public sf::Drawable {
         sf::VertexArray m_skyBackground;
         sf::Text m_timeText;
         //In order to avoid having a lot of extra code to handle resizing, we'll
-        //simply update these values to the values of the width and height of
-        //the RenderTarget passed into the draw function.
-        mutable float m_targetWidth;
-        mutable float m_targetHeight;
+        //simply update m_target to have it point to the RenderTarget passed into
+        //the draw function.
+        mutable sf::RenderTarget* m_target;
         mutable sf::Shader m_shader;
 
 		void updateSkyVertices();

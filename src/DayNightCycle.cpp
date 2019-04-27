@@ -16,8 +16,7 @@ DayNightCycle::DayNightCycle(const World& _world)
 	m_sunMoonSprite{},
 	m_skyBackground{ sf::PrimitiveType::Quads, 4 },
 	m_timeText{},
-	m_targetWidth{0},
-	m_targetHeight{0},
+	m_target{nullptr},
 	m_shader{}
 {
 	m_timeText.setFont(FontManager::get_instance().getFont(FontManager::Type::ANDY));
@@ -44,19 +43,26 @@ DayNightCycle::DayNightCycle(const World& _world)
 }
 
 void DayNightCycle::update() {
-	//A draw call needs to be attempted at least once to set these values
+	//A draw call needs to be attempted at least once to set our target
 	//before updating can begin
-	if(m_targetHeight == 0 || m_targetWidth == 0) {
+	if(m_target == nullptr) {
 		return;
+	}
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Comma)) {
+		m_world.getTime().pause();
+	}
+	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Period)) {
+		m_world.getTime().unpause();
 	}
 
 	updateSkyVertices();
 
 	static const double pi {std::atan(1)*4};
-	World::WorldTime worldTime = m_world.getTime();
+	auto worldTime = m_world.getTime();
 
 	m_timeText.setString(worldTime.getString());
-	m_timeText.setPosition(m_targetWidth - 1.2 * m_timeText.getGlobalBounds().width, 0);
+	m_timeText.setPosition(m_target->getSize().x - 1.2 * m_timeText.getGlobalBounds().width, 0);
 
 	int HOUR_START 	{DAY_BEGIN_HOUR};
 	int HOUR_END 	{DAY_END_HOUR};
@@ -119,10 +125,10 @@ void DayNightCycle::update() {
 
 	//We're also going to invert the sin result in yPos so the movement will be down->up->down, rather
 	//than up->down->up
-	double xPos {(1 - progressInPercent) * (m_targetWidth + m_sunMoonSprite.getGlobalBounds().width)};
-	double yPos {(1 - sin(progressInPercent * pi)) * m_targetHeight / 3};
+	double xPos {(1 - progressInPercent) * (m_target->getSize().x + m_sunMoonSprite.getGlobalBounds().width)};
+	double yPos {(1 - sin(progressInPercent * pi)) * m_target->getSize().y / 3};
 	//This adjustment was made with some experimenting to get it to look right
-	yPos += m_targetHeight / 10;
+	yPos += m_target->getSize().y / 10;
 
 	m_sunMoonSprite.setPosition(xPos, yPos);
 
@@ -135,21 +141,21 @@ void DayNightCycle::update() {
 	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
 	//Next, we'll subtract half the screen width and add half the height
 	//to get the equivalent point in the OpenGL coordinate system
-	openGLCoordinates.x -= m_targetWidth / 2;
-	openGLCoordinates.y += m_targetHeight/ 2;
+	openGLCoordinates.x -= m_target->getSize().x / 2;
+	openGLCoordinates.y += m_target->getSize().y/ 2;
 
 	//TODO: further refine this
 	//We're going to let the shader determine the appropriate gradient from two
 	//files, sky.png and glow.png, that represent the sun's position in the sky
 	//over time
 	m_shader.setUniform("sunPosition", sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
+	m_shader.setUniform("sunProgress", float(progressInPercent));
 	m_shader.setUniform("lightIntensity", float(sin(progressInPercent * pi)));
 
 }
 
 void DayNightCycle::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	m_targetWidth = target.getSize().x;
-	m_targetHeight = target.getSize().y;
+	m_target = &target;
 
 	sf::RenderStates skyStates{&m_shader};
 	target.draw(m_skyBackground, skyStates);
@@ -165,15 +171,18 @@ void DayNightCycle::updateSkyVertices() {
 	//In OpenGL, the origin (0,0) is in the middle.
 	//Therefore, we'll need to tweak some stuff.
 	//top left
-	m_skyBackground[0].position = { -m_targetWidth / 2, m_targetHeight / 2 };
-	m_skyBackground[0].texCoords = { -m_targetWidth / 2, m_targetHeight / 2 };
+	float targetWidth = m_target->getSize().x;
+	float targetHeight = m_target->getSize().y;
+
+	m_skyBackground[0].position = { -targetWidth / 2, targetHeight / 2 };
+	m_skyBackground[0].texCoords = { -targetWidth / 2, targetHeight / 2 };
 	//top right
-	m_skyBackground[1].position = { m_targetWidth / 2, m_targetHeight / 2 };
-	m_skyBackground[1].texCoords = { m_targetWidth / 2, m_targetHeight / 2 };
+	m_skyBackground[1].position = { targetWidth / 2, targetHeight / 2 };
+	m_skyBackground[1].texCoords = { targetWidth / 2, targetHeight / 2 };
 	//bottom right
-	m_skyBackground[2].position = { m_targetWidth / 2, -m_targetHeight / 2 };
-	m_skyBackground[2].texCoords = { m_targetWidth / 2, -m_targetHeight / 2 };
+	m_skyBackground[2].position = { targetWidth / 2, -targetHeight / 2 };
+	m_skyBackground[2].texCoords = { targetWidth / 2, -targetHeight / 2 };
 	//bottom left
-	m_skyBackground[3].position = { -m_targetWidth / 2, -m_targetHeight / 2 };
-	m_skyBackground[3].texCoords = { -m_targetWidth / 2, -m_targetHeight / 2 };
+	m_skyBackground[3].position = { -targetWidth / 2, -targetHeight / 2 };
+	m_skyBackground[3].texCoords = { -targetWidth / 2, -targetHeight / 2 };
 }

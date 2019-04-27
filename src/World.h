@@ -14,7 +14,7 @@ class World {
 
 		struct WorldTime {
 
-			WorldTime(int _hours, int _minutes) {
+			WorldTime(int _hours, int _minutes) : paused { false } {
 				setTime(_hours, _minutes);
 			}
 
@@ -34,6 +34,10 @@ class World {
 
 			//increment by one minute
 			void tick() {
+				if(paused) {
+					return;
+				}
+
 				setTime(hours, minutes + 1);
 			}
 
@@ -45,9 +49,20 @@ class World {
 				return std::to_string(hours) + ":" + minutesStr;
 			}
 
+			void pause() const {
+				paused = true;
+			}
+
+			void unpause() const {
+				paused = false;
+			}
+
 
 			int hours;
 			int minutes;
+
+		private:
+			mutable bool paused;
 		};
 
 		////////////////////////////////////////////////
@@ -63,7 +78,7 @@ class World {
 
 		void update(int _timeslice);
 
-		const WorldTime getTime() const;
+		const WorldTime& getTime() const;
 	private:
 		std::vector<WorldChunk> m_chunks;
 		WorldTime m_time;
