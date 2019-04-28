@@ -23,29 +23,29 @@ of the block.
 */
 
 class BlockData {
-	public:
-		enum Type {
-			AIR = 0,
-			DIRT = 1
-		};
+  public:
+	enum Type
+	{
+		AIR  = 0,
+		DIRT = 1
+	};
 
-		//Note:
-		//The opacity parameter in the constructor is taken in percentage
-		//because it makes more sense to specify it that way. Before
-		//m_opacity is set, that percentage is converted to the actual
-		//alpha value (0-255).
+	//Note:
+	//The opacity parameter in the constructor is taken in percentage
+	//because it makes more sense to specify it that way. Before
+	//m_opacity is set, that percentage is converted to the actual
+	//alpha value (0-255).
 
-		BlockData(	std::string _name,
-					int _opacity,
-					sf::Vector2f _textureIndeces);
+	BlockData(std::string _name, int _opacity, sf::Vector2f _textureIndeces);
 
-		const std::string& getName() const;
-		int getOpacityAlpha() const;
-		sf::Vector2f getTextureIndeces() const;
-	private:
-		std::string		m_name;
-		int 			m_opacityAlpha;
-		sf::Vector2f 	m_textureIndeces;
+	const std::string& getName() const;
+	int                getOpacityAlpha() const;
+	sf::Vector2f       getTextureIndeces() const;
+
+  private:
+	std::string  m_name;
+	int          m_opacityAlpha;
+	sf::Vector2f m_textureIndeces;
 };
 
 #endif // BLOCKDATA_H_INCLUDED

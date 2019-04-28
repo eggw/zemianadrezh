@@ -2,13 +2,8 @@
 
 #include "BlockDatabase.h"
 
-Block::Block(int _id,
-			BlockData::Type _type) :
-	m_id{_id},
-	m_type {_type},
-	m_damageLevel {0}
-{
-
+Block::Block(int _id, BlockData::Type _type)
+            : m_id{_id}, m_type{_type}, m_damageLevel{0} {
 }
 
 BlockData::Type Block::getType() const {
@@ -25,16 +20,17 @@ const BlockData& Block::getData() const {
 
 sf::FloatRect Block::getTextureRect() const {
 	//First, fetch the coordinates for the first (0 damage level) texture of this block.
-	sf::Vector2f textureCoordinates {BlockDatabase::get_instance().getData(m_type).getTextureIndeces()};
+	sf::Vector2f textureCoordinates{
+	  BlockDatabase::get_instance().getData(m_type).getTextureIndeces()};
 	//We'll then make sure we multiply the indeces of the coordinates by the width and height
 	//of a block, and add one pixel if they're greater than 0
 	textureCoordinates.x *= BLOCK_DIMENSIONS_X;
 	textureCoordinates.y *= BLOCK_DIMENSIONS_Y;
 
-	if(textureCoordinates.x > 0) {
+	if (textureCoordinates.x > 0) {
 		++textureCoordinates.x;
 	}
-	if(textureCoordinates.y > 0) {
+	if (textureCoordinates.y > 0) {
 		++textureCoordinates.y;
 	}
 
@@ -50,6 +46,8 @@ sf::FloatRect Block::getTextureRect() const {
 
 	float newX{textureCoordinates.x + (damageIndex * BLOCK_DIMENSIONS_X)};
 
-	return	{newX, textureCoordinates.y,
-			float(BLOCK_DIMENSIONS_X), float(BLOCK_DIMENSIONS_Y)};
+	return {newX,
+	        textureCoordinates.y,
+	        float(BLOCK_DIMENSIONS_X),
+	        float(BLOCK_DIMENSIONS_Y)};
 }

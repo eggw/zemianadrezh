@@ -3,37 +3,40 @@
 
 #include "Singleton.h"
 
-class LoggerNetwork: public Singleton<LoggerNetwork> {
+class LoggerNetwork : public Singleton<LoggerNetwork> {
+  public:
+	LoggerNetwork();
 
-	public:
-		LoggerNetwork();
+	enum class LOG_SENDER
+	{
+		SERVER,
+		CLIENT
+	};
 
-		enum class LOG_SENDER {
-			SERVER,
-			CLIENT
-		};
+	enum class LOG_MESSAGE
+	{
+		CONNECTION_WAITING,
+		CONNECTION_SUCCESS,
+		CONNECTION_FAILURE,
+		CONNECTION_BLOCKED,
+		LISTEN_PORT_SUCCESS,
+		LISTEN_PORT_FAILURE,
+		BIND_PORT_SUCCESS,
+		BIND_PORT_FAILURE,
+		CONNECTION_LOCALHOST
+	};
 
-		enum class LOG_MESSAGE {
-			CONNECTION_WAITING,
-			CONNECTION_SUCCESS,
-			CONNECTION_FAILURE,
-			CONNECTION_BLOCKED,
-			LISTEN_PORT_SUCCESS,
-			LISTEN_PORT_FAILURE,
-			BIND_PORT_SUCCESS,
-			BIND_PORT_FAILURE,
-			CONNECTION_LOCALHOST
-		};
+	enum class LOG_PACKET_DATATRANSFER
+	{
+		PACKET_SENT,
+		PACKET_RECEIVED
+	};
 
-		enum class LOG_PACKET_DATATRANSFER {
-			PACKET_SENT,
-			PACKET_RECEIVED
-		};
-
-		void log(LOG_SENDER _sender, LOG_MESSAGE _message);
-		void logConsole(LOG_SENDER _sender, LOG_MESSAGE _message);
-		void logConsole(LOG_SENDER _sender, LOG_PACKET_DATATRANSFER _d, int _packetCode);
-
+	void log(LOG_SENDER _sender, LOG_MESSAGE _message);
+	void logConsole(LOG_SENDER _sender, LOG_MESSAGE _message);
+	void logConsole(LOG_SENDER              _sender,
+	                LOG_PACKET_DATATRANSFER _d,
+	                int                     _packetCode);
 };
 
 #endif // LOGGERNETWORK_H_INCLUDED

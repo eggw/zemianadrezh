@@ -1,8 +1,6 @@
 #include "WorldTime.h"
 
-WorldTime::WorldTime(HHMM _t)
-	:	m_time	{ 0, 0 },
-		m_paused{ false } {
+WorldTime::WorldTime(HHMM _t) : m_time{0, 0}, m_paused{false} {
 	set(_t);
 }
 
@@ -23,7 +21,7 @@ void WorldTime::tick() {
 	if (m_paused) {
 		return;
 	}
-	set({ m_time.hours, m_time.minutes + 1 } );
+	set({m_time.hours, m_time.minutes + 1});
 }
 
 HHMM WorldTime::get() const {
@@ -31,7 +29,7 @@ HHMM WorldTime::get() const {
 }
 
 const std::string WorldTime::getString() const {
-	std::string minutesStr{ std::to_string(m_time.minutes) };
+	std::string minutesStr{std::to_string(m_time.minutes)};
 	if (m_time.minutes < 10) {
 		minutesStr = "0" + minutesStr;
 	}

@@ -19,19 +19,18 @@ in its chunk (m_id), a block type (m_type), and its damage level (m_damageLevel)
 */
 
 class Block : public Entity {
-	public:
-		Block(	int _id,
-				BlockData::Type _type);
+  public:
+	Block(int _id, BlockData::Type _type);
 
-		BlockData::Type getType() const;
-		void setType(BlockData::Type _t);
-		const BlockData& getData() const;
-		sf::FloatRect getTextureRect() const;
-	private:
-		int 			m_id;
-		BlockData::Type m_type;
-		int 			m_damageLevel;
+	BlockData::Type  getType() const;
+	void             setType(BlockData::Type _t);
+	const BlockData& getData() const;
+	sf::FloatRect    getTextureRect() const;
+
+  private:
+	int             m_id;
+	BlockData::Type m_type;
+	int             m_damageLevel;
 };
-
 
 #endif // BLOCK_H_INCLUDED

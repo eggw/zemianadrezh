@@ -7,59 +7,58 @@
 #include "TextEntryBox.h"
 #include "ChatBoxMessage.h"
 
-
 class ChatBox : public sf::Drawable {
-	public:
-		ChatBox(sf::RenderWindow& _window,
-				const std::string& _name);
+  public:
+	ChatBox(sf::RenderWindow& _window, const std::string& _name);
 
-		void appendMessage(	const std::string _message,
-							const std::string _sender = "");
-		void getInput(sf::Event& _event);
-		void update();
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void appendMessage(const std::string _message,
+	                   const std::string _sender = "");
+	void getInput(sf::Event& _event);
+	void update();
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-		bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
-	private:
-		//Message-related
-		/////////////////////////////////////////
-		void positionMessage(int _index);
-		void setTransparency(int _a);
-		bool messagesTransparent() const;
-		void updateShadedRectangleTransparency();
-		void updateMessageTransparency();
-		void updateMessageAlertTransparency();
-		void setNewMessageAlert(bool _b);
-		/////////////////////////////////////////
+	bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
 
-		//View-related
-		/////////////////////////////////////////
-		void onResize(sf::Vector2u _newSize);
-		void snapToTop();
-		void snapToBottom();
-		float getUpperViewBound() const;
-		float getLowerViewBound() const;
-		bool viewAtHighest() const;
-		bool viewAtLowest() const;
-		void scrollUp();
-		void scrollDown();
-		/////////////////////////////////////////
+  private:
+	//Message-related
+	/////////////////////////////////////////
+	void positionMessage(int _index);
+	void setTransparency(int _a);
+	bool messagesTransparent() const;
+	void updateShadedRectangleTransparency();
+	void updateMessageTransparency();
+	void updateMessageAlertTransparency();
+	void setNewMessageAlert(bool _b);
+	/////////////////////////////////////////
 
-	private:
-		const std::string& m_name;
+	//View-related
+	/////////////////////////////////////////
+	void  onResize(sf::Vector2u _newSize);
+	void  snapToTop();
+	void  snapToBottom();
+	float getUpperViewBound() const;
+	float getLowerViewBound() const;
+	bool  viewAtHighest() const;
+	bool  viewAtLowest() const;
+	void  scrollUp();
+	void  scrollDown();
+	/////////////////////////////////////////
 
-		sf::View m_view;
-		sf::View m_shadedRectangleView;
+  private:
+	const std::string& m_name;
 
-		sf::RectangleShape m_shadedRectangle;
+	sf::View m_view;
+	sf::View m_shadedRectangleView;
 
-		std::vector<ChatBoxMessage> m_messages;
-		std::pair<std::string, std::string> m_lastMessage;
+	sf::RectangleShape m_shadedRectangle;
 
-		TextEntryBox m_textEntry;
-		sf::Clock m_clock;
+	std::vector<ChatBoxMessage>         m_messages;
+	std::pair<std::string, std::string> m_lastMessage;
 
-		bool m_anchoredToBottom;
+	TextEntryBox m_textEntry;
+	sf::Clock    m_clock;
+
+	bool m_anchoredToBottom;
 };
 
 #endif // CHATBOX_H_INCLUDED

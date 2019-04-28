@@ -12,97 +12,96 @@
 class Server;
 
 class NetworkManagerServer {
-	public:
-		NetworkManagerServer(Server& _server);
+  public:
+	NetworkManagerServer(Server& _server);
 
-		void sendPacket(Packet::TCPPacket _type,
-						sf::TcpSocket* _recipient = nullptr,
-						bool _exclude = false);
+	void sendPacket(Packet::TCPPacket _type,
+	                sf::TcpSocket*    _recipient = nullptr,
+	                bool              _exclude   = false);
 
-		void sendPacket(Packet::UDPPacket _type,
-						const sf::IpAddress& _recipient = sf::IpAddress::None,
-						bool _exclude = false);
+	void sendPacket(Packet::UDPPacket    _type,
+	                const sf::IpAddress& _recipient = sf::IpAddress::None,
+	                bool                 _exclude   = false);
 
-		void sendChunkData(int _chunkID);
+	void sendChunkData(int _chunkID);
 
-		void receiveTCPPackets();
-		void receiveUDPPackets();
+	void receiveTCPPackets();
+	void receiveUDPPackets();
 
-		//Sends a message to all connected players
-		void sendMessage(const std::string& _message,
-						 const std::string& _sender);
-		//Sends a "QUIT" packet to all connected players containing
-		//the name of the player who quit
-		void notifyRemoved(const std::string& _name);
+	//Sends a message to all connected players
+	void sendMessage(const std::string& _message, const std::string& _sender);
+	//Sends a "QUIT" packet to all connected players containing
+	//the name of the player who quit
+	void notifyRemoved(const std::string& _name);
 
-		void listen();
-		void accept();
-		void update();
-	private:
-		//Since the clients that connect to us via UDP will have varying
-		//ports, we'll use IPInfo to conveniently store it alongside their IP
-		struct IPInfo {
-			IPInfo(	std::string _n,
-					sf::TcpSocket& _t,
-					unsigned short _p) :
-				playerName{ _n },
-				ipAddress{ _t.getRemoteAddress() },
-				port{ _p }{};
+	void listen();
+	void accept();
+	void update();
 
-			std::string playerName;
-			sf::IpAddress ipAddress;
-			unsigned short port;
-		};
+  private:
+	//Since the clients that connect to us via UDP will have varying
+	//ports, we'll use IPInfo to conveniently store it alongside their IP
+	struct IPInfo {
+		IPInfo(std::string _n, sf::TcpSocket& _t, unsigned short _p)
+		            : playerName{_n},
+		              ipAddress{_t.getRemoteAddress()},
+		              port{_p} {};
 
-		//---------------------------------------------------------------------
-		//Generally, our recipients are either going to be:
-		//one specific recipient,
-		//all recipients,
-		//or all but one recipient.
-		//
-		//These functions take in a target recipient, defaulting to nullptr,
-		//and a boolean, defaulting to false.
-		//
-		//If the recipient is null, they will return all possible recipients.
-		//If _exclude is false, they will only return the recipient specified.
-		//If _exclude is true, they will return all recipients except the one
-		//specified.
-		//
-		//These functions are used in the sendPacket() functions.
-		//---------------------------------------------------------------------
+		std::string    playerName;
+		sf::IpAddress  ipAddress;
+		unsigned short port;
+	};
 
-		std::vector<sf::TcpSocket*> getTCPRecipients(sf::TcpSocket* _recipient = nullptr,
-													 bool _exclude = false);
+	//---------------------------------------------------------------------
+	//Generally, our recipients are either going to be:
+	//one specific recipient,
+	//all recipients,
+	//or all but one recipient.
+	//
+	//These functions take in a target recipient, defaulting to nullptr,
+	//and a boolean, defaulting to false.
+	//
+	//If the recipient is null, they will return all possible recipients.
+	//If _exclude is false, they will only return the recipient specified.
+	//If _exclude is true, they will return all recipients except the one
+	//specified.
+	//
+	//These functions are used in the sendPacket() functions.
+	//---------------------------------------------------------------------
 
-		std::vector<IPInfo> 		getUDPRecipients(sf::IpAddress _recipient = sf::IpAddress::None,
-													 bool _exclude = false);
-		//---------------------------------------------------------------------
+	std::vector<sf::TcpSocket*> getTCPRecipients(
+	  sf::TcpSocket* _recipient = nullptr,
+	  bool           _exclude   = false);
 
-		//removeConnection() is used to remove the matching TcpSocket from
-		//m_clientConnections as well as the associated IPInfo in m_clientIPs
-		//---------------------------------------------------------------------
-		void removeConnection(const sf::TcpSocket* _con);
-		//---------------------------------------------------------------------
-		//Note: the reason we have m_clientIPs and m_clientConnections in seperate
-		//data structures is because when sf::TcpListener accepts a socket, we only
-		//have access to the socket, and can't send or access any other data alongside
-		//it (in our case, we need the player's name and port the client is using).
-		//When a connection is accepted, it is pushed back to m_clientConnections.
-		//
-		//When a client sends a JUST_JOINED packet, we can then send data with it - the
-		//player's name and port. It is then that the IPInfo containing the player's
-		//name and client's port is pushed back to m_clientIPs.
+	std::vector<IPInfo> getUDPRecipients(
+	  sf::IpAddress _recipient = sf::IpAddress::None,
+	  bool          _exclude   = false);
+	//---------------------------------------------------------------------
 
-		Server& m_server;
-		sf::TcpListener m_listener;
-		sf::UdpSocket m_udpSocket;
-		std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
-		std::map<const sf::TcpSocket*, IPInfo> m_clientIPs;
-		std::vector<std::pair<std::string, std::string>> m_messages;
-        //m_lastRemovedPlayer contains the name of the last player to
-        //be removed from the server
-		std::string m_lastRemovedPlayer;
+	//removeConnection() is used to remove the matching TcpSocket from
+	//m_clientConnections as well as the associated IPInfo in m_clientIPs
+	//---------------------------------------------------------------------
+	void removeConnection(const sf::TcpSocket* _con);
+	//---------------------------------------------------------------------
+	//Note: the reason we have m_clientIPs and m_clientConnections in seperate
+	//data structures is because when sf::TcpListener accepts a socket, we only
+	//have access to the socket, and can't send or access any other data alongside
+	//it (in our case, we need the player's name and port the client is using).
+	//When a connection is accepted, it is pushed back to m_clientConnections.
+	//
+	//When a client sends a JUST_JOINED packet, we can then send data with it - the
+	//player's name and port. It is then that the IPInfo containing the player's
+	//name and client's port is pushed back to m_clientIPs.
+
+	Server&                                          m_server;
+	sf::TcpListener                                  m_listener;
+	sf::UdpSocket                                    m_udpSocket;
+	std::vector<std::unique_ptr<sf::TcpSocket>>      m_clientConnections;
+	std::map<const sf::TcpSocket*, IPInfo>           m_clientIPs;
+	std::vector<std::pair<std::string, std::string>> m_messages;
+	//m_lastRemovedPlayer contains the name of the last player to
+	//be removed from the server
+	std::string m_lastRemovedPlayer;
 };
-
 
 #endif // NETWORKMANAGERSERVER_H_INCLUDED

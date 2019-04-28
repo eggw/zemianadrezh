@@ -11,62 +11,61 @@
 class ProgramState;
 
 class Program : public Singleton<Program> {
+  public:
+	Program();
+	~Program();
 
-	public:
-		Program();
-		~Program();
+	void init();
+	void gameLoop();
 
-		void init();
-		void gameLoop();
+	void pushState_Play_SP();
+	void pushState_Play_MP_Host();
+	void pushState_Play_MP_Join();
 
-		void pushState_Play_SP();
-		void pushState_Play_MP_Host();
-		void pushState_Play_MP_Join();
+	void pushState_Pause();
+	void pushState_MPMenu();
+	void pushState_MPHostMenu();
+	void pushState_MPJoinMenu();
 
+	void pushState_MPJoinFailed();
+	void pushState_MPConnectionLost();
 
-		void pushState_Pause();
-		void pushState_MPMenu();
-		void pushState_MPHostMenu();
-		void pushState_MPJoinMenu();
+	void returnToMainMenu();
 
-		void pushState_MPJoinFailed();
-		void pushState_MPConnectionLost();
+	bool localServerInitialised();
+	void initialiseLocalServer(bool _joinable);
+	void terminateLocalServer();
 
-		void returnToMainMenu();
+	void popState();
 
-		bool localServerInitialised();
-		void initialiseLocalServer(bool _joinable);
-		void terminateLocalServer();
+	void closeWindow();
 
-		void popState();
+	void setIpAddress(const std::string& _ipStr);
 
-		void closeWindow();
+	Server* getServer() const;
 
-		void setIpAddress(const std::string& _ipStr);
+	std::vector<std::unique_ptr<ProgramState>> m_states;
+	std::unique_ptr<sf::RenderWindow>          m_window;
 
-		Server* getServer() const;
+  private:
+	//getInput() is responsibile for detecting the window being
+	//closed, and, of course, calling the current state's getInput()
+	void getInput();
+	//Update and draw simply call the current gamestate's version of
+	//those functions, as well as checking if they should do so for
+	//the previous state.
+	void update(int _timeslice);
+	void draw();
 
-		std::vector<std::unique_ptr<ProgramState>> m_states;
-		std::unique_ptr<sf::RenderWindow> m_window;
-	private:
-		//getInput() is responsibile for detecting the window being
-		//closed, and, of course, calling the current state's getInput()
-	    void getInput();
-	    //Update and draw simply call the current gamestate's version of
-	    //those functions, as well as checking if they should do so for
-	    //the previous state.
-	    void update(int _timeslice);
-	    void draw();
-
-		bool isAtMainMenu();
-		std::unique_ptr<Server> m_localServer{nullptr};
-		//Due to the way menu items work (ProgramState_Menu),
-		//they can call Program functions, but they can't pass
-		//parameters. Therefore, when a player wants to join
-		//a server, we'll set m_ipAddress to the IP they type,
-		//so that we can initialise the client with
-		//pushState_Play_MP_Join()
-		std::string m_ipAddress{"localhost"};
+	bool                    isAtMainMenu();
+	std::unique_ptr<Server> m_localServer{nullptr};
+	//Due to the way menu items work (ProgramState_Menu),
+	//they can call Program functions, but they can't pass
+	//parameters. Therefore, when a player wants to join
+	//a server, we'll set m_ipAddress to the IP they type,
+	//so that we can initialise the client with
+	//pushState_Play_MP_Join()
+	std::string m_ipAddress{"localhost"};
 };
 
 #endif // PROGRAM_H_INCLUDED

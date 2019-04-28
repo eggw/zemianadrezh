@@ -17,45 +17,47 @@ server.
 class Server;
 
 class Client : public GameInstance {
-	public:
-		Client(	sf::RenderWindow& _window,
-				sf::IpAddress _serverIP,
-				Server* _localServer = nullptr);
+  public:
+	Client(sf::RenderWindow& _window,
+	       sf::IpAddress     _serverIP,
+	       Server*           _localServer = nullptr);
 
-		~Client();
+	~Client();
 
-		void getInput(sf::Event& _event);
-		void update(int _timeslice);
-		void updatePlayer(const Player::EncodedPlayerData& _data);
-		void addPlayer(const Player::EncodedPlayerData& _data);
+	void getInput(sf::Event& _event);
+	void update(int _timeslice);
+	void updatePlayer(const Player::EncodedPlayerData& _data);
+	void addPlayer(const Player::EncodedPlayerData& _data);
 
-		void respawnPlayer();
+	void respawnPlayer();
 
-		void sendPackets();
-		void receivePackets();
+	void sendPackets();
+	void receivePackets();
 
-		const Player* getPlayer() const;
-		const ChatBox* getChatBox() const;
-		const UserInterface* getUserInterface() const;
+	const Player*        getPlayer() const;
+	const ChatBox*       getChatBox() const;
+	const UserInterface* getUserInterface() const;
 
-		bool isConnected() const;
-		bool isLocal() const;
+	bool isConnected() const;
+	bool isLocal() const;
 
-		std::pair<std::string, std::string> getPendingMessage() const;
-	public:
-		NetworkManagerClient m_networkManager;
-	private:
-		sf::IpAddress m_serverIP;
-		Server* m_localServer;
-		Player m_player;
+	std::pair<std::string, std::string> getPendingMessage() const;
 
-		ChatBox m_chatBox;
-		UserInterface m_userInterface;
+  public:
+	NetworkManagerClient m_networkManager;
 
-		std::pair<std::string, std::string> m_pendingMessage;
+  private:
+	sf::IpAddress m_serverIP;
+	Server*       m_localServer;
+	Player        m_player;
 
-		void handleIncomingMessages();
-		void handleOutgoingMessages();
+	ChatBox       m_chatBox;
+	UserInterface m_userInterface;
+
+	std::pair<std::string, std::string> m_pendingMessage;
+
+	void handleIncomingMessages();
+	void handleOutgoingMessages();
 };
 
 #endif // CLIENT_H_INCLUDED

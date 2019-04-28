@@ -4,8 +4,8 @@
 #include "ProgramState_Menu.h"
 
 class ProgramState_ConnectionLost : public ProgramState_Menu {
-	public:
-		ProgramState_ConnectionLost (Program& _program);
+  public:
+	ProgramState_ConnectionLost(Program& _program);
 };
 
 #endif // PROGRAMSTATE_CONNECTIONLOST_H_INCLUDED

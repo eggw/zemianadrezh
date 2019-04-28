@@ -5,9 +5,8 @@
 
 namespace Packet {
 
-	constexpr unsigned short Port_TCP_Server	{ 7777 };
-	constexpr unsigned short Port_UDP_Server	{ 7777 };
-
+	constexpr unsigned short Port_TCP_Server{7777};
+	constexpr unsigned short Port_UDP_Server{7777};
 
 	enum class TCPPacket
 	{
@@ -47,6 +46,6 @@ namespace Packet {
 	constexpr UDPPacket toUDPType(int _i) {
 		return static_cast<UDPPacket>(_i);
 	}
-}
+} // namespace Packet
 
 #endif // PACKETTYPES_H_INCLUDED

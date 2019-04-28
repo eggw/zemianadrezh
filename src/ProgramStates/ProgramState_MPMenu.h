@@ -4,9 +4,8 @@
 #include "ProgramState_Menu.h"
 
 class ProgramState_MPMenu : public ProgramState_Menu {
-	public:
-		ProgramState_MPMenu (Program& _program);
+  public:
+	ProgramState_MPMenu(Program& _program);
 };
-
 
 #endif // PROGRAMSTATE_MPMENU_H_INCLUDED

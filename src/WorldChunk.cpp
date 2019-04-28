@@ -7,47 +7,45 @@
 
 //Packet operator overloading
 //----------------------------------------------------------------------------------------------------------------
-sf::Packet& operator <<(sf::Packet& _p, const WorldChunk::EncodedChunkData& _d) {
+sf::Packet& operator<<(sf::Packet& _p, const WorldChunk::EncodedChunkData& _d) {
 	return _p << _d.id << _d.blocks;
 }
 
-sf::Packet& operator >>(sf::Packet& _p, WorldChunk::EncodedChunkData& _d) {
+sf::Packet& operator>>(sf::Packet& _p, WorldChunk::EncodedChunkData& _d) {
 	return _p >> _d.id >> _d.blocks;
 }
 //----------------------------------------------------------------------------------------------------------------
 
-WorldChunk::WorldChunk(int _id, bool _empty)
-	:m_id{_id} {
-
+WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id} {
 	//index represents a block's position in the chunk.
 	//First, the x axis is filled out, then the y, so
 	//it looks like this:
 
 	int index{0};
 
-	for(int y{0}; y < CHUNK_DIMENSIONS_Y; y++) {
-		for(int x{0}; x < CHUNK_DIMENSIONS_X; x++) {
-
+	for (int y{0}; y < CHUNK_DIMENSIONS_Y; y++) {
+		for (int x{0}; x < CHUNK_DIMENSIONS_X; x++) {
 			bool air{false};
 
-			if(_empty) {
+			if (_empty) {
 				air = true;
 			}
 
 			else {
-				auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-				static std::mt19937 mt_rand(seed);
+				auto seed = std::chrono::high_resolution_clock::now()
+				              .time_since_epoch()
+				              .count();
+				static std::mt19937                mt_rand(seed);
 				std::uniform_int_distribution<int> uniform_dist(1, 20);
-				int mean = uniform_dist(mt_rand);
+				int                                mean = uniform_dist(mt_rand);
 
-				if(mean == 1) {
+				if (mean == 1) {
 					air = true;
 				}
 			}
 
-
 			BlockData::Type t;
-			if(!air) {
+			if (!air) {
 				t = BlockData::Type::DIRT;
 			}
 			else {
@@ -55,8 +53,7 @@ WorldChunk::WorldChunk(int _id, bool _empty)
 			}
 
 			Block block{index, t};
-			block.m_position.x = x;
-			block.m_position.y = y;
+			block.setPosition(x, y);
 
 			++index;
 
@@ -97,11 +94,11 @@ const WorldChunk::EncodedChunkData WorldChunk::encodeData() const {
 
 	data.id = sf::Uint16(m_id);
 
-	auto blocks =getBlocks();
+	auto blocks = getBlocks();
 
-	for(size_t z{0}; z < blocks.size(); z++) {
-		int type {blocks[z].getType()};
-		if(type != 0) {
+	for (size_t z{0}; z < blocks.size(); z++) {
+		int type{blocks[z].getType()};
+		if (type != 0) {
 			data.blocks += std::to_string(type);
 			data.blocks += ",";
 			data.blocks += std::to_string(z);
@@ -116,29 +113,29 @@ void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
 	m_id = _data.id;
 	std::string currentNumber;
 
-	int currentType;
+	int         currentType;
 	std::string currentTypeStr{""};
-	bool readingType{true};
+	bool        readingType{true};
 
-	for(const char& c : _data.blocks) {
-		if(c == ',') {
+	for (const char& c : _data.blocks) {
+		if (c == ',') {
 			readingType = false;
 			currentType = std::stoi(currentTypeStr);
 			currentTypeStr.clear();
 		}
 
-		else if(c == '.') {
+		else if (c == '.') {
 			int id = std::stoi(currentNumber);
 			currentNumber.clear();
 			setBlockType(id, BlockData::Type(currentType));
 			readingType = true;
 		}
 
-		else if(readingType) {
+		else if (readingType) {
 			currentTypeStr += c;
 		}
 
-		else if(!readingType) {
+		else if (!readingType) {
 			currentNumber += c;
 		}
 	}

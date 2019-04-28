@@ -8,72 +8,92 @@
 
 //Packet operator overloading
 //----------------------------------------------------------------------------------------------------------------
-sf::Packet& operator <<(sf::Packet& _p, const Player::EncodedPlayerData& _d) {
-	return _p << _d.playerName << _d.facingLeft << _d.velocityX << _d.velocityY << _d.positionX << _d.positionY;
+sf::Packet& operator<<(sf::Packet& _p, const Player::EncodedPlayerData& _d) {
+	return _p << _d.playerName << _d.facingLeft << _d.velocityX << _d.velocityY
+	          << _d.positionX << _d.positionY;
 }
 
-sf::Packet& operator >>(sf::Packet& _p, Player::EncodedPlayerData& _d) {
-	return _p >> _d.playerName >> _d.facingLeft >> _d.velocityX >> _d.velocityY >> _d.positionX >> _d.positionY;
+sf::Packet& operator>>(sf::Packet& _p, Player::EncodedPlayerData& _d) {
+	return _p >> _d.playerName >> _d.facingLeft >> _d.velocityX >>
+	       _d.velocityY >> _d.positionX >> _d.positionY;
 }
 //----------------------------------------------------------------------------------------------------------------
 
 Player::Player(const std::string& _name)
-	:m_sprite(),
-	 m_animationSheet(TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER)),
-	 m_playerName{_name} {
-
+            : m_sprite(),
+              m_animationSheet(TextureManager::get_instance().getTexture(
+                TextureManager::Type::PLAYER)),
+              m_playerName{_name} {
 	constexpr int SPRITE_WIDTH{32};
 	constexpr int SPRITE_HEIGHT{48};
 
 	//LEFT: indeces 0-10
 	//idle left
-	m_animationSheet.addFrame({0,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame({0, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 1
-	m_animationSheet.addFrame({SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame({SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 2
-	m_animationSheet.addFrame({2*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {2 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 3
-	m_animationSheet.addFrame({3*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {3 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 4
-	m_animationSheet.addFrame({4*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {4 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 5
-	m_animationSheet.addFrame({5*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {5 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 6
-	m_animationSheet.addFrame({6*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {6 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 7
-	m_animationSheet.addFrame({7*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {7 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 8
-	m_animationSheet.addFrame({8*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {8 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 9
-	m_animationSheet.addFrame({9*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {9 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk left 10
-	m_animationSheet.addFrame({10*SPRITE_WIDTH,0,SPRITE_WIDTH,SPRITE_HEIGHT});
-
+	m_animationSheet.addFrame(
+	  {10 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
 
 	//RIGHT: indeces 11-21
 	//idle right
-	m_animationSheet.addFrame({10*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {10 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 1
-	m_animationSheet.addFrame({9*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {9 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 2
-	m_animationSheet.addFrame({8*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {8 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 3
-	m_animationSheet.addFrame({7*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {7 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 4
-	m_animationSheet.addFrame({6*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {6 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 5
-	m_animationSheet.addFrame({5*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {5 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 6
-	m_animationSheet.addFrame({4*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {4 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 7
-	m_animationSheet.addFrame({3*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {3 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 8
-	m_animationSheet.addFrame({2*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {2 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 9
-	m_animationSheet.addFrame({1*SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
+	m_animationSheet.addFrame(
+	  {1 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 	//walk right 10
-	m_animationSheet.addFrame({SPRITE_WIDTH,SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT});
-
+	m_animationSheet.addFrame(
+	  {SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 
 	m_animationSheet.setAnimationRange(11, 21);
 }
@@ -83,19 +103,18 @@ const std::string& Player::getName() const {
 }
 
 void Player::getInput() {
-	if(InputLocker::get_instance().isLocked()) {
+	if (InputLocker::get_instance().isLocked()) {
 		return;
 	}
 
-	if(sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
+	if (sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
 		m_facingLeft = true;
 		m_velocity.x = -0.2;
 	}
 
-	else if(sf::Keyboard::isKeyPressed(Key::RIGHT_KEY)) {
+	else if (sf::Keyboard::isKeyPressed(Key::RIGHT_KEY)) {
 		m_facingLeft = false;
 		m_velocity.x = 0.2;
-
 	}
 	else {
 		m_velocity.x = 0;
@@ -105,15 +124,15 @@ void Player::getInput() {
 void Player::update(int _timeslice) {
 	EntityMoving::update(_timeslice);
 
-	if(m_facingLeft) {
+	if (m_facingLeft) {
 		m_animationSheet.setAnimationRange(0, 10);
 	}
 	else {
 		m_animationSheet.setAnimationRange(11, 21);
 	}
 
-	float effectiveSpeed{ m_velocity.x };
-	if(effectiveSpeed < 0) {
+	float effectiveSpeed{m_velocity.x};
+	if (effectiveSpeed < 0) {
 		effectiveSpeed *= -1;
 	}
 	m_animationSheet.setAnimationSpeed(effectiveSpeed / 10);
@@ -132,10 +151,10 @@ const Player::EncodedPlayerData Player::encodeData() const {
 
 	data.playerName = getName();
 	data.facingLeft = m_facingLeft;
-	data.velocityX = m_velocity.x;
-	data.velocityY = m_velocity.y;
-	data.positionX = m_position.x;
-	data.positionY = m_position.y;
+	data.velocityX  = m_velocity.x;
+	data.velocityY  = m_velocity.y;
+	data.positionX  = m_position.x;
+	data.positionY  = m_position.y;
 
 	return data;
 }
@@ -148,4 +167,3 @@ void Player::parseData(const Player::EncodedPlayerData& _data) {
 	m_position.x = _data.positionX;
 	m_position.y = _data.positionY;
 }
-

@@ -19,29 +19,29 @@ https://csc.lsu.edu/~kooima/misc/cs594/final/part2.html
 */
 
 class DayNightCycle : public sf::Drawable {
-	public:
-		DayNightCycle(const World& _world);
+  public:
+	DayNightCycle(const World& _world);
 
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-		//This function will deal with managing either the sun or the moon's
-        //sprite and position, depending on the world time
-        void update();
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	//This function will deal with managing either the sun or the moon's
+	//sprite and position, depending on the world time
+	void update();
 
-	private:
-		const World& m_world;
-        sf::Sprite m_sunMoonSprite;
-        //m_skyBackground will simply contain four vertices at the corners of the
-        //window. Shaders will determine the appropriate gradients depending on the
-        //time of day and position of the sun in the sky.
-        sf::VertexArray m_skyBackground;
-        sf::Text m_timeText;
-        //In order to avoid having a lot of extra code to handle resizing, we'll
-        //simply update m_target to have it point to the RenderTarget passed into
-        //the draw function.
-        mutable sf::RenderTarget* m_target;
-        mutable sf::Shader m_shader;
+  private:
+	const World& m_world;
+	sf::Sprite   m_sunMoonSprite;
+	//m_skyBackground will simply contain four vertices at the corners of the
+	//window. Shaders will determine the appropriate gradients depending on the
+	//time of day and position of the sun in the sky.
+	sf::VertexArray m_skyBackground;
+	sf::Text        m_timeText;
+	//In order to avoid having a lot of extra code to handle resizing, we'll
+	//simply update m_target to have it point to the RenderTarget passed into
+	//the draw function.
+	mutable sf::RenderTarget* m_target;
+	mutable sf::Shader        m_shader;
 
-		void updateSkyVertices();
+	void updateSkyVertices();
 };
 
 #endif // DAYNIGHTCYCLE_H_INCLUDED

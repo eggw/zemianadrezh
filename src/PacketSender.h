@@ -23,30 +23,29 @@ typedef std::shared_ptr<sf::Packet> PacketSharedPtr;
 typedef std::unique_ptr<sf::Packet> PacketUPtr;
 
 class PacketSender : public Singleton<PacketSender> {
-	public:
-		struct TCPPacket {
-			TCPPacket(sf::TcpSocket* _socket, const PacketSharedPtr _packet)
-				:   m_socket{_socket},
-					m_packet{_packet} {}
+  public:
+	struct TCPPacket {
+		TCPPacket(sf::TcpSocket* _socket, const PacketSharedPtr _packet)
+		            : m_socket{_socket}, m_packet{_packet} {
+		}
 
-			sf::TcpSocket* m_socket;
-			PacketSharedPtr m_packet;
-		};
+		sf::TcpSocket*  m_socket;
+		PacketSharedPtr m_packet;
+	};
 
-		PacketSender();
+	PacketSender();
 
-		void send(sf::TcpSocket* _socket, const PacketSharedPtr _packet);
+	void send(sf::TcpSocket* _socket, const PacketSharedPtr _packet);
 
-		void send(sf::UdpSocket* _socket,
-				  const PacketSharedPtr _packet,
-				  const sf::IpAddress& _recipient,
-				  unsigned short _port);
+	void send(sf::UdpSocket*        _socket,
+	          const PacketSharedPtr _packet,
+	          const sf::IpAddress&  _recipient,
+	          unsigned short        _port);
 
-		void update();
+	void update();
 
-	private:
-		std::vector<TCPPacket> m_packetData;
+  private:
+	std::vector<TCPPacket> m_packetData;
 };
-
 
 #endif // PACKETSENDER_H_INCLUDED

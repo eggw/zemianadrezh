@@ -9,41 +9,39 @@
 #include "ProgramStates/ProgramState_MPJoinFailed.h"
 #include "ProgramStates/ProgramState_ConnectionLost.h"
 
-constexpr int FIXED_TIMESLICE { 16 };
+constexpr int FIXED_TIMESLICE{16};
 
 Program::Program() {
-	m_window = std::unique_ptr<sf::RenderWindow>
-			   (new sf::RenderWindow(sf::VideoMode(800,600),
-									 "zemianadrezh"));
+	m_window = std::unique_ptr<sf::RenderWindow>(
+	  new sf::RenderWindow(sf::VideoMode(800, 600), "zemianadrezh"));
 	m_window->setFramerateLimit(60);
 
-	m_states.push_back(std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
+	m_states.push_back(
+	  std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
 
 	gameLoop();
 }
 
 Program::~Program() {
-
 }
 
 void Program::init() {
-
 }
 
 void Program::gameLoop() {
-	int simulationTime { 0 }; //as milliseconds
+	int       simulationTime{0}; //as milliseconds
 	sf::Clock timesliceClock{};
 
-	while(m_window->isOpen()) {
-		m_window->clear(sf::Color(0,0,0));
+	while (m_window->isOpen()) {
+		m_window->clear(sf::Color(0, 0, 0));
 
-        getInput();
+		getInput();
 
-		int realTime{ timesliceClock.getElapsedTime().asMilliseconds() };
-		while (simulationTime < realTime){
+		int realTime{timesliceClock.getElapsedTime().asMilliseconds()};
+		while (simulationTime < realTime) {
 			simulationTime += FIXED_TIMESLICE;
 
-			if(localServerInitialised()) {
+			if (localServerInitialised()) {
 				m_localServer->receivePackets();
 				m_localServer->update(FIXED_TIMESLICE);
 			}
@@ -56,25 +54,25 @@ void Program::gameLoop() {
 }
 
 void Program::getInput() {
-    sf::Event event;
-    while(m_window->pollEvent(event)) {
-        if(event.type == sf::Event::Closed) {
-            m_window->close();
-        }
+	sf::Event event;
+	while (m_window->pollEvent(event)) {
+		if (event.type == sf::Event::Closed) {
+			m_window->close();
+		}
 
-        m_states.back()->getInput(event);
-    }
+		m_states.back()->getInput(event);
+	}
 }
 
 void Program::update(int _timeslice) {
-	if(m_states.back()->isVisibleOverPreviousState()) {
+	if (m_states.back()->isVisibleOverPreviousState()) {
 		m_states.end()[-2]->update(_timeslice);
 	}
 	m_states.back()->update(_timeslice);
 }
 
 void Program::draw() {
-	if(m_states.back()->isVisibleOverPreviousState()) {
+	if (m_states.back()->isVisibleOverPreviousState()) {
 		m_states.end()[-2]->draw();
 	}
 	m_states.back()->draw();
@@ -83,50 +81,56 @@ void Program::draw() {
 
 void Program::pushState_Play_SP() {
 	initialiseLocalServer(false);
-	m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
-					   sf::IpAddress::LocalHost)));
+	m_states.push_back(std::unique_ptr<ProgramState_Play>(
+	  new ProgramState_Play(*this, sf::IpAddress::LocalHost)));
 }
 
 void Program::pushState_Play_MP_Host() {
 	initialiseLocalServer(true);
-	m_states.push_back(std::unique_ptr<ProgramState_Play>(new ProgramState_Play(*this,
-					   sf::IpAddress::LocalHost)));
+	m_states.push_back(std::unique_ptr<ProgramState_Play>(
+	  new ProgramState_Play(*this, sf::IpAddress::LocalHost)));
 }
 
 void Program::pushState_Play_MP_Join() {
-	sf::IpAddress ip{sf::IpAddress(m_ipAddress)};
-	std::unique_ptr<ProgramState_Play>newState (new ProgramState_Play(*this,
-													m_ipAddress));
-	if(newState->clientConnected()){
+	sf::IpAddress                      ip{sf::IpAddress(m_ipAddress)};
+	std::unique_ptr<ProgramState_Play> newState(
+	  new ProgramState_Play(*this, m_ipAddress));
+	if (newState->clientConnected()) {
 		m_states.push_back(std::move(newState));
 	}
-	else{
+	else {
 		pushState_MPJoinFailed();
 	}
 }
 
 void Program::pushState_Pause() {
-	m_states.push_back(std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
+	m_states.push_back(
+	  std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
 }
 
 void Program::pushState_MPMenu() {
-	m_states.push_back(std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
+	m_states.push_back(
+	  std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
 }
 
 void Program::pushState_MPHostMenu() {
-	m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(new ProgramState_MPHostMenu(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(
+	  new ProgramState_MPHostMenu(*this)));
 }
 
 void Program::pushState_MPJoinMenu() {
-	m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(new ProgramState_MPJoinMenu(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(
+	  new ProgramState_MPJoinMenu(*this)));
 }
 
 void Program::pushState_MPJoinFailed() {
-	m_states.push_back(std::unique_ptr<ProgramState_MPJoinFailed>(new ProgramState_MPJoinFailed(*this, m_ipAddress)));
+	m_states.push_back(std::unique_ptr<ProgramState_MPJoinFailed>(
+	  new ProgramState_MPJoinFailed(*this, m_ipAddress)));
 }
 
 void Program::pushState_MPConnectionLost() {
-	m_states.push_back(std::unique_ptr<ProgramState_ConnectionLost>(new ProgramState_ConnectionLost(*this)));
+	m_states.push_back(std::unique_ptr<ProgramState_ConnectionLost>(
+	  new ProgramState_ConnectionLost(*this)));
 }
 
 bool Program::localServerInitialised() {
@@ -142,13 +146,14 @@ void Program::terminateLocalServer() {
 }
 
 bool Program::isAtMainMenu() {
-	ProgramState_MainMenu* ptrTest = dynamic_cast<ProgramState_MainMenu*> (m_states.back().get());
+	ProgramState_MainMenu* ptrTest =
+	  dynamic_cast<ProgramState_MainMenu*>(m_states.back().get());
 	return (ptrTest != nullptr);
 }
 
 //This function simply keeps popping the state until it's the main menu state.
 void Program::returnToMainMenu() {
-	while(!isAtMainMenu()) {
+	while (!isAtMainMenu()) {
 		popState();
 	}
 }
@@ -156,7 +161,7 @@ void Program::returnToMainMenu() {
 void Program::popState() {
 	m_states.pop_back();
 
-	if(!m_states.empty()) {
+	if (!m_states.empty()) {
 		m_states.back()->onStateSwitch();
 	}
 }
@@ -170,10 +175,8 @@ void Program::setIpAddress(const std::string& _ipStr) {
 }
 
 Server* Program::getServer() const {
-	if(m_localServer == nullptr) {
+	if (m_localServer == nullptr) {
 		return nullptr;
 	}
 	return m_localServer.get();
 }
-
-
