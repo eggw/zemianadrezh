@@ -58,8 +58,9 @@ void DayNightCycle::update() {
 
 	updateSkyVertices();
 
-	static const double pi {std::atan(1)*4};
-	auto worldTime = m_world.getTime();
+	static const double pi	{ std::atan(1)*4 };
+	auto worldTime			{ m_world.getTime() };
+	auto hhmm				{ worldTime.get() };
 
 	m_timeText.setString(worldTime.getString());
 	m_timeText.setPosition(m_target->getSize().x - 1.2 * m_timeText.getGlobalBounds().width, 0);
@@ -67,7 +68,7 @@ void DayNightCycle::update() {
 	int HOUR_START 	{DAY_BEGIN_HOUR};
 	int HOUR_END 	{DAY_END_HOUR};
 
-	if(worldTime.hours >= DAY_BEGIN_HOUR && worldTime.hours < DAY_END_HOUR) {
+	if(hhmm.hours >= DAY_BEGIN_HOUR && hhmm.hours < DAY_END_HOUR) {
 		m_sunMoonSprite.setTexture(TextureManager::get_instance().getTexture(TextureManager::Type::SUN));
 	}
 	else{
@@ -92,8 +93,8 @@ void DayNightCycle::update() {
 	if(HOUR_START > HOUR_END) {
         HOUR_END += 24;
 	}
-	if(worldTime.hours < HOUR_START) {
-		worldTime.hours += 24;
+	if(hhmm.hours < HOUR_START) {
+		hhmm.hours += 24;
 	}
 
 	//Get the "percentage" of how far along the X axis the sun should be (for example, at 12, it should be
@@ -103,11 +104,11 @@ void DayNightCycle::update() {
 	int difference {abs(HOUR_START - HOUR_END)};
 	//Then, calculate the offset from the begin hour.
 	//[For example, if we take 12, 12 - 6 = 6]
-	int offset {abs(HOUR_START - worldTime.hours)};
+	int offset {abs(HOUR_START - hhmm.hours)};
 	//We'll now be able to take into consideration the minutes. We simply divide
 	//the world time in minutes by 60 to get the percentage value between our
 	//current hour and the next hour. For example, 30 would yield 0.5.
-	float minutesPercentage {worldTime.minutes / 60.f };
+	float minutesPercentage { hhmm.minutes / 60.f };
 
 	//We can divide our minutesPercentage by the hour difference to get the value we should
 	//increment our final result by.

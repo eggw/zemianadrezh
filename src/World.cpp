@@ -3,9 +3,7 @@
 #include "TextureManager.h"
 
 World::World()
-
-: m_time{5, 0}
-{
+	: m_time{ {5, 0} } {
 }
 
 const sf::Vector2f World::getCenter() const {
@@ -79,7 +77,7 @@ void World::update(int _timeslice) {
 	//}
 }
 
-const World::WorldTime& World::getTime() const {
+const WorldTime& World::getTime() const {
 	return m_time;
 }
 
