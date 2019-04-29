@@ -11,8 +11,10 @@ in vec3 out_vertex;
 out vec4 fragColor;
 
 void main() {
-   	//vec3 V = normalize(out_vertex);
-    //vec3 L = normalize(sunPosition.xyz);
+   	vec3 V = normalize(out_vertex);
+    vec3 L = (sunPosition.xyz);
+	V.y = 1 - V.y;
+	L.y = 1 - L.y;
 
     //Compute the proximity of this fragment to the sun.
 
@@ -20,12 +22,12 @@ void main() {
 
     //Look up the sky color and glow colors.
 
-	//vec4 Kc = texture2D(sky, vec2((L.y + 1.0) / 2.0, V.y));
+	vec4 Kc = texture2D(sky, vec2(1, V.y));
     //vec4 Kg = texture2D(glow,  vec2((L.y + 1.0) / 2.0, vl));
+	fragColor = Kc;
+    //Combine the sky and glow giving the pixel value.
 
-    // Combine the sky and glow giving the pixel value.
-
-	//fragColor = vec4(0,0,vl,1);
+	//fragColor = vec4(L.y,L.y,L.y,1);
 	//fragColor = vec4(0,0,lightIntensity,1);
 	//fragColor = vec4(0.352, 0.439, 1.0, 1.0);
     //fragColor = vec4(Kc.rgb + Kg.rgb * Kg.a / 2.0, Kc.a);

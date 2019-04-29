@@ -150,10 +150,12 @@ void DayNightCycle::update() {
 	//First, since the sprite's x origin is at its rightmost point, we'll
 	//subtract half its width from the x coordinate.
 	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
-	//Next, we'll subtract half the screen width and add half the height
-	//to get the equivalent point in the OpenGL coordinate system
-	openGLCoordinates.x -= m_target->getSize().x / 2;
-	openGLCoordinates.y += m_target->getSize().y / 2;
+	//Taking into account openGL's texture2D origin is at the top left,
+	//we'll get the appropriate coordinate position of the sun as a ratio
+	//We'll divide y further in order to simulate the horizon being at the
+	//center of the screen, rather than the bottom
+	openGLCoordinates.x /= m_target->getSize().x;
+	openGLCoordinates.y /= m_target->getSize().y / 2;
 
 	//TODO: further refine this
 	//We're going to let the shader determine the appropriate gradient from two
