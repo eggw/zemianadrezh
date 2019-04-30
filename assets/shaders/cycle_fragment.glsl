@@ -17,6 +17,13 @@ out vec4 fragColor;
 void main() {
    	vec3 V = (out_vertex);
     vec3 L = (planetPosition.xyz);
+    //Since un-normalized coordinates in openGL start at the
+    //top left, a lower y translates to a higher position.
+    //Therefore, we'll invert the y values to accurately
+    //reflect that the sun's y position actually increases
+    //as it goes up.
+    //Keep in mind that it never actually gets to the very top, more like
+    //80% or 90%. Maybe fix this later (in DayNightCycle.cpp)?
 	V.y = 1 - V.y;
 	L.y = 1 - L.y;
 	//Read from the lefthand side of the sky file if it's nighttime
@@ -25,16 +32,15 @@ void main() {
 	}
 
     //Compute the proximity of this fragment to the sun.
-    //float vl = dot(V, L);
+    float vl = dot(V, L);
 
     //Look up the sky color and glow colors.
 
 	//Note: (L.y + 1) / 2 is to accomodate for sky.png having
 	//its right half dedicated to the daytime gradient and
 	//left half to the nighttime gradient
-	vec4 Kc = texture2D(sky, vec2((L.y + 1) / 2, V.y));
-
-    //vec4 Kg = texture2D(glow,  vec2((L.y + 1.0) / 2.0, vl));
+	vec4 Kc = texture2D(sky, 	vec2((L.y + 1) / 2, V.y));
+    vec4 Kg = texture2D(glow,  	vec2((L.y + 1) / 2, vl));
 	fragColor = Kc;
 	//vec4 dither = vec4(texture2D(sky, out_vertex.xy / 8.0).r / 32.0 - (1.0 / 128.0));
 	//fragColor += dither;
