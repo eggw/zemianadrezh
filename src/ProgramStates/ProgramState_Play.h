@@ -10,6 +10,11 @@
 #include "RendererSharedDrawable.h"
 #include "DayNightCycle.h"
 
+#include "Systems/SystemAnimation.h"
+#include "Systems/SystemDrawing.h"
+#include "Systems/SystemPhysics.h"
+#include "Systems/SystemPlayerMovement.h"
+
 class ProgramState_Play : public ProgramState {
   public:
 	ProgramState_Play(Program& _program, sf::IpAddress _ipAddress);
@@ -25,13 +30,18 @@ class ProgramState_Play : public ProgramState {
 	void onResize(sf::Vector2u _newSize);
 
   private:
-	Client                          m_client;
-	RendererChunk                   m_rendererChunk;
-	RendererDrawable<Player>        m_rendererClientPlayer;
-	RendererDrawable<ChatBox>       m_rendererChatbox;
-	RendererDrawable<UserInterface> m_rendererUserInterface;
-	RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
-	DayNightCycle                   m_dayNightCycle;
+	Client m_client;
+	//RendererChunk                   m_rendererChunk;
+	//RendererDrawable<Player>        m_rendererClientPlayer;
+	//RendererDrawable<ChatBox>       m_rendererChatbox;
+	//RendererDrawable<UserInterface> m_rendererUserInterface;
+	//RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
+	SystemAnimation      m_systemAnimation;
+	SystemDrawing        m_systemDrawing;
+	SystemPhysics        m_systemPhysics;
+	SystemPlayerMovement m_systemPlayerMovement;
+
+	DayNightCycle m_dayNightCycle;
 
 	//The client's player and the chatbox will always be drawn.
 	//However, other players come and go. m_rendererPeers will use
@@ -40,7 +50,7 @@ class ProgramState_Play : public ProgramState {
 	//thus goes out of scope, it will be detected by the weak_ptrs in
 	//weak_ptr.expired(), and we can then remove it from m_objects, avoiding
 	//a dangling pointer.
-	RendererSharedDrawable<Player> m_rendererOtherPlayers;
+	//RendererSharedDrawable<Player> m_rendererOtherPlayers;
 
 	//m_view is the view used to draw chunks, players, items, etc.
 	sf::View m_view;

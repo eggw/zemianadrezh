@@ -1,7 +1,6 @@
 #ifndef BLOCK_H_INCLUDED
 #define BLOCK_H_INCLUDED
 
-#include "Entity.h"
 #include "BlockData.h"
 
 /*
@@ -18,7 +17,7 @@ This way, each block only needs to have an index, specifying its position
 in its chunk (m_id), a block type (m_type), and its damage level (m_damageLevel).
 */
 
-class Block : public Entity {
+class Block {
   public:
 	Block(int _id, BlockData::Type _type);
 
@@ -27,10 +26,14 @@ class Block : public Entity {
 	const BlockData& getData() const;
 	sf::FloatRect    getTextureRect() const;
 
+	sf::Vector2f getPosition() const;
+	void         setPosition(sf::Vector2f _p);
+
   private:
 	int             m_id;
 	BlockData::Type m_type;
 	int             m_damageLevel;
+	sf::Vector2f    m_position;
 };
 
 #endif // BLOCK_H_INCLUDED

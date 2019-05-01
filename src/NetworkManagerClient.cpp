@@ -6,6 +6,9 @@
 #include "LoggerNetwork.h"
 #include "Client.h"
 
+#include "Tags/PlayerTag.h"
+#include "Components/ComponentsPlayer.h"
+
 NetworkManagerClient::NetworkManagerClient(Client& _client)
             : m_client{_client}, m_connectionActive{true}, m_udpSocket{} {
 	m_udpSocket.setBlocking(false);
@@ -32,13 +35,18 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::JUSTJOINED: {
-		Player::EncodedPlayerData playerData =
-		  m_client.getPlayer()->encodeData();
-		sf::Uint16 port{m_udpSocket.getLocalPort()};
-		*packet << playerData.playerName;
-		*packet << port;
-		PacketSender::get_instance().send(&m_serverConnection, packet);
+		entt::entity e{m_client.m_player};
+		sf::Uint16   port{m_udpSocket.getLocalPort()};
 
+		auto dir{m_client.m_registry.get<ComponentDirection>(e)};
+		auto name{m_client.m_registry.get<ComponentName>(e)};
+		auto vel{m_client.m_registry.get<ComponentPhysics>(e)};
+		auto pos{m_client.m_registry.get<ComponentPosition>(e)};
+
+		*packet << ComponentsPlayer{dir, name, vel, pos};
+		*packet << port;
+
+		PacketSender::get_instance().send(&m_serverConnection, packet);
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
@@ -89,9 +97,14 @@ void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::UDPPacket::DATA_PLAYER: {
-		Player::EncodedPlayerData playerData =
-		  m_client.getPlayer()->encodeData();
-		*packet << playerData;
+		entt::entity e{m_client.m_player};
+
+		auto dir{m_client.m_registry.get<ComponentDirection>(e)};
+		auto name{m_client.m_registry.get<ComponentName>(e)};
+		auto vel{m_client.m_registry.get<ComponentPhysics>(e)};
+		auto pos{m_client.m_registry.get<ComponentPosition>(e)};
+
+		*packet << ComponentsPlayer{dir, name, vel, pos};
 
 		PacketSender::get_instance().send(
 		  &m_udpSocket, packet, m_serverConnection.getRemoteAddress(), port);
@@ -168,7 +181,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::TCPPacket::RESPAWN_PLAYER: {
-			m_client.respawnPlayer();
+			//m_client.respawnPlayer();
 			break;
 		}
 			//////////////////////////////////////////////////////////////////////////////
@@ -210,10 +223,11 @@ void NetworkManagerClient::receiveUDPPackets() {
 		switch (packetType) {
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::UDPPacket::DATA_PLAYER: {
-			Player::EncodedPlayerData playerData;
-			*packet >> playerData;
+			ComponentsPlayer p;
 
-			m_client.updatePlayer(playerData);
+			*packet >> p;
+			//get back to this
+			//m_client.updatePlayer(playerData);
 			break;
 		}
 			//////////////////////////////////////////////////////////////////////////////

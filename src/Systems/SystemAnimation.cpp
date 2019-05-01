@@ -12,13 +12,11 @@ SystemAnimation::SystemAnimation() {
 //Iterate through all entites with
 void SystemAnimation::update(int _timeslice, entt::registry& _reg) {
 	auto view = _reg.view<ComponentAnimation,
-	                      ComponentSprite,
 	                      ComponentDirection,
 	                      ComponentPhysics,
 	                      ComponentPosition>();
 	for (auto& entity : view) {
 		auto&      animation = view.get<ComponentAnimation>(entity).m_animation;
-		auto&      sprite    = view.get<ComponentSprite>(entity).m_sprite;
 		const auto left = view.get<ComponentDirection>(entity).m_facingLeft;
 		const auto vel  = view.get<ComponentPhysics>(entity).m_velocity;
 		const auto pos  = view.get<ComponentPosition>(entity).m_position;
@@ -36,8 +34,5 @@ void SystemAnimation::update(int _timeslice, entt::registry& _reg) {
 		}
 		animation.setAnimationSpeed(effectiveSpeed / 10);
 		animation.update();
-
-		sprite = animation.getSprite();
-		sprite.setPosition(pos);
 	}
 }

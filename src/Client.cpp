@@ -3,6 +3,11 @@
 #include "Server.h"
 
 #include "LoggerNetwork.h"
+#include "TextureManager.h"
+
+#include "Tags/PlayerTag.h"
+#include "Components/ComponentAnimation.h"
+#include "Components/ComponentsPlayer.h"
 
 Client::Client(sf::RenderWindow& _window,
                sf::IpAddress     _serverIP,
@@ -11,10 +16,20 @@ Client::Client(sf::RenderWindow& _window,
               m_networkManager(*this),
               m_serverIP(_serverIP),
               m_localServer(_localServer),
-              m_player(_localServer == nullptr ? "RemotePlayer" :
-                                                 "LocalPlayer"),
-              m_chatBox(_window, m_player.getName()),
+              m_player{m_registry.create()},
+              m_chatBox(_window, "TEST"),
               m_userInterface(_window) {
+	m_registry.assign<PlayerTag>(m_player, true);
+	m_registry.assign<ComponentAnimation>(
+	  m_player,
+	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));
+
+	m_registry.assign<ComponentName>(
+	  m_player, _localServer == nullptr ? "RemotePlayer" : "LocalPlayer");
+
+	m_registry.assign<ComponentPhysics>(m_player);
+	m_registry.assign<ComponentDirection>(m_player, false);
+	m_registry.assign<ComponentPosition>(m_player, 0, 0);
 	/*
 	TODO/TOFIX
 	Assigning m_world and m_players to the server's references doesn't properly work.
@@ -25,15 +40,11 @@ Client::Client(sf::RenderWindow& _window,
 	ialised in GameInstance first, but I need to investigate this further.
 	*/
 	if (m_localServer != nullptr) {
-		m_world   = m_localServer->getWorld();
-		m_players = m_localServer->getPlayers();
+		m_world = m_localServer->getWorld();
 
 		LoggerNetwork::get_instance().log(
 		  LoggerNetwork::LOG_SENDER::CLIENT,
 		  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
-	}
-	else {
-		m_players = std::make_shared<std::vector<std::shared_ptr<Player>>>();
 	}
 }
 
@@ -44,20 +55,12 @@ Client::~Client() {
 }
 
 void Client::getInput(sf::Event& _event) {
-	m_player.getInput();
 	m_chatBox.getInput(_event);
 	m_userInterface.getInput(_event);
 }
 
 void Client::update(int _timeslice) {
 	m_world.update(_timeslice);
-	m_player.update(_timeslice);
-
-	if (m_players != nullptr) {
-		for (auto& player : *m_players) {
-			player->update(_timeslice);
-		}
-	}
 
 	handleIncomingMessages();
 	handleOutgoingMessages();
@@ -82,42 +85,22 @@ void Client::receivePackets() {
 	m_networkManager.receiveTCPPackets();
 }
 
-void Client::updatePlayer(const Player::EncodedPlayerData& _data) {
-	if (_data.playerName == m_player.getName()) {
-		return;
-	}
-
-	bool found{false};
-
-	for (auto& player : *m_players) {
-		if (player->getName() == _data.playerName) {
-			player->parseData(_data);
-			found = true;
-		}
-	}
-
-	if (!found) {
-		addPlayer(_data);
-	}
+entt::entity Client::getPlayerId() const {
+	return m_player;
 }
 
-void Client::addPlayer(const Player::EncodedPlayerData& _data) {
-	if (_data.playerName == m_player.getName()) {
-		return;
+sf::Vector2f Client::getPlayerPosition() const {
+	//get back to this
+	/*
+	auto view = m_registry.view<PlayerTag, ComponentPosition>();
+	for (auto entity : view) {
+	    bool local = view.get<PlayerTag>(entity).m_local;
+	    if (local) {
+	        return view.get<ComponentPosition>(entity).m_position;
+	    }
 	}
-
-	auto newPlayer{std::make_shared<Player>(_data.playerName)};
-	newPlayer->parseData(_data);
-	m_players->push_back(std::move(newPlayer));
-}
-
-void Client::respawnPlayer() {
-	sf::Vector2f worldCenter{m_world.getCenter().x, 0};
-	m_player.setPosition(worldCenter);
-}
-
-const Player* Client::getPlayer() const {
-	return &m_player;
+	*/
+	return {0, 0};
 }
 
 const ChatBox* Client::getChatBox() const {

@@ -9,6 +9,58 @@ Animation::Animation(const sf::Texture& _texture)
               m_animationSpeed{1.0f},
               m_animationTimer(),
               m_animationRunning{false} {
+	constexpr int SPRITE_WIDTH{32};
+	constexpr int SPRITE_HEIGHT{48};
+
+	//LEFT: indeces 0-10
+	//idle left
+	addFrame({0, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 1
+	addFrame({SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 2
+	addFrame({2 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 3
+	addFrame({3 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 4
+	addFrame({4 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 5
+	addFrame({5 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 6
+	addFrame({6 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 7
+	addFrame({7 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 8
+	addFrame({8 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 9
+	addFrame({9 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk left 10
+	addFrame({10 * SPRITE_WIDTH, 0, SPRITE_WIDTH, SPRITE_HEIGHT});
+
+	//RIGHT: indeces 11-21
+	//idle right
+	addFrame({10 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 1
+	addFrame({9 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 2
+	addFrame({8 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 3
+	addFrame({7 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 4
+	addFrame({6 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 5
+	addFrame({5 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 6
+	addFrame({4 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 7
+	addFrame({3 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 8
+	addFrame({2 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 9
+	addFrame({1 * SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+	//walk right 10
+	addFrame({SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
+
+	setAnimationRange(11, 21);
 }
 
 void Animation::addFrame(sf::IntRect _rect) {
@@ -76,7 +128,7 @@ void Animation::update() {
 	//std::cout << "--------------------------" << std::endl;
 }
 
-const sf::Sprite Animation::getSprite() const {
+const sf::Sprite Animation::getCurrentSprite() const {
 	return getSprite(m_currentIndex);
 }
 

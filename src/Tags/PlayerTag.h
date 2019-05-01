@@ -8,7 +8,7 @@
 
 class PlayerTag final {
   public:
-	PlayerTag(bool _isLocal) : m_local{_isLocal} {};
+	PlayerTag(bool _isLocal = false) : m_local{_isLocal} {};
 	PlayerTag& operator=(const PlayerTag&) noexcept {
 		return *this;
 	};

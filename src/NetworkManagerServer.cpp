@@ -5,6 +5,9 @@
 #include "LoggerNetwork.h"
 #include "Server.h"
 
+#include "Tags/PlayerTag.h"
+#include "Components/ComponentsPlayer.h"
+
 NetworkManagerServer::NetworkManagerServer(Server& _server)
             : m_server(_server),
               m_listener(),
@@ -144,17 +147,22 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::UDPPacket::DATA_PLAYER: {
 		for (const auto& recipient : recipients) {
-			for (const auto& player : *m_server.getPlayers()) {
-				Player::EncodedPlayerData playerData = player->encodeData();
+			auto view = m_server.m_registry.view<PlayerTag>();
+			for (auto& entity : view) {
+				auto dir  = m_server.m_registry.get<ComponentDirection>(entity);
+				auto name = m_server.m_registry.get<ComponentName>(entity);
+				auto vel  = m_server.m_registry.get<ComponentPhysics>(entity);
+				auto pos  = m_server.m_registry.get<ComponentPosition>(entity);
 
-				*packet << playerData;
+				ComponentsPlayer data{dir, name, vel, pos};
+				*packet << data;
 
 				//Here we do a quick check to see if the playerdata generated
 				//belongs to the recipient's player; if it does, we'll cancel
 				//and not redundantly send it back to them
 				//TODO: confirm this works!
 
-				if (recipient.playerName != playerData.playerName) {
+				if (recipient.playerName != name.m_name) {
 					PacketSender::get_instance().send(&m_udpSocket,
 					                                  packet,
 					                                  recipient.ipAddress,
@@ -190,20 +198,18 @@ void NetworkManagerServer::receiveTCPPackets() {
 			switch (packetType) {
 			//////////////////////////////////////////////////////////////////////////////
 			case Packet::TCPPacket::JUSTJOINED: {
-				Player::EncodedPlayerData playerData =
-				  Player::EncodedPlayerData();
-				sf::Uint16 port;
-				*packet >> playerData.playerName;
+				ComponentsPlayer data;
+				sf::Uint16       port;
+				*packet >> data.m_name;
 				*packet >> port;
 
 				m_clientIPs.insert(
 				  {connection.get(),
-				   {playerData.playerName, *connection.get(), port}});
-				m_server.addPlayer(playerData);
+				   {data.m_name.m_name, *connection.get(), port}});
+				m_server.addPlayer(data);
 				sendPacket(Packet::TCPPacket::DATA_WORLD);
 				sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
-				sendMessage("Welcome, " + playerData.playerName + "!",
-				            "Server");
+				sendMessage("Welcome, " + data.m_name.m_name + "!", "Server");
 				break;
 			}
 			//////////////////////////////////////////////////////////////////////////////
@@ -267,11 +273,10 @@ void NetworkManagerServer::receiveUDPPackets() {
 			switch (packetType) {
 			//////////////////////////////////////////////////////////////////////////////
 			case Packet::UDPPacket::DATA_PLAYER: {
-				Player::EncodedPlayerData playerData;
-
-				*packet >> playerData;
-
-				m_server.updatePlayer(playerData);
+				ComponentsPlayer p;
+				*packet >> p;
+				//get back to this
+				//m_server.updatePlayer(p);
 
 				sendPacket(Packet::UDPPacket::DATA_PLAYER,
 				           client.second.ipAddress);

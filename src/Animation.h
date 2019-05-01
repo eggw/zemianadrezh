@@ -10,27 +10,25 @@ class Animation {
 	void addFrame(sf::IntRect _rect);
 
 	void setAnimationRange(int _beginIndex, int _maxIndex);
-
 	void setAnimationSpeed(float _speed);
 
 	void beginAnimation();
 	void stopAnimation();
 
-	//without arguments, this returns the sprite
-	//corresponding to the textureRect of the current
-	//index
-	const sf::Sprite getSprite() const;
-	const sf::Sprite getSprite(int _index) const;
+	const sf::Sprite getCurrentSprite() const;
 
 	void update();
 
   private:
+	const sf::Sprite getSprite(int _index) const;
+
 	std::vector<sf::IntRect> m_textureRects;
 	int                      m_currentIndex;
 	int                      m_minIndex;
 	int                      m_maxIndex;
 
 	const sf::Texture& m_texture;
+	sf::Sprite         m_sprite;
 
 	float m_animationSpeed;
 

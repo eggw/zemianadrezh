@@ -51,3 +51,10 @@ sf::FloatRect Block::getTextureRect() const {
 	        float(BLOCK_DIMENSIONS_X),
 	        float(BLOCK_DIMENSIONS_Y)};
 }
+
+sf::Vector2f Block::getPosition() const {
+	return m_position;
+}
+void Block::setPosition(sf::Vector2f _p) {
+	m_position = _p;
+}

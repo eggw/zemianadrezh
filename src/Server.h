@@ -8,13 +8,12 @@
 #include "GameInstance.h"
 
 class Server : public GameInstance {
+	friend class NetworkManagerServer;
+
   public:
 	//todo: pass world settings to constructor
 	Server(bool _allowConnections);
 	~Server();
-
-	void updatePlayer(const Player::EncodedPlayerData& _data);
-	void addPlayer(const Player::EncodedPlayerData& _data);
 
 	void receivePackets();
 

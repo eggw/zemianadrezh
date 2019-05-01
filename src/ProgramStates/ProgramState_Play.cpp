@@ -3,6 +3,8 @@
 #include "Keybinds.h"
 #include "LoggerNetwork.h"
 
+#include "TextureManager.h"
+
 #include <iostream>
 
 ProgramState_Play::ProgramState_Play(Program&      _program,
@@ -11,13 +13,18 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //set the last argument of m_client's constructor
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
-              m_client(*m_program.m_window, _ipAddress, m_program.getServer()),
+              m_client(*m_program.m_window,
+                       _ipAddress,
+                       m_program.getServer()), /*
               m_rendererChunk(*m_program.m_window),
               m_rendererClientPlayer(*m_program.m_window),
               m_rendererChatbox(*m_program.m_window),
-              m_rendererOtherPlayers(*m_program.m_window),
               m_rendererUserInterface(*m_program.m_window),
-              m_rendererDayNightCycle(*m_program.m_window),
+              m_rendererDayNightCycle(*m_program.m_window),*/
+              m_systemAnimation{},
+              m_systemDrawing{*m_program.m_window},
+              m_systemPhysics{},
+              m_systemPlayerMovement{m_client.getPlayerId()},
               m_dayNightCycle(m_client.getWorld()),
               m_view{sf::FloatRect(0,
                                    0,
@@ -30,10 +37,9 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
                          float(m_program.m_window->getSize().y)}} {
 	m_client.m_networkManager.connect(_ipAddress, Packet::Port_TCP_Server);
 
-	m_rendererChatbox.addObject(m_client.getChatBox());
-	m_rendererClientPlayer.addObject(m_client.getPlayer());
-	m_rendererUserInterface.addObject(m_client.getUserInterface());
-	m_rendererDayNightCycle.addObject(&m_dayNightCycle);
+	//m_rendererChatbox.addObject(m_client.getChatBox());
+	//m_rendererUserInterface.addObject(m_client.getUserInterface());
+	//m_rendererDayNightCycle.addObject(&m_dayNightCycle);
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -61,11 +67,16 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 	}
 
 	m_client.getInput(_event);
+	m_systemPlayerMovement.getInput(m_client.m_registry);
 }
 
 void ProgramState_Play::update(int _timeslice) {
+	m_systemAnimation.update(_timeslice, m_client.m_registry);
+	m_systemPhysics.update(_timeslice, m_client.m_registry);
+	m_systemPlayerMovement.update(_timeslice, m_client.m_registry);
+
 	m_dayNightCycle.update();
-	m_view.setCenter(m_client.getPlayer()->getPosition());
+	m_view.setCenter(m_client.getPlayerPosition());
 
 	m_client.receivePackets();
 
@@ -81,15 +92,16 @@ void ProgramState_Play::update(int _timeslice) {
 }
 
 void ProgramState_Play::draw() {
-	m_program.m_window->setView(m_skyView);
-	m_rendererDayNightCycle.draw();
+	//m_program.m_window->setView(m_skyView);
+	//m_rendererDayNightCycle.draw();
 
 	m_program.m_window->setView(m_view);
-	m_rendererClientPlayer.draw();
-	m_rendererOtherPlayers.draw();
-	m_rendererChunk.draw();
-	m_rendererChatbox.draw();
-	m_rendererUserInterface.draw();
+	m_systemDrawing.draw(m_client.m_registry);
+	//m_rendererClientPlayer.draw();
+	//m_rendererOtherPlayers.draw();
+	//m_rendererChunk.draw();
+	//m_rendererChatbox.draw();
+	//m_rendererUserInterface.draw();
 }
 
 bool ProgramState_Play::clientConnected() const {
@@ -115,7 +127,7 @@ void ProgramState_Play::renderUpdatedChunks() {
 			  std::find(std::begin(*ptr), std::end(*ptr), chunk.getID());
 
 			if (result != std::end(*ptr)) {
-				m_rendererChunk.update(&chunk);
+				//m_rendererChunk.update(&chunk);
 			}
 		}
 
@@ -125,10 +137,12 @@ void ProgramState_Play::renderUpdatedChunks() {
 
 //TODO: refactor this shit
 void ProgramState_Play::renderNewPlayers() {
+	/*
 	for (const auto& player : *m_client.getPlayers()) {
-		if (player->getName() != m_client.getPlayer()->getName()) {
-			m_rendererOtherPlayers.addObject(player);
-		}
+	    if (player->getName() != m_client.getPlayer()->getName()) {
+	        m_rendererOtherPlayers.addObject(player);
+	    }
 	}
+	*/
 }
 //-------------------

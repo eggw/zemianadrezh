@@ -2,17 +2,22 @@
 #define GAMEINSTANCE_H_INCLUDED
 
 #include <memory>
+#include <entt/entity/registry.hpp>
 
 #include "World.h"
 #include "Player.h"
 
+#include "Components/ComponentsPlayer.h"
+
 class GameInstance {
+	friend class ProgramState_Play;
+
   public:
 	GameInstance();
 
 	const World& getWorld() const;
-	const std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers()
-	  const;
+	//const std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers()
+	// const;
 
 	const encodedChunks encodeWorldChunks() const;
 	void parseWorldChunk(const WorldChunk::EncodedChunkData& _data);
@@ -29,7 +34,7 @@ class GameInstance {
 	//is done.
 	//Additionally, if the _data.playerName does not match any existing player
 	//in m_players, addPlayer() is called.
-	virtual void updatePlayer(const Player::EncodedPlayerData& _data) = 0;
+	//virtual void updatePlayer(const Player::EncodedPlayerData& _data) = 0;
 
 	//addPlayer():
 	//The server creates a new player, sets its position to spawn, and appends
@@ -38,10 +43,11 @@ class GameInstance {
 	//The client creates a new player with all the information contained in _data,
 	//and appends it to m_players, if _data.playerName isn't the same as the
 	//client's own player
-	virtual void addPlayer(const Player::EncodedPlayerData& _data) = 0;
+	void addPlayer(const ComponentsPlayer& _data);
 	//////////////////////////////////////////////////////////////////////////
 
-	void removePlayer(std::string _name);
+	void removePlayer(entt::entity _e);
+	void removePlayer(std::string& _name);
 
   protected:
 	World m_world;
@@ -50,11 +56,13 @@ class GameInstance {
 	//and simply assign the client's resources to the memory address of the
 	//server's.
 
+	//The registry that will contain all our entities
+	entt::registry m_registry;
 	//The reason we used a vector of shared pointers instead of uptrs is
 	//because we will pass weak pointers of all the players into RendererDrawable.
 	//When a player is removed, the shared_ptr will go out of scope. This is where
 	//the weak_ptr comes in and removes itself from the Renderer.
-	std::shared_ptr<std::vector<std::shared_ptr<Player>>> m_players;
+	//std::shared_ptr<std::vector<std::shared_ptr<Player>>> m_players;
 };
 
 #endif // GAMEINSTANCE_H_INCLUDED

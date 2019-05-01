@@ -7,7 +7,7 @@
 class SystemDrawing {
   public:
 	SystemDrawing(sf::RenderWindow& _window);
-	void update(int _timeslice, entt::registry& _reg);
+	void draw(entt::registry& _reg);
 
   private:
 	sf::RenderWindow& m_window;
