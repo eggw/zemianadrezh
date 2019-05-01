@@ -54,7 +54,7 @@ void DayNightCycle::update() {
 		return;
 	}
 
-	static bool daytime {true};
+	static bool daytime{true};
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Comma)) {
 		m_world.getTime().pause();
@@ -82,7 +82,7 @@ void DayNightCycle::update() {
 		  TextureManager::get_instance().getTexture(TextureManager::Type::SUN));
 	}
 	else {
-		daytime = false;
+		daytime    = false;
 		HOUR_START = NIGHT_BEGIN_HOUR;
 		HOUR_END   = NIGHT_END_HOUR;
 		m_sunMoonSprite.setTexture(TextureManager::get_instance().getTexture(
@@ -170,8 +170,9 @@ void DayNightCycle::update() {
 	  sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
 	m_shader.setUniform("daytime", daytime);
 
-	m_shader.setUniform("planetProgress", float(progressInPercent));
-	m_shader.setUniform("lightIntensity", float(sin(progressInPercent * pi)));
+	//unused; keeping for future testing
+	//m_shader.setUniform("planetProgress", float(progressInPercent));
+	//m_shader.setUniform("lightIntensity", float(sin(progressInPercent * pi)));
 }
 
 void DayNightCycle::draw(sf::RenderTarget& target,
