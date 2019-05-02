@@ -17,6 +17,8 @@ Client::Client(sf::RenderWindow& _window,
               m_serverIP(_serverIP),
               m_localServer(_localServer),
               m_player{m_registry.create()},
+              //get back to this:
+              //ChatBox's second parameter should take in the player's name
               m_chatBox(_window, "TEST"),
               m_userInterface(_window) {
 	m_registry.assign<PlayerTag>(m_player, true);
@@ -89,17 +91,15 @@ entt::entity Client::getPlayerId() const {
 	return m_player;
 }
 
+//Searches the registry for an entity with a PlayerTag specifiying
+//a local player, and returns their position
 sf::Vector2f Client::getPlayerPosition() const {
-	//get back to this
-	/*
-	auto view = m_registry.view<PlayerTag, ComponentPosition>();
+	auto view = m_registry.view<const PlayerTag>();
 	for (auto entity : view) {
-	    bool local = view.get<PlayerTag>(entity).m_local;
-	    if (local) {
-	        return view.get<ComponentPosition>(entity).m_position;
+	    if (view.get(entity).m_local) {
+	        return m_registry.get<ComponentPosition>(entity).m_position;
 	    }
 	}
-	*/
 	return {0, 0};
 }
 
@@ -145,4 +145,10 @@ void Client::handleOutgoingMessages() {
 		m_pendingMessage = *ptr;
 		m_networkManager.sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 	}
+}
+
+void Client::respawnPlayer() {
+	auto& playerPos = m_registry.get<ComponentPosition>(m_player).m_position;
+	playerPos.x = m_world.getCenter().x;
+	playerPos.y = 0;
 }

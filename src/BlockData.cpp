@@ -1,6 +1,6 @@
 #include "BlockData.h"
 
-#include <iostream>
+#include <math.h>
 
 BlockData::BlockData(std::string  _name,
                      int          _opacity,

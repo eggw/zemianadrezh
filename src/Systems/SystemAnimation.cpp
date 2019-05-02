@@ -32,6 +32,7 @@ void SystemAnimation::update(int _timeslice, entt::registry& _reg) {
 		if (effectiveSpeed < 0) {
 			effectiveSpeed *= -1;
 		}
+
 		animation.setAnimationSpeed(effectiveSpeed / 10);
 		animation.update();
 	}

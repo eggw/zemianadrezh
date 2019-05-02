@@ -17,6 +17,8 @@ class Animation {
 
 	const sf::Sprite getCurrentSprite() const;
 
+	//This function deals with managing the current
+	//frame of the sprite.
 	void update();
 
   private:

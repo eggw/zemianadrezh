@@ -15,6 +15,8 @@ argument. This will return a constant reference to the BlockData object.
 
 This way, each block only needs to have an index, specifying its position
 in its chunk (m_id), a block type (m_type), and its damage level (m_damageLevel).
+
+Note that blocks aren't defined as entities.
 */
 
 class Block {

@@ -149,10 +149,10 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
 		for (const auto& recipient : recipients) {
 			auto view = m_server.m_registry.view<PlayerTag>();
 			for (auto& entity : view) {
-				auto dir  = m_server.m_registry.get<ComponentDirection>(entity);
-				auto name = m_server.m_registry.get<ComponentName>(entity);
-				auto vel  = m_server.m_registry.get<ComponentPhysics>(entity);
-				auto pos  = m_server.m_registry.get<ComponentPosition>(entity);
+				const auto dir  = m_server.m_registry.get<ComponentDirection>(entity);
+				const auto name = m_server.m_registry.get<ComponentName>(entity);
+				const auto vel  = m_server.m_registry.get<ComponentPhysics>(entity);
+				const auto pos  = m_server.m_registry.get<ComponentPosition>(entity);
 
 				ComponentsPlayer data{dir, name, vel, pos};
 				*packet << data;
@@ -200,16 +200,17 @@ void NetworkManagerServer::receiveTCPPackets() {
 			case Packet::TCPPacket::JUSTJOINED: {
 				ComponentsPlayer data;
 				sf::Uint16       port;
-				*packet >> data.m_name;
+
+				*packet >> data;
 				*packet >> port;
 
 				m_clientIPs.insert(
 				  {connection.get(),
-				   {data.m_name.m_name, *connection.get(), port}});
-				m_server.addPlayer(data);
+				   {data.compName.m_name, *connection.get(), port}});
+				m_server.updatePlayer(data);
 				sendPacket(Packet::TCPPacket::DATA_WORLD);
 				sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
-				sendMessage("Welcome, " + data.m_name.m_name + "!", "Server");
+				sendMessage("Welcome, " + data.compName.m_name + "!", "Server");
 				break;
 			}
 			//////////////////////////////////////////////////////////////////////////////
@@ -276,7 +277,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 				ComponentsPlayer p;
 				*packet >> p;
 				//get back to this
-				//m_server.updatePlayer(p);
+				m_server.updatePlayer(p);
 
 				sendPacket(Packet::UDPPacket::DATA_PLAYER,
 				           client.second.ipAddress);

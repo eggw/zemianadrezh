@@ -38,12 +38,14 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 		entt::entity e{m_client.m_player};
 		sf::Uint16   port{m_udpSocket.getLocalPort()};
 
-		auto dir{m_client.m_registry.get<ComponentDirection>(e)};
-		auto name{m_client.m_registry.get<ComponentName>(e)};
-		auto vel{m_client.m_registry.get<ComponentPhysics>(e)};
-		auto pos{m_client.m_registry.get<ComponentPosition>(e)};
+		const auto dir{m_client.m_registry.get<ComponentDirection>(e)};
+		const auto name{m_client.m_registry.get<ComponentName>(e)};
+		const auto vel{m_client.m_registry.get<ComponentPhysics>(e)};
+		const auto pos{m_client.m_registry.get<ComponentPosition>(e)};
 
-		*packet << ComponentsPlayer{dir, name, vel, pos};
+		ComponentsPlayer data{dir, name, vel, pos};
+
+		*packet << data;
 		*packet << port;
 
 		PacketSender::get_instance().send(&m_serverConnection, packet);
@@ -181,7 +183,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::TCPPacket::RESPAWN_PLAYER: {
-			//m_client.respawnPlayer();
+			m_client.respawnPlayer();
 			break;
 		}
 			//////////////////////////////////////////////////////////////////////////////
@@ -224,10 +226,9 @@ void NetworkManagerClient::receiveUDPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::UDPPacket::DATA_PLAYER: {
 			ComponentsPlayer p;
-
 			*packet >> p;
 			//get back to this
-			//m_client.updatePlayer(playerData);
+			m_client.updatePlayer(p);
 			break;
 		}
 			//////////////////////////////////////////////////////////////////////////////

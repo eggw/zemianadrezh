@@ -31,26 +31,20 @@ class ProgramState_Play : public ProgramState {
 
   private:
 	Client m_client;
-	//RendererChunk                   m_rendererChunk;
-	//RendererDrawable<Player>        m_rendererClientPlayer;
-	//RendererDrawable<ChatBox>       m_rendererChatbox;
-	//RendererDrawable<UserInterface> m_rendererUserInterface;
-	//RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
+
+	//We'll handle the drawing of non-entity elements with special
+	//renderers.
+	RendererChunk                   m_rendererChunk;
+	RendererDrawable<ChatBox>       m_rendererChatbox;
+	RendererDrawable<UserInterface> m_rendererUserInterface;
+	RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
+
 	SystemAnimation      m_systemAnimation;
 	SystemDrawing        m_systemDrawing;
 	SystemPhysics        m_systemPhysics;
 	SystemPlayerMovement m_systemPlayerMovement;
 
 	DayNightCycle m_dayNightCycle;
-
-	//The client's player and the chatbox will always be drawn.
-	//However, other players come and go. m_rendererPeers will use
-	//weak_ptrs (to GameInstance::m_players) to draw them. When a player
-	//is removed from m_players (via GameInstance::removePlayer()), and
-	//thus goes out of scope, it will be detected by the weak_ptrs in
-	//weak_ptr.expired(), and we can then remove it from m_objects, avoiding
-	//a dangling pointer.
-	//RendererSharedDrawable<Player> m_rendererOtherPlayers;
 
 	//m_view is the view used to draw chunks, players, items, etc.
 	sf::View m_view;

@@ -12,22 +12,22 @@
 //managers
 struct ComponentsPlayer {
   public:
-	ComponentsPlayer() : m_dir{}, m_name{}, m_vel{}, m_pos{} {};
+	ComponentsPlayer() : compDir{}, compName{}, compVel{}, compPos{} {};
 	ComponentsPlayer(ComponentDirection _d,
 	                 ComponentName      _n,
 	                 ComponentPhysics   _v,
 	                 ComponentPosition  _p)
-	            : m_dir{_d}, m_name{_n}, m_vel{_v}, m_pos{_p} {};
+	            : compDir{_d}, compName{_n}, compVel{_v}, compPos{_p} {};
 
 	//Move assignment overload
 	ComponentsPlayer& operator=(const ComponentsPlayer&) noexcept {
 		return *this;
 	};
 
-	ComponentDirection m_dir{};
-	ComponentName      m_name{};
-	ComponentPhysics   m_vel{};
-	ComponentPosition  m_pos{};
+	ComponentDirection compDir{};
+	ComponentName      compName{};
+	ComponentPhysics   compVel{};
+	ComponentPosition  compPos{};
 };
 
 //Forward declare Packet here and define the overloading in .cpp, so

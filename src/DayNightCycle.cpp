@@ -4,6 +4,7 @@
 #include "FontManager.h"
 
 #include <iostream>
+#include <math.h>
 
 constexpr int DAY_BEGIN_HOUR{5};
 constexpr int DAY_END_HOUR{19};

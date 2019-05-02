@@ -31,17 +31,43 @@ void GameInstance::parseWorldChunk(const WorldChunk::EncodedChunkData& _data) {
 	m_world.parseChunk(_data);
 }
 
-void GameInstance::addPlayer(const ComponentsPlayer& _data) {
-	entt::entity e{m_registry.create()};
-	m_registry.assign<ComponentAnimation>(
-	  e,
-	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));
+void GameInstance::updatePlayer(const ComponentsPlayer& _data) {
+	auto view {m_registry.view<const PlayerTag>()};
+	for(auto& entity : view) {
+		//get back to this
+		//TODO: this might cause problems with the resource-sharing
+		//server/client model
+		//We don't want to update the player if it's local.
+		//Only the Client will have a local player; all players
+		//initialized in the Server itself will be designated
+		//non-local
+		if(view.get(entity).m_local) {
+			continue;
+		}
 
-	m_registry.assign<PlayerTag>(e);
-	m_registry.assign<ComponentName>(e, _data.m_name);
-	m_registry.assign<ComponentPhysics>(e, _data.m_vel);
-	m_registry.assign<ComponentDirection>(e, _data.m_dir);
-	m_registry.assign<ComponentPosition>(e, _data.m_pos);
+		auto name {m_registry.get<ComponentName>(entity).m_name};
+		if(name == _data.compName.m_name) {
+			m_registry.replace<ComponentName>(entity, _data.compName);
+			m_registry.replace<ComponentPhysics>(entity, _data.compVel);
+			m_registry.replace<ComponentDirection>(entity, _data.compDir);
+			m_registry.replace<ComponentPosition>(entity, _data.compPos);
+			return;
+		}
+	}
+
+	//If we got this far, that means no player with a matching name
+	//was found. Let's create it.
+	addPlayer(_data);
+}
+
+entt::entity GameInstance::getPlayer(std::string& _name) {
+	auto view {m_registry.view<const PlayerTag>()};
+	for(auto& entity : view) {
+		auto name {m_registry.get<ComponentName>(entity).m_name};
+		if(name == _name) {
+			return entity;
+		}
+	}
 }
 
 void GameInstance::removePlayer(entt::entity _e) {
@@ -54,9 +80,9 @@ void GameInstance::removePlayer(entt::entity _e) {
 }
 
 void GameInstance::removePlayer(std::string& _name) {
-	auto view = m_registry.view<PlayerTag, ComponentName>();
+	auto view = m_registry.view<const PlayerTag>();
 	for (auto& entity : view) {
-		auto name = view.get<ComponentName>(entity).m_name;
+		auto name = m_registry.get<ComponentName>(entity).m_name;
 		if (name == _name) {
 			m_registry.remove<PlayerTag>(entity);
 			m_registry.remove<ComponentAnimation>(entity);
@@ -66,4 +92,17 @@ void GameInstance::removePlayer(std::string& _name) {
 			m_registry.remove<ComponentPosition>(entity);
 		}
 	}
+}
+
+void GameInstance::addPlayer(const ComponentsPlayer& _data) {
+	entt::entity e{m_registry.create()};
+	m_registry.assign<ComponentAnimation>(
+	  e,
+	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));
+
+	m_registry.assign<PlayerTag>(e, false);
+	m_registry.assign<ComponentName>(e, _data.compName);
+	m_registry.assign<ComponentPhysics>(e, _data.compVel);
+	m_registry.assign<ComponentDirection>(e, _data.compDir);
+	m_registry.assign<ComponentPosition>(e, _data.compPos);
 }

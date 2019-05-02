@@ -15,12 +15,11 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //instance of Server and Client
               m_client(*m_program.m_window,
                        _ipAddress,
-                       m_program.getServer()), /*
+                       m_program.getServer()),
               m_rendererChunk(*m_program.m_window),
-              m_rendererClientPlayer(*m_program.m_window),
               m_rendererChatbox(*m_program.m_window),
               m_rendererUserInterface(*m_program.m_window),
-              m_rendererDayNightCycle(*m_program.m_window),*/
+              m_rendererDayNightCycle(*m_program.m_window),
               m_systemAnimation{},
               m_systemDrawing{*m_program.m_window},
               m_systemPhysics{},
@@ -37,9 +36,9 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
                          float(m_program.m_window->getSize().y)}} {
 	m_client.m_networkManager.connect(_ipAddress, Packet::Port_TCP_Server);
 
-	//m_rendererChatbox.addObject(m_client.getChatBox());
-	//m_rendererUserInterface.addObject(m_client.getUserInterface());
-	//m_rendererDayNightCycle.addObject(&m_dayNightCycle);
+	m_rendererChatbox.addObject(m_client.getChatBox());
+	m_rendererUserInterface.addObject(m_client.getUserInterface());
+	m_rendererDayNightCycle.addObject(&m_dayNightCycle);
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -92,16 +91,16 @@ void ProgramState_Play::update(int _timeslice) {
 }
 
 void ProgramState_Play::draw() {
-	//m_program.m_window->setView(m_skyView);
-	//m_rendererDayNightCycle.draw();
+	m_program.m_window->setView(m_skyView);
+	m_rendererDayNightCycle.draw();
 
 	m_program.m_window->setView(m_view);
 	m_systemDrawing.draw(m_client.m_registry);
 	//m_rendererClientPlayer.draw();
 	//m_rendererOtherPlayers.draw();
-	//m_rendererChunk.draw();
-	//m_rendererChatbox.draw();
-	//m_rendererUserInterface.draw();
+	m_rendererChunk.draw();
+	m_rendererChatbox.draw();
+	m_rendererUserInterface.draw();
 }
 
 bool ProgramState_Play::clientConnected() const {
@@ -127,7 +126,7 @@ void ProgramState_Play::renderUpdatedChunks() {
 			  std::find(std::begin(*ptr), std::end(*ptr), chunk.getID());
 
 			if (result != std::end(*ptr)) {
-				//m_rendererChunk.update(&chunk);
+				m_rendererChunk.update(&chunk);
 			}
 		}
 

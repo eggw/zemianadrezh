@@ -45,7 +45,7 @@ class ChatBox : public sf::Drawable {
 	/////////////////////////////////////////
 
   private:
-	const std::string& m_name;
+	const std::string m_name;
 
 	sf::View m_view;
 	sf::View m_shadedRectangleView;
