@@ -7,11 +7,6 @@ struct ComponentSprite {
   public:
 	ComponentSprite(sf::Sprite& _s) : m_sprite{_s} {};
 
-	//Move assignment overload
-	ComponentSprite& operator=(const ComponentSprite&) noexcept {
-		return *this;
-	};
-
 	sf::Sprite m_sprite;
 };
 

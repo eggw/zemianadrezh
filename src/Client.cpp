@@ -91,16 +91,8 @@ entt::entity Client::getPlayerId() const {
 	return m_player;
 }
 
-//Searches the registry for an entity with a PlayerTag specifiying
-//a local player, and returns their position
 sf::Vector2f Client::getPlayerPosition() const {
-	auto view = m_registry.view<const PlayerTag>();
-	for (auto entity : view) {
-	    if (view.get(entity).m_local) {
-	        return m_registry.get<ComponentPosition>(entity).m_position;
-	    }
-	}
-	return {0, 0};
+	return m_registry.get<ComponentPosition>(m_player).m_position;
 }
 
 const ChatBox* Client::getChatBox() const {

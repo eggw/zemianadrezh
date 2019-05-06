@@ -8,11 +8,6 @@ struct ComponentName {
 	ComponentName() : m_name{"[BLANK]"} {};
 	ComponentName(std::string _str) : m_name{_str} {};
 
-	//Move assignment overload
-	ComponentName& operator=(const ComponentName&) noexcept {
-		return *this;
-	};
-
 	std::string m_name;
 };
 

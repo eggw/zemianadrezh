@@ -7,6 +7,11 @@ class Animation {
   public:
 	Animation(const sf::Texture& _texture);
 
+	//Move assignment overload
+	Animation& operator=(const Animation&) noexcept {
+		return *this;
+	};
+
 	void addFrame(sf::IntRect _rect);
 
 	void setAnimationRange(int _beginIndex, int _maxIndex);

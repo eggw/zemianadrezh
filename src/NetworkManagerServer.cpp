@@ -149,29 +149,33 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
 		for (const auto& recipient : recipients) {
 			auto view = m_server.m_registry.view<PlayerTag>();
 			for (auto& entity : view) {
-				const auto dir  = m_server.m_registry.get<ComponentDirection>(entity);
 				const auto name = m_server.m_registry.get<ComponentName>(entity);
+				//Here we do a quick check to see if the playerdata generated
+				//belongs to the recipient's player; if it does, we'll cancel
+				//and not redundantly send it back to them
+				//TODO: confirm this works!
+				if (recipient.playerName == name.m_name) {
+					continue;
+				}
+
+				std::cout << "sending " << name.m_name << " to " << recipient.playerName << std::endl;
+
+				const auto dir  = m_server.m_registry.get<ComponentDirection>(entity);
 				const auto vel  = m_server.m_registry.get<ComponentPhysics>(entity);
 				const auto pos  = m_server.m_registry.get<ComponentPosition>(entity);
 
 				ComponentsPlayer data{dir, name, vel, pos};
 				*packet << data;
 
-				//Here we do a quick check to see if the playerdata generated
-				//belongs to the recipient's player; if it does, we'll cancel
-				//and not redundantly send it back to them
-				//TODO: confirm this works!
+				PacketSender::get_instance().send(&m_udpSocket,
+												  packet,
+												  recipient.ipAddress,
+												  recipient.port);
+				LoggerNetwork::get_instance().logConsole(
+				  LoggerNetwork::LOG_SENDER::SERVER,
+				  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
+				  packetCode);
 
-				if (recipient.playerName != name.m_name) {
-					PacketSender::get_instance().send(&m_udpSocket,
-					                                  packet,
-					                                  recipient.ipAddress,
-					                                  recipient.port);
-					LoggerNetwork::get_instance().logConsole(
-					  LoggerNetwork::LOG_SENDER::SERVER,
-					  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-					  packetCode);
-				}
 			}
 		}
 

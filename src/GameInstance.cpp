@@ -9,6 +9,7 @@
 #include "Components/ComponentPhysics.h"
 #include "Components/ComponentPosition.h"
 
+#include <iostream>
 GameInstance::GameInstance() : m_world() {
 }
 
@@ -32,22 +33,10 @@ void GameInstance::parseWorldChunk(const WorldChunk::EncodedChunkData& _data) {
 }
 
 void GameInstance::updatePlayer(const ComponentsPlayer& _data) {
-	auto view {m_registry.view<const PlayerTag>()};
+	auto view {m_registry.view<PlayerTag>()};
 	for(auto& entity : view) {
-		//get back to this
-		//TODO: this might cause problems with the resource-sharing
-		//server/client model
-		//We don't want to update the player if it's local.
-		//Only the Client will have a local player; all players
-		//initialized in the Server itself will be designated
-		//non-local
-		if(view.get(entity).m_local) {
-			continue;
-		}
-
 		auto name {m_registry.get<ComponentName>(entity).m_name};
 		if(name == _data.compName.m_name) {
-			m_registry.replace<ComponentName>(entity, _data.compName);
 			m_registry.replace<ComponentPhysics>(entity, _data.compVel);
 			m_registry.replace<ComponentDirection>(entity, _data.compDir);
 			m_registry.replace<ComponentPosition>(entity, _data.compPos);
@@ -80,16 +69,11 @@ void GameInstance::removePlayer(entt::entity _e) {
 }
 
 void GameInstance::removePlayer(std::string& _name) {
-	auto view = m_registry.view<const PlayerTag>();
+	auto view = m_registry.view<PlayerTag>();
 	for (auto& entity : view) {
-		auto name = m_registry.get<ComponentName>(entity).m_name;
+		const auto name = m_registry.get<ComponentName>(entity).m_name;
 		if (name == _name) {
-			m_registry.remove<PlayerTag>(entity);
-			m_registry.remove<ComponentAnimation>(entity);
-			m_registry.remove<ComponentName>(entity);
-			m_registry.remove<ComponentPhysics>(entity);
-			m_registry.remove<ComponentDirection>(entity);
-			m_registry.remove<ComponentPosition>(entity);
+			removePlayer(entity);
 		}
 	}
 }

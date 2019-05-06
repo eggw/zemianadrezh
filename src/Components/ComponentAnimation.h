@@ -9,11 +9,6 @@ struct ComponentAnimation {
   public:
 	ComponentAnimation(Animation _a) : m_animation{_a} {};
 
-	//Move assignment overload
-	ComponentAnimation& operator=(const ComponentAnimation&) noexcept {
-		return *this;
-	};
-
 	Animation m_animation;
 };
 

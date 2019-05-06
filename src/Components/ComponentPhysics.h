@@ -9,11 +9,6 @@ struct ComponentPhysics {
 	ComponentPhysics(sf::Vector2f _v) : m_velocity{_v} {};
 	ComponentPhysics(float _x, float _y) : m_velocity{_x, _y} {};
 
-	//Move assignment overload
-	ComponentPhysics& operator=(const ComponentPhysics&) noexcept {
-		return *this;
-	};
-
 	sf::Vector2f m_velocity;
 };
 

@@ -8,11 +8,6 @@ struct ComponentDirection {
 	ComponentDirection() : m_facingLeft{true} {};
 	ComponentDirection(bool _left) : m_facingLeft{_left} {};
 
-	//Move assignment overload
-	ComponentDirection& operator=(const ComponentDirection&) noexcept {
-		return *this;
-	};
-
 	bool m_facingLeft;
 };
 

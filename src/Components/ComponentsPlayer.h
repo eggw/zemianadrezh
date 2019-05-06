@@ -19,11 +19,6 @@ struct ComponentsPlayer {
 	                 ComponentPosition  _p)
 	            : compDir{_d}, compName{_n}, compVel{_v}, compPos{_p} {};
 
-	//Move assignment overload
-	ComponentsPlayer& operator=(const ComponentsPlayer&) noexcept {
-		return *this;
-	};
-
 	ComponentDirection compDir{};
 	ComponentName      compName{};
 	ComponentPhysics   compVel{};

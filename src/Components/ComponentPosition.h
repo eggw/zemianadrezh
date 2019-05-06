@@ -9,11 +9,6 @@ struct ComponentPosition {
 	ComponentPosition(sf::Vector2f _v) : m_position{_v} {};
 	ComponentPosition(float _x, float _y) : m_position{_x, _y} {};
 
-	//Move assignment overload
-	ComponentPosition& operator=(const ComponentPosition&) noexcept {
-		return *this;
-	};
-
 	sf::Vector2f m_position;
 };
 
