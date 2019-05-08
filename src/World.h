@@ -7,12 +7,13 @@
 typedef std::vector<WorldChunk::EncodedChunkData> encodedChunks;
 
 class World {
+	friend class RendererChunk;
+
   public:
 	World();
 
 	const sf::Vector2f getCenter() const;
 	void               addChunk(int _beginID, int _num, bool _empty);
-	const std::vector<WorldChunk>& getChunks() const;
 
 	const encodedChunks encodeChunks() const;
 	void                parseChunk(const WorldChunk::EncodedChunkData& _data);

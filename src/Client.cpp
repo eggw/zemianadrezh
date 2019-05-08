@@ -111,8 +111,8 @@ std::pair<std::string, std::string> Client::getPendingMessage() const {
 //network manager. If so, we'll add it to the chatbox and clear it from
 //the network manager.
 void Client::handleIncomingMessages() {
-	std::unique_ptr<std::pair<std::string, std::string>> ptr(
-	  new std::pair<std::string, std::string>);
+	auto ptr(std::make_unique<std::pair<std::string, std::string>>());
+
 	if (m_networkManager.receivedMessage(ptr.get())) {
 		m_chatBox.appendMessage(ptr->first, ptr->second);
 		m_networkManager.clearLastReceivedMessage();
@@ -123,8 +123,8 @@ void Client::handleIncomingMessages() {
 //and if so, we'll set it as our latest m_pendingMessage, then send it
 //to the server
 void Client::handleOutgoingMessages() {
-	std::unique_ptr<std::pair<std::string, std::string>> ptr(
-	  new std::pair<std::string, std::string>);
+	auto ptr(std::make_unique<std::pair<std::string, std::string>>());
+
 	if (m_chatBox.completedMessage(ptr.get())) {
 		m_pendingMessage = *ptr;
 		m_networkManager.sendPacket(Packet::TCPPacket::CHAT_MESSAGE);

@@ -4,16 +4,56 @@
 #include <map>
 
 #include "RendererBase.h"
-#include "WorldChunk.h"
+#include "World.h"
 #include "TextureManager.h"
 
 class RendererChunk : public RendererBase<WorldChunk> {
   public:
-	RendererChunk(sf::RenderWindow& _window)
-	            : RendererBase<WorldChunk>(_window){};
+	RendererChunk(sf::RenderWindow& _window,
+				  World& _world)
+	            : RendererBase<WorldChunk>(_window),
+				  m_world{_world}{};
 
 	~RendererChunk(){};
 
+	//The publicly available update() function simply takes in a chunk's ID.
+	//It then gets the pointer corresponding to that chunk, if it exists
+	//in the world, and calls the private update() function on it.
+	void update(int _chunkID) {
+		const WorldChunk* ptr {nullptr};
+
+		for(auto& chunk : m_world.m_chunks) {
+			if(chunk.getID() == _chunkID) {
+				ptr = &chunk;
+				break;
+			}
+		}
+
+		if(ptr == nullptr) {
+			return;
+		}
+
+		update(ptr);
+	}
+
+	void draw() const {
+		static auto blocks{TextureManager::get_instance().getTexture(
+		  TextureManager::Type::BLOCKS)};
+		for (const auto& element : m_vertexMap) {
+			RendererBase<WorldChunk>::m_window.draw(element.second, &blocks);
+		}
+	};
+
+  private:
+	mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
+	World&                                               m_world;
+
+	//--------------------------------------------------------------
+
+	//When given a WorldChunk ptr, this function then generates a vertex array
+	//for all the chunk's tiles. It then checks if the chunk is already present
+	//in m_vertexMap. If so, it simply updates its vertex array, and if not, it
+	//creates a new entry.
 	void update(const WorldChunk* _chunk) {
 		sf::VertexArray vertexArray;
 		vertexArray.setPrimitiveType(sf::PrimitiveType::Triangles);
@@ -115,17 +155,6 @@ class RendererChunk : public RendererBase<WorldChunk> {
 			m_vertexMap.emplace(_chunk, vertexArray);
 		}
 	};
-
-	void draw() const {
-		static auto blocks{TextureManager::get_instance().getTexture(
-		  TextureManager::Type::BLOCKS)};
-		for (const auto& element : m_vertexMap) {
-			RendererBase<WorldChunk>::m_window.draw(element.second, &blocks);
-		}
-	};
-
-  private:
-	mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
 };
 
 #endif // RENDERERCHUNK_H_INCLUDED

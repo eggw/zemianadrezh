@@ -52,7 +52,8 @@ class ProgramState_Play : public ProgramState {
 	sf::View m_skyView;
 
 	//This function is responsible for calling RendererChunk's update
-	//function on chunks that have just had their data updated
+	//function on chunks that have just had their data updated (when
+	//the network manager indicates that chunk data has been sent)
 	void renderUpdatedChunks();
 };
 

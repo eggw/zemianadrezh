@@ -36,10 +36,6 @@ void World::addChunk(int _beginID, int _num, bool _empty) {
 	}
 }
 
-const std::vector<WorldChunk>& World::getChunks() const {
-	return m_chunks;
-}
-
 const encodedChunks World::encodeChunks() const {
 	encodedChunks data;
 

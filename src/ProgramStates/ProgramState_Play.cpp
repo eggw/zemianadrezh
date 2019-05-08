@@ -16,7 +16,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               m_client(*m_program.m_window,
                        _ipAddress,
                        m_program.getServer()),
-              m_rendererChunk(*m_program.m_window),
+              m_rendererChunk(*m_program.m_window, m_client.m_world),
               m_rendererChatbox(*m_program.m_window),
               m_rendererUserInterface(*m_program.m_window),
               m_rendererDayNightCycle(*m_program.m_window),
@@ -114,19 +114,12 @@ void ProgramState_Play::onResize(sf::Vector2u _newSize) {
 }
 
 void ProgramState_Play::renderUpdatedChunks() {
-	std::unique_ptr<std::vector<int>> ptr(new std::vector<int>);
+	auto updatedIDs {std::make_unique<std::vector<int>>()};
 
-	if (m_client.m_networkManager.chunkDataReceived(ptr.get())) {
-		auto worldData = m_client.getWorld().getChunks();
-		for (const auto& chunk : worldData) {
-			auto result =
-			  std::find(std::begin(*ptr), std::end(*ptr), chunk.getID());
-
-			if (result != std::end(*ptr)) {
-				m_rendererChunk.update(&chunk);
-			}
+	if (m_client.m_networkManager.chunkDataReceived(updatedIDs.get())) {
+		for(auto id : *updatedIDs) {
+			m_rendererChunk.update(id);
 		}
-
 		m_client.m_networkManager.setChunkDataProcessed(true);
 	}
 }
