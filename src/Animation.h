@@ -12,23 +12,20 @@ class Animation {
 		return *this;
 	};
 
-	void addFrame(sf::IntRect _rect);
-
 	void setAnimationRange(int _beginIndex, int _maxIndex);
 	void setAnimationSpeed(float _speed);
-
-	void beginAnimation();
-	void stopAnimation();
-
 	const sf::Sprite getCurrentSprite() const;
-
-	//This function deals with managing the current
-	//frame of the sprite.
 	void update();
 
   private:
+  	//Functions -----------------------------------
 	const sf::Sprite getSprite(int _index) const;
+	void addFrame(sf::IntRect _rect);
+	void beginAnimation();
+	void stopAnimation();
+	//---------------------------------------------
 
+	//Data members --------------------------------
 	std::vector<sf::IntRect> m_textureRects;
 	int                      m_currentIndex;
 	int                      m_minIndex;
@@ -41,6 +38,7 @@ class Animation {
 
 	sf::Clock m_animationTimer;
 	bool      m_animationRunning;
+	//---------------------------------------------
 };
 
 #endif // ANIMATION_H_INCLUDED

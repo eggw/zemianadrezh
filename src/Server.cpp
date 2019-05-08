@@ -7,6 +7,8 @@ Server::Server(bool _allowConnections)
 	m_world.addChunk(0, 2, false);
 }
 
+//Automatically send out a packet indicating the server has been closed
+//upon its destruction
 Server::~Server() {
 	m_networkManager.sendPacket(Packet::TCPPacket::CONNECTIONLOST);
 }
@@ -23,6 +25,6 @@ void Server::update(int _timeslice) {
 	m_networkManager.update();
 }
 
-bool Server::connectionsAllowed() {
+bool Server::connectionsAllowed() const {
 	return m_allowConnections;
 }

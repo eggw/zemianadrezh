@@ -22,17 +22,8 @@ Client::Client(sf::RenderWindow& _window,
               //elegantly
               m_chatBox(_window, _localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
               m_userInterface(_window) {
-	m_registry.assign<PlayerTag>(m_player);
-	m_registry.assign<ComponentAnimation>(
-	  m_player,
-	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));
 
-	m_registry.assign<ComponentName>(
-	  m_player, _localServer == nullptr ? "RemotePlayer" : "LocalPlayer");
-
-	m_registry.assign<ComponentPhysics>(m_player);
-	m_registry.assign<ComponentDirection>(m_player, false);
-	m_registry.assign<ComponentPosition>(m_player, 0, 0);
+	initialisePlayer();
 	/*
 	TODO/TOFIX
 	Assigning m_world and m_players to the server's references doesn't properly work.
@@ -138,6 +129,12 @@ void Client::handleOutgoingMessages() {
 		m_pendingMessage = *ptr;
 		m_networkManager.sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 	}
+}
+
+void Client::initialisePlayer() {
+	ComponentsPlayer p{};
+	p.compName.m_name = (m_localServer == nullptr ? "RemotePlayer" : "LocalPlayer");
+	addPlayer(p, m_player);
 }
 
 void Client::respawnPlayer() {

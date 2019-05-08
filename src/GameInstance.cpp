@@ -49,16 +49,6 @@ void GameInstance::updatePlayer(const ComponentsPlayer& _data) {
 	addPlayer(_data);
 }
 
-entt::entity GameInstance::getPlayer(std::string& _name) {
-	auto view {m_registry.view<const PlayerTag>()};
-	for(auto& entity : view) {
-		auto name {m_registry.get<ComponentName>(entity).m_name};
-		if(name == _name) {
-			return entity;
-		}
-	}
-}
-
 void GameInstance::removePlayer(entt::entity _e) {
 	m_registry.destroy(_e);
 }
@@ -76,13 +66,17 @@ void GameInstance::removePlayer(std::string& _name) {
 
 void GameInstance::addPlayer(const ComponentsPlayer& _data) {
 	entt::entity e{m_registry.create()};
+	addPlayer(_data, e);
+}
+
+void GameInstance::addPlayer(const ComponentsPlayer& _data, entt::entity _e) {
 	m_registry.assign<ComponentAnimation>(
-	  e,
+	  _e,
 	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));
 
-	m_registry.assign<PlayerTag>(e);
-	m_registry.assign<ComponentName>(e, _data.compName);
-	m_registry.assign<ComponentPhysics>(e, _data.compVel);
-	m_registry.assign<ComponentDirection>(e, _data.compDir);
-	m_registry.assign<ComponentPosition>(e, _data.compPos);
+	m_registry.assign<PlayerTag>(_e);
+	m_registry.assign<ComponentName>(_e, _data.compName);
+	m_registry.assign<ComponentPhysics>(_e, _data.compVel);
+	m_registry.assign<ComponentDirection>(_e, _data.compDir);
+	m_registry.assign<ComponentPosition>(_e, _data.compPos);
 }

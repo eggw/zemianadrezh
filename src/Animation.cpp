@@ -63,10 +63,6 @@ Animation::Animation(const sf::Texture& _texture)
 	setAnimationRange(11, 21);
 }
 
-void Animation::addFrame(sf::IntRect _rect) {
-	m_textureRects.push_back(_rect);
-}
-
 void Animation::setAnimationRange(int _beginIndex, int _maxIndex) {
 	m_minIndex = _beginIndex;
 	m_maxIndex = _maxIndex;
@@ -85,16 +81,7 @@ void Animation::setAnimationSpeed(float _speed) {
 	}
 }
 
-void Animation::beginAnimation() {
-	//m_animationTimer.restart();
-	m_animationRunning = true;
-	//m_currentIndex = m_minIndex;
-}
 
-void Animation::stopAnimation() {
-	m_currentIndex     = m_minIndex;
-	m_animationRunning = false;
-}
 
 void Animation::update() {
 	//std::cout << "--------------------------" << std::endl;
@@ -132,9 +119,23 @@ const sf::Sprite Animation::getCurrentSprite() const {
 	return getSprite(m_currentIndex);
 }
 
+
 const sf::Sprite Animation::getSprite(int _index) const {
 	sf::Sprite sprite{m_texture, m_textureRects[_index]};
 	sprite.setOrigin(sprite.getGlobalBounds().width / 2,
 	                 sprite.getGlobalBounds().height);
 	return sprite;
+}
+
+void Animation::addFrame(sf::IntRect _rect) {
+	m_textureRects.push_back(_rect);
+}
+
+void Animation::beginAnimation() {
+	m_animationRunning = true;
+}
+
+void Animation::stopAnimation() {
+	m_currentIndex     = m_minIndex;
+	m_animationRunning = false;
 }

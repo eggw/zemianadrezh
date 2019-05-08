@@ -95,8 +95,6 @@ void ProgramState_Play::draw() {
 
 	m_program.m_window->setView(m_view);
 	m_systemDrawing.draw(m_client.m_registry);
-	//m_rendererClientPlayer.draw();
-	//m_rendererOtherPlayers.draw();
 	m_rendererChunk.draw();
 	m_rendererChatbox.draw();
 	m_rendererUserInterface.draw();

@@ -60,6 +60,7 @@ class Client : public GameInstance {
 	void handleIncomingMessages();
 	void handleOutgoingMessages();
 
+	void initialisePlayer();
 	void respawnPlayer();
 };
 

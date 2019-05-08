@@ -15,11 +15,12 @@ class Server : public GameInstance {
 	Server(bool _allowConnections);
 	~Server();
 
+	//Note that Server doesn't have a sendPackets() function.
+	//This is because the server doesn't send any unsolicited
+	//packets; rather, it responds to packets sent by Clients
 	void receivePackets();
-
 	void update(int _timeslice);
-
-	bool connectionsAllowed();
+	bool connectionsAllowed() const;
 
   public:
 	NetworkManagerServer m_networkManager;

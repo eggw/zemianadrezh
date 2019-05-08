@@ -33,7 +33,7 @@ class ProgramState_Play : public ProgramState {
 	Client m_client;
 
 	//We'll handle the drawing of non-entity elements with special
-	//renderers.
+	//renderers. This isn't really all that necessary, though.
 	RendererChunk                   m_rendererChunk;
 	RendererDrawable<ChatBox>       m_rendererChatbox;
 	RendererDrawable<UserInterface> m_rendererUserInterface;

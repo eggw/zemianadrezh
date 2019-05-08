@@ -10,6 +10,5 @@ class Player {
 
   private:
 	std::string m_playerName;
-	bool        m_spawned{false};
 };
 #endif // PLAYER_H_INCLUDED
