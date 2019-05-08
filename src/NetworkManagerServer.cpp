@@ -134,11 +134,12 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 }
 
 void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
-                                      const sf::IpAddress& _recipient,
+                                      const std::string&   _recipientName,
                                       bool                 _exclude) {
+
 	int packetCode = Packet::toInt(_type);
 
-	auto recipients{getUDPRecipients(_recipient, _exclude)};
+	auto recipients{getUDPRecipients(_recipientName, _exclude)};
 
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
@@ -146,7 +147,9 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::UDPPacket::DATA_PLAYER: {
+		std::cout << "--------------" << std::endl;
 		for (const auto& recipient : recipients) {
+			std::cout << recipient.playerName << ", " << recipient.ipAddress << ":" << recipient.port << std::endl;
 			auto view = m_server.m_registry.view<PlayerTag>();
 			for (auto& entity : view) {
 				const auto name = m_server.m_registry.get<ComponentName>(entity);
@@ -158,7 +161,7 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
 					continue;
 				}
 
-				std::cout << "sending " << name.m_name << " to " << recipient.playerName << std::endl;
+				std::cout << "sending " << name.m_name << " to " << recipient.playerName << " at port " << recipient.port << std::endl;
 
 				const auto dir  = m_server.m_registry.get<ComponentDirection>(entity);
 				const auto vel  = m_server.m_registry.get<ComponentPhysics>(entity);
@@ -280,11 +283,10 @@ void NetworkManagerServer::receiveUDPPackets() {
 			case Packet::UDPPacket::DATA_PLAYER: {
 				ComponentsPlayer p;
 				*packet >> p;
-				//get back to this
 				m_server.updatePlayer(p);
 
 				sendPacket(Packet::UDPPacket::DATA_PLAYER,
-				           client.second.ipAddress);
+				           client.second.playerName);
 				break;
 			}
 				//////////////////////////////////////////////////////////////////////////////
@@ -373,11 +375,11 @@ std::vector<sf::TcpSocket*> NetworkManagerServer::getTCPRecipients(
 }
 
 std::vector<NetworkManagerServer::IPInfo>
-NetworkManagerServer::getUDPRecipients(sf::IpAddress _recipient,
+NetworkManagerServer::getUDPRecipients(const std::string& _recipientName,
                                        bool          _exclude) {
 	std::vector<IPInfo> recipients{};
 
-	if (_recipient == sf::IpAddress::None) {
+	if (_recipientName == "") {
 		for (const auto& client : m_clientIPs) {
 			recipients.push_back(client.second);
 		}
@@ -385,14 +387,14 @@ NetworkManagerServer::getUDPRecipients(sf::IpAddress _recipient,
 	else {
 		if (!_exclude) {
 			for (const auto& client : m_clientIPs) {
-				if (client.second.ipAddress == _recipient) {
+				if (client.second.playerName == _recipientName) {
 					recipients.push_back(client.second);
 				}
 			}
 		}
 		else {
 			for (const auto& client : m_clientIPs) {
-				if (client.second.ipAddress != _recipient) {
+				if (client.second.playerName != _recipientName) {
 					recipients.push_back(client.second);
 				}
 			}

@@ -17,11 +17,12 @@ Client::Client(sf::RenderWindow& _window,
               m_serverIP(_serverIP),
               m_localServer(_localServer),
               m_player{m_registry.create()},
-              //get back to this:
-              //ChatBox's second parameter should take in the player's name
-              m_chatBox(_window, "TEST"),
+              //get back to this / TODO:
+              //ChatBox's second parameter should take in the player's name more...
+              //elegantly
+              m_chatBox(_window, _localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
               m_userInterface(_window) {
-	m_registry.assign<PlayerTag>(m_player, true);
+	m_registry.assign<PlayerTag>(m_player);
 	m_registry.assign<ComponentAnimation>(
 	  m_player,
 	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));

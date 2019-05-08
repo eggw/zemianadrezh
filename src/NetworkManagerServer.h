@@ -20,7 +20,7 @@ class NetworkManagerServer {
 	                bool              _exclude   = false);
 
 	void sendPacket(Packet::UDPPacket    _type,
-	                const sf::IpAddress& _recipient = sf::IpAddress::None,
+	                const std::string&   _recipientName,
 	                bool                 _exclude   = false);
 
 	void sendChunkData(int _chunkID);
@@ -58,15 +58,26 @@ class NetworkManagerServer {
 	//all recipients,
 	//or all but one recipient.
 	//
-	//These functions take in a target recipient, defaulting to nullptr,
+	//These functions take in a target recipient, defaulting to nullptr
+	//(in getTcpRecipients) or an empty string (in getUDPRecipients),
 	//and a boolean, defaulting to false.
 	//
-	//If the recipient is null, they will return all possible recipients.
+	//N.B.: The reason getUDPRecipients() takes a string and not a
+	//UdpSocket is because it is possible for two players to have
+	//the same IP address (such as when testing two local clients).
+	//
+	//In such a case, we still need to be able to differentiate
+	//them, and this cannot be done via just knowing their IP.
+	//However, since two players cannot have the same name, we
+	//can safely assume their name uniquely identifies them.
+	//
+	//If the recipient is null (or an empty string), they will return all
+	//possible recipients.
 	//If _exclude is false, they will only return the recipient specified.
 	//If _exclude is true, they will return all recipients except the one
 	//specified.
 	//
-	//These functions are used in the sendPacket() functions.
+	//These functions are utilised in the sendPacket() functions.
 	//---------------------------------------------------------------------
 
 	std::vector<sf::TcpSocket*> getTCPRecipients(
@@ -74,7 +85,7 @@ class NetworkManagerServer {
 	  bool           _exclude   = false);
 
 	std::vector<IPInfo> getUDPRecipients(
-	  sf::IpAddress _recipient = sf::IpAddress::None,
+	  const std::string& _recipientName = "",
 	  bool          _exclude   = false);
 	//---------------------------------------------------------------------
 
@@ -83,7 +94,7 @@ class NetworkManagerServer {
 	//---------------------------------------------------------------------
 	void removeConnection(const sf::TcpSocket* _con);
 	//---------------------------------------------------------------------
-	//Note: the reason we have m_clientIPs and m_clientConnections in seperate
+	//Note: the reason we have m_clientConnections and m_clientIPs in seperate
 	//data structures is because when sf::TcpListener accepts a socket, we only
 	//have access to the socket, and can't send or access any other data alongside
 	//it (in our case, we need the player's name and port the client is using).

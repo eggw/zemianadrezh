@@ -227,14 +227,10 @@ void NetworkManagerClient::receiveUDPPackets() {
 		case Packet::UDPPacket::DATA_PLAYER: {
 			ComponentsPlayer p;
 			*packet >> p;
-			if(p.compName.m_name != m_client.m_registry.get<ComponentName>(m_client.m_player).m_name) {
-				m_client.updatePlayer(p);
-			}
-			else{
-				std::cout << "THIS SHOULDN'T BE HAPPENING" << std::endl;
-			}
-			//get back to this
-
+			//When we receive a packet containing player data, we're going to update or
+			//add the player to our registry. Note that under normal circumstances, the
+			//client's own player shouldn't have its data sent back to it.
+			m_client.updatePlayer(p);
 			break;
 		}
 			//////////////////////////////////////////////////////////////////////////////

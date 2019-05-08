@@ -84,7 +84,7 @@ void GameInstance::addPlayer(const ComponentsPlayer& _data) {
 	  e,
 	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));
 
-	m_registry.assign<PlayerTag>(e, false);
+	m_registry.assign<PlayerTag>(e);
 	m_registry.assign<ComponentName>(e, _data.compName);
 	m_registry.assign<ComponentPhysics>(e, _data.compVel);
 	m_registry.assign<ComponentDirection>(e, _data.compDir);
