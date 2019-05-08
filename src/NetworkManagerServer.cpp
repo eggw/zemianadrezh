@@ -220,6 +220,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 	if (toRemove != nullptr) {
 		std::string name{m_clientIPs.at(toRemove).playerName};
 		removeConnection(toRemove);
+		m_server.removePlayer(name);
 		sendMessage("Goodbye, " + name + "!", "Server");
 		notifyRemoved(name);
 	}

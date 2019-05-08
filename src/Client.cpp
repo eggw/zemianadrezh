@@ -17,7 +17,7 @@ Client::Client(sf::RenderWindow& _window,
               m_serverIP(_serverIP),
               m_localServer(_localServer),
               m_player{m_registry.create()},
-              //get back to this / TODO:
+              //TODO:
               //ChatBox's second parameter should take in the player's name more...
               //elegantly
               m_chatBox(_window, _localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),

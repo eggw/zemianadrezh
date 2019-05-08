@@ -51,7 +51,6 @@ class Client : public GameInstance {
 	Server*       m_localServer;
 	entt::entity  m_player;
 
-	//get back to this
 	//TODO: move these to ProgramState_Play?
 	//Or maybe a more general interface wrapper?
 	ChatBox       m_chatBox;

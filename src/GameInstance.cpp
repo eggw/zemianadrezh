@@ -60,12 +60,7 @@ entt::entity GameInstance::getPlayer(std::string& _name) {
 }
 
 void GameInstance::removePlayer(entt::entity _e) {
-	m_registry.remove<PlayerTag>(_e);
-	m_registry.remove<ComponentAnimation>(_e);
-	m_registry.remove<ComponentName>(_e);
-	m_registry.remove<ComponentPhysics>(_e);
-	m_registry.remove<ComponentDirection>(_e);
-	m_registry.remove<ComponentPosition>(_e);
+	m_registry.destroy(_e);
 }
 
 void GameInstance::removePlayer(std::string& _name) {
@@ -74,6 +69,7 @@ void GameInstance::removePlayer(std::string& _name) {
 		const auto name = m_registry.get<ComponentName>(entity).m_name;
 		if (name == _name) {
 			removePlayer(entity);
+			return;
 		}
 	}
 }

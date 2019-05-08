@@ -54,11 +54,6 @@ class ProgramState_Play : public ProgramState {
 	//This function is responsible for calling RendererChunk's update
 	//function on chunks that have just had their data updated
 	void renderUpdatedChunks();
-
-	//This function is responsible for calling RendererPlayer's add
-	//function on players that have joined but are not being rendered
-	//TODO: refactor it.
-	void renderNewPlayers();
 };
 
 #endif // PROGRAMSTATE_PLAY_H_INCLUDED

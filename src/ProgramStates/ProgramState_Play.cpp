@@ -80,7 +80,6 @@ void ProgramState_Play::update(int _timeslice) {
 	m_client.receivePackets();
 
 	renderUpdatedChunks();
-	renderNewPlayers();
 
 	m_client.update(_timeslice);
 	m_client.sendPackets();
@@ -133,15 +132,3 @@ void ProgramState_Play::renderUpdatedChunks() {
 		m_client.m_networkManager.setChunkDataProcessed(true);
 	}
 }
-
-//TODO: refactor this shit
-void ProgramState_Play::renderNewPlayers() {
-	/*
-	for (const auto& player : *m_client.getPlayers()) {
-	    if (player->getName() != m_client.getPlayer()->getName()) {
-	        m_rendererOtherPlayers.addObject(player);
-	    }
-	}
-	*/
-}
-//-------------------
