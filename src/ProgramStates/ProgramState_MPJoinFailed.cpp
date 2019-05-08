@@ -1,4 +1,4 @@
-#include "ProgramState_MPJoinFailed.h"
+#include "ProgramStates/ProgramState_MPJoinFailed.h"
 
 ProgramState_MPJoinFailed::ProgramState_MPJoinFailed(Program& _program,
                                                      const std::string& _ip)

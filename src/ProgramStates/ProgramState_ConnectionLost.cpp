@@ -1,4 +1,4 @@
-#include "ProgramState_ConnectionLost.h"
+#include "ProgramStates/ProgramState_ConnectionLost.h"
 
 ProgramState_ConnectionLost::ProgramState_ConnectionLost(Program& _program)
             : ProgramState_Menu(_program) {

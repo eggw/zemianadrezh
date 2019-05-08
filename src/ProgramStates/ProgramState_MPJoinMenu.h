@@ -1,7 +1,7 @@
 #ifndef PROGRAMSTATE_MPJOINMENU_H_INCLUDED
 #define PROGRAMSTATE_MPJOINMENU_H_INCLUDED
 
-#include "ProgramState_Menu.h"
+#include "ProgramStates/ProgramState_Menu.h"
 
 #include "TextEntryBox.h"
 

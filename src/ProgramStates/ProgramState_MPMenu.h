@@ -1,7 +1,7 @@
 #ifndef PROGRAMSTATE_MPMENU_H_INCLUDED
 #define PROGRAMSTATE_MPMENU_H_INCLUDED
 
-#include "ProgramState_Menu.h"
+#include "ProgramStates/ProgramState_Menu.h"
 
 class ProgramState_MPMenu : public ProgramState_Menu {
   public:

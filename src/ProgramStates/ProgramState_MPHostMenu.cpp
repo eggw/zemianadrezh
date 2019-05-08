@@ -1,4 +1,4 @@
-#include "ProgramState_MPHostMenu.h"
+#include "ProgramStates/ProgramState_MPHostMenu.h"
 
 ProgramState_MPHostMenu::ProgramState_MPHostMenu(Program& _program)
             : ProgramState_Menu(_program) {

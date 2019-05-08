@@ -19,7 +19,7 @@ class RendererChunk : public RendererBase<WorldChunk> {
 	//The publicly available update() function simply takes in a chunk's ID.
 	//It then gets the pointer corresponding to that chunk, if it exists
 	//in the world, and calls the private update() function on it.
-	void update(int _chunkID) {
+	void update(int _chunkID) const {
 		const WorldChunk* ptr {nullptr};
 
 		for(auto& chunk : m_world.m_chunks) {
@@ -46,7 +46,7 @@ class RendererChunk : public RendererBase<WorldChunk> {
 
   private:
 	mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
-	World&                                               m_world;
+	const World&                                         m_world;
 
 	//--------------------------------------------------------------
 
@@ -54,7 +54,7 @@ class RendererChunk : public RendererBase<WorldChunk> {
 	//for all the chunk's tiles. It then checks if the chunk is already present
 	//in m_vertexMap. If so, it simply updates its vertex array, and if not, it
 	//creates a new entry.
-	void update(const WorldChunk* _chunk) {
+	void update(const WorldChunk* _chunk) const {
 		sf::VertexArray vertexArray;
 		vertexArray.setPrimitiveType(sf::PrimitiveType::Triangles);
 		vertexArray.resize((CHUNK_DIMENSIONS_X * CHUNK_DIMENSIONS_Y) * 6);

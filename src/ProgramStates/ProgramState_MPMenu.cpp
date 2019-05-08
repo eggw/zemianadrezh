@@ -1,4 +1,4 @@
-#include "ProgramState_MPMenu.h"
+#include "ProgramStates/ProgramState_MPMenu.h"
 
 ProgramState_MPMenu::ProgramState_MPMenu(Program& _program)
             : ProgramState_Menu(_program) {
