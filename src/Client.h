@@ -5,8 +5,8 @@
 
 #include "NetworkManagerClient.h"
 #include "GameInstance.h"
-#include "ChatBox.h"
-#include "UserInterface.h"
+#include "Interface/ChatBox.h"
+#include "Interface/HotbarInterface.h"
 
 /*
 The client class takes an optional pointer to a server.
@@ -36,7 +36,7 @@ class Client : public GameInstance {
 	entt::entity         getPlayerId() const;
 	sf::Vector2f         getPlayerPosition() const;
 	const ChatBox*       getChatBox() const;
-	const UserInterface* getUserInterface() const;
+	const HotbarInterface* getHotbarInterface() const;
 
 	bool isConnected() const;
 	bool isLocal() const;
@@ -53,8 +53,8 @@ class Client : public GameInstance {
 
 	//TODO: move these to ProgramState_Play?
 	//Or maybe a more general interface wrapper?
-	ChatBox       m_chatBox;
-	UserInterface m_userInterface;
+	ChatBox         m_chatBox;
+	HotbarInterface m_hotbarInterface;
 	std::pair<std::string, std::string> m_pendingMessage;
 
 	void handleIncomingMessages();

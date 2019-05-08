@@ -36,7 +36,7 @@ class ProgramState_Play : public ProgramState {
 	//renderers. This isn't really all that necessary, though.
 	RendererChunk                   m_rendererChunk;
 	RendererDrawable<ChatBox>       m_rendererChatbox;
-	RendererDrawable<UserInterface> m_rendererUserInterface;
+	RendererDrawable<HotbarInterface> m_rendererHotbarInterface;
 	RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
 
 	SystemAnimation      m_systemAnimation;

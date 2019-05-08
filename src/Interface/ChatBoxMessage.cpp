@@ -1,4 +1,4 @@
-#include "ChatBoxMessage.h"
+#include "Interface/ChatBoxMessage.h"
 
 void removeNewlines(std::string& _str) {
 	std::string newline{"\n"};

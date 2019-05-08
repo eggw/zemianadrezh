@@ -1,8 +1,8 @@
-#include "UserInterface.h"
+#include "Interface/HotbarInterface.h"
 
 #include "Keybinds.h"
 
-UserInterface::UserInterface(sf::RenderWindow& _window)
+HotbarInterface::HotbarInterface(sf::RenderWindow& _window)
             : m_window{_window}, m_hotbarView(), m_activeHotbarSlot{nullptr} {
 	int hotbarRectWidth{40};
 	int hotbarRectHeight{40};
@@ -31,7 +31,7 @@ UserInterface::UserInterface(sf::RenderWindow& _window)
 	onResize(m_window.getSize());
 }
 
-void UserInterface::getInput(sf::Event& _event) {
+void HotbarInterface::getInput(sf::Event& _event) {
 	switch (_event.type) {
 	case sf::Event::KeyPressed: {
 		if (_event.key.code == Key::HOTBAR_1) {
@@ -90,10 +90,10 @@ void UserInterface::getInput(sf::Event& _event) {
 	}
 }
 
-void UserInterface::update(int _timeslice) {
+void HotbarInterface::update(int _timeslice) {
 }
 
-void UserInterface::draw(sf::RenderTarget& target,
+void HotbarInterface::draw(sf::RenderTarget& target,
                          sf::RenderStates  states) const {
 	sf::View previousView = target.getView();
 
@@ -107,12 +107,12 @@ void UserInterface::draw(sf::RenderTarget& target,
 	target.setView(previousView);
 }
 
-void UserInterface::onResize(sf::Vector2u _newSize) {
+void HotbarInterface::onResize(sf::Vector2u _newSize) {
 	m_hotbarView = sf::View({float(_newSize.x / 2), float(_newSize.y / 2)},
 	                        {float(_newSize.x), float(_newSize.y)});
 }
 
-void UserInterface::setActiveHotbarSlot(int _i) {
+void HotbarInterface::setActiveHotbarSlot(int _i) {
 	if (m_activeHotbarSlot != nullptr) {
 		m_activeHotbarSlot->m_rectangle.setOutlineColor(sf::Color::Black);
 	}

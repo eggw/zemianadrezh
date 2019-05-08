@@ -18,7 +18,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
                        m_program.getServer()),
               m_rendererChunk(*m_program.m_window, m_client.m_world),
               m_rendererChatbox(*m_program.m_window),
-              m_rendererUserInterface(*m_program.m_window),
+              m_rendererHotbarInterface(*m_program.m_window),
               m_rendererDayNightCycle(*m_program.m_window),
               m_systemAnimation{},
               m_systemDrawing{*m_program.m_window},
@@ -37,7 +37,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
 	m_client.m_networkManager.connect(_ipAddress, Packet::Port_TCP_Server);
 
 	m_rendererChatbox.addObject(m_client.getChatBox());
-	m_rendererUserInterface.addObject(m_client.getUserInterface());
+	m_rendererHotbarInterface.addObject(m_client.getHotbarInterface());
 	m_rendererDayNightCycle.addObject(&m_dayNightCycle);
 }
 
@@ -97,7 +97,7 @@ void ProgramState_Play::draw() {
 	m_systemDrawing.draw(m_client.m_registry);
 	m_rendererChunk.draw();
 	m_rendererChatbox.draw();
-	m_rendererUserInterface.draw();
+	m_rendererHotbarInterface.draw();
 }
 
 bool ProgramState_Play::clientConnected() const {

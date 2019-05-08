@@ -1,12 +1,12 @@
-#ifndef USERINTERFACE_H_INCLUDED
-#define USERINTERFACE_H_INCLUDED
+#ifndef HOTBARINTERFACE_H_INCLUDED
+#define HOTBARINTERFACE_H_INCLUDED
 
 #include <SFML/Graphics.hpp>
 #include "FontManager.h"
 
-class UserInterface : public sf::Drawable {
+class HotbarInterface : public sf::Drawable {
   public:
-	UserInterface(sf::RenderWindow& _window);
+	HotbarInterface(sf::RenderWindow& _window);
 
 	void getInput(sf::Event& _event);
 	void update(int _timeslice);
@@ -44,4 +44,4 @@ class UserInterface : public sf::Drawable {
 	HotbarRect* m_activeHotbarSlot;
 };
 
-#endif // USERINTERFACE_H_INCLUDED
+#endif // HOTBARINTERFACE_H_INCLUDED

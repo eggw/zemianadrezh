@@ -21,7 +21,7 @@ Client::Client(sf::RenderWindow& _window,
               //ChatBox's second parameter should take in the player's name more...
               //elegantly
               m_chatBox(_window, _localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
-              m_userInterface(_window) {
+              m_hotbarInterface(_window) {
 
 	initialisePlayer();
 	/*
@@ -50,7 +50,7 @@ Client::~Client() {
 
 void Client::getInput(sf::Event& _event) {
 	m_chatBox.getInput(_event);
-	m_userInterface.getInput(_event);
+	m_hotbarInterface.getInput(_event);
 }
 
 void Client::update(int _timeslice) {
@@ -91,8 +91,8 @@ const ChatBox* Client::getChatBox() const {
 	return &m_chatBox;
 }
 
-const UserInterface* Client::getUserInterface() const {
-	return &m_userInterface;
+const HotbarInterface* Client::getHotbarInterface() const {
+	return &m_hotbarInterface;
 }
 
 bool Client::isConnected() const {

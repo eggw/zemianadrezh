@@ -5,7 +5,7 @@
 #include "MulticolourText/MulticolourText.hpp"
 
 #include "TextEntryBox.h"
-#include "ChatBoxMessage.h"
+#include "Interface/ChatBoxMessage.h"
 
 class ChatBox : public sf::Drawable {
   public:

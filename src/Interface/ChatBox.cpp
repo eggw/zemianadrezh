@@ -1,4 +1,4 @@
-#include "ChatBox.h"
+#include "Interface/ChatBox.h"
 
 #include "FontManager.h"
 
