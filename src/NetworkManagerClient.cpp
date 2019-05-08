@@ -83,11 +83,6 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	default:
 		break;
 	}
-
-	LoggerNetwork::get_instance().logConsole(
-	  LoggerNetwork::LOG_SENDER::CLIENT,
-	  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-	  packetCode);
 }
 
 void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
@@ -124,10 +119,6 @@ void NetworkManagerClient::receiveTCPPackets() {
 	while (m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
 		*packet >> packetCode;
 		Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
-		LoggerNetwork::get_instance().logConsole(
-		  LoggerNetwork::LOG_SENDER::CLIENT,
-		  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
-		  packetCode);
 
 		switch (packetType) {
 		//////////////////////////////////////////////////////////////////////////////
@@ -217,10 +208,6 @@ void NetworkManagerClient::receiveUDPPackets() {
 		receivedCount++;
 		*packet >> packetCode;
 		Packet::UDPPacket packetType{Packet::toUDPType(packetCode)};
-		LoggerNetwork::get_instance().logConsole(
-		  LoggerNetwork::LOG_SENDER::CLIENT,
-		  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
-		  packetCode);
 
 		switch (packetType) {
 		//////////////////////////////////////////////////////////////////////////////

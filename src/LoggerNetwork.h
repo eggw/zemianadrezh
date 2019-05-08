@@ -26,17 +26,7 @@ class LoggerNetwork : public Singleton<LoggerNetwork> {
 		CONNECTION_LOCALHOST
 	};
 
-	enum class LOG_PACKET_DATATRANSFER
-	{
-		PACKET_SENT,
-		PACKET_RECEIVED
-	};
-
 	void log(LOG_SENDER _sender, LOG_MESSAGE _message);
-	void logConsole(LOG_SENDER _sender, LOG_MESSAGE _message);
-	void logConsole(LOG_SENDER              _sender,
-	                LOG_PACKET_DATATRANSFER _d,
-	                int                     _packetCode);
 };
 
 #endif // LOGGERNETWORK_H_INCLUDED

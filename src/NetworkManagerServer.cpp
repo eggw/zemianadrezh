@@ -49,11 +49,6 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 			PacketSender::get_instance().send(recipient, packet);
 		}
 
-		LoggerNetwork::get_instance().logConsole(
-		  LoggerNetwork::LOG_SENDER::SERVER,
-		  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-		  packetCode);
-
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
@@ -63,11 +58,6 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 		for (const auto& recipient : recipients) {
 			PacketSender::get_instance().send(recipient, packet);
 		}
-
-		LoggerNetwork::get_instance().logConsole(
-		  LoggerNetwork::LOG_SENDER::SERVER,
-		  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-		  packetCode);
 
 		break;
 	}
@@ -86,10 +76,6 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 			*p << chunk;
 			for (const auto& recipient : recipients) {
 				PacketSender::get_instance().send(recipient, p);
-				LoggerNetwork::get_instance().logConsole(
-				  LoggerNetwork::LOG_SENDER::SERVER,
-				  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-				  packetCode);
 			}
 		}
 
@@ -108,11 +94,6 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 			PacketSender::get_instance().send(recipient, packet);
 		}
 
-		LoggerNetwork::get_instance().logConsole(
-		  LoggerNetwork::LOG_SENDER::SERVER,
-		  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-		  packetCode);
-
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
@@ -121,10 +102,6 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 	case Packet::TCPPacket::RESPAWN_PLAYER: {
 		for (const auto& recipient : recipients) {
 			PacketSender::get_instance().send(recipient, packet);
-			LoggerNetwork::get_instance().logConsole(
-			  LoggerNetwork::LOG_SENDER::SERVER,
-			  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-			  packetCode);
 		}
 
 		break;
@@ -147,22 +124,16 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::UDPPacket::DATA_PLAYER: {
-		std::cout << "--------------" << std::endl;
 		for (const auto& recipient : recipients) {
-			std::cout << recipient.playerName << ", " << recipient.ipAddress << ":" << recipient.port << std::endl;
 			auto view = m_server.m_registry.view<PlayerTag>();
 			for (auto& entity : view) {
 				const auto name = m_server.m_registry.get<ComponentName>(entity);
-				//Here we do a quick check to see if the playerdata generated
+				//Perform a quick check to see if the playerdata generated
 				//belongs to the recipient's player; if it does, we'll cancel
 				//and not redundantly send it back to them
-				//TODO: confirm this works!
 				if (recipient.playerName == name.m_name) {
 					continue;
 				}
-
-				std::cout << "sending " << name.m_name << " to " << recipient.playerName << " at port " << recipient.port << std::endl;
-
 				const auto dir  = m_server.m_registry.get<ComponentDirection>(entity);
 				const auto vel  = m_server.m_registry.get<ComponentPhysics>(entity);
 				const auto pos  = m_server.m_registry.get<ComponentPosition>(entity);
@@ -174,11 +145,6 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket    _type,
 												  packet,
 												  recipient.ipAddress,
 												  recipient.port);
-				LoggerNetwork::get_instance().logConsole(
-				  LoggerNetwork::LOG_SENDER::SERVER,
-				  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_SENT,
-				  packetCode);
-
 			}
 		}
 
@@ -197,10 +163,6 @@ void NetworkManagerServer::receiveTCPPackets() {
 		if (connection->receive(*packet) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
 			Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
-			LoggerNetwork::get_instance().logConsole(
-			  LoggerNetwork::LOG_SENDER::SERVER,
-			  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
-			  packetCode);
 
 			switch (packetType) {
 			//////////////////////////////////////////////////////////////////////////////
@@ -273,10 +235,6 @@ void NetworkManagerServer::receiveUDPPackets() {
 		    sf::Socket::Status::Done) {
 			*packet >> packetCode;
 			Packet::UDPPacket packetType{Packet::toUDPType(packetCode)};
-			LoggerNetwork::get_instance().logConsole(
-			  LoggerNetwork::LOG_SENDER::SERVER,
-			  LoggerNetwork::LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
-			  packetCode);
 
 			switch (packetType) {
 			//////////////////////////////////////////////////////////////////////////////

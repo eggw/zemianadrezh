@@ -2,20 +2,12 @@
 
 #include <fstream>
 #include <time.h>
-
 #include <map>
 #include <string>
-#include <iostream>
 
 #include "PacketTypes.h"
 
-/*
-TODO: get back to the shit I commented out here
-*/
-
-static std::map<LoggerNetwork::LOG_SENDER, std::string>              senderMap;
-static std::map<LoggerNetwork::LOG_PACKET_DATATRANSFER, std::string> packetMap;
-//static std::map<Packet::Type, std::string> packetTypeMap;
+static std::map<LoggerNetwork::LOG_SENDER, std::string>  senderMap;
 static std::map<LoggerNetwork::LOG_MESSAGE, std::string> messageMap;
 
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
@@ -34,15 +26,6 @@ const std::string currentDateTime() {
 LoggerNetwork::LoggerNetwork() {
 	senderMap.emplace(LOG_SENDER::CLIENT, "Client");
 	senderMap.emplace(LOG_SENDER::SERVER, "Server");
-
-	packetMap.emplace(LOG_PACKET_DATATRANSFER::PACKET_RECEIVED,
-	                  "Packet received");
-	packetMap.emplace(LOG_PACKET_DATATRANSFER::PACKET_SENT, "Packet sent");
-
-	//packetTypeMap.emplace(Packet::Type::CHAT_MESSAGE, "CHAT_MESSAGE");
-	//packetTypeMap.emplace(Packet::Type::DATA_WORLD, "DATA_WORLD");
-	//packetTypeMap.emplace(Packet::Type::REQUEST_WORLD, "REQUEST_WORLD");
-	//packetTypeMap.emplace(Packet::Type::DATA_PLAYER, "DATA_PLAYER");
 
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_WAITING, "awaiting response...");
 	messageMap.emplace(LOG_MESSAGE::CONNECTION_FAILURE, "connection failure!");
@@ -100,17 +83,4 @@ void LoggerNetwork::log(LOG_SENDER _sender, LOG_MESSAGE _message) {
 	output.close();
 
 	return;
-}
-
-void LoggerNetwork::logConsole(LOG_SENDER _sender, LOG_MESSAGE _message) {
-	std::cout << senderMap[_sender] << ": " << messageMap[_message]
-	          << std::endl;
-}
-
-void LoggerNetwork::logConsole(LOG_SENDER              _sender,
-                               LOG_PACKET_DATATRANSFER _d,
-                               int                     _packetCode) {
-	//auto type = Packet::toType(_packetCode);
-	//commented out temporarily
-	//std::cout << senderMap[_sender] << ": " << packetMap[_d] << "\t" << packetTypeMap[type] << std::endl;
 }
