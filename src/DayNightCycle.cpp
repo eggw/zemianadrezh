@@ -55,125 +55,12 @@ void DayNightCycle::update() {
 		return;
 	}
 
-	static bool daytime{true};
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Comma)) {
-		m_world.getTime().pause();
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Period)) {
-		m_world.getTime().unpause();
-	}
-
+	getInput();
 	updateSkyVertices();
-
-	static const double pi{std::atan(1) * 4};
-	auto                worldTime{m_world.getTime()};
-	auto                hhmm{worldTime.get()};
-
-	m_timeText.setString(worldTime.getString());
-	m_timeText.setPosition(
-	  m_target->getSize().x - 1.2 * m_timeText.getGlobalBounds().width, 0);
-
-	int HOUR_START{DAY_BEGIN_HOUR};
-	int HOUR_END{DAY_END_HOUR};
-
-	if (hhmm.hours >= DAY_BEGIN_HOUR && hhmm.hours < DAY_END_HOUR) {
-		daytime = true;
-		m_sunMoonSprite.setTexture(
-		  TextureManager::get_instance().getTexture(TextureManager::Type::SUN));
-	}
-	else {
-		daytime    = false;
-		HOUR_START = NIGHT_BEGIN_HOUR;
-		HOUR_END   = NIGHT_END_HOUR;
-		m_sunMoonSprite.setTexture(TextureManager::get_instance().getTexture(
-		  TextureManager::Type::MOON));
-	}
-
-	//We're going to set the origin to be at the rightmost point horizontally and the
-	//centermost point vertically. Later, when determining xPos, we add the width of the
-	//sprite to our calculation. This is to ensure a seamless transition (at the exact
-	//moment the sun is out of our view, the moon starts to come in, and vice versa)
-	m_sunMoonSprite.setOrigin(m_sunMoonSprite.getGlobalBounds().width,
-	                          m_sunMoonSprite.getGlobalBounds().height / 2);
-
-	//These two if statements make sure that everything runs smoothly in cases such as the following:
-	//HOUR_START = 19
-	//HOUR_END = 5
-	//worldTime.hours = 0
-	//In such a case, the algorithm will get confused and not work as it should because of the way
-	//24h wrapping works. Adding 24 will fix the logic so that the correct number of hours is given
-	if (HOUR_START > HOUR_END) {
-		HOUR_END += 24;
-	}
-	if (hhmm.hours < HOUR_START) {
-		hhmm.hours += 24;
-	}
-
-	//Get the "percentage" of how far along the X axis the sun should be (for example, at 12, it should be
-	//exactly 50% of the way.
-	//First, calculate the difference between the hours.
-	//[For example, from 6 to 18, this would be 12]
-	int difference{abs(HOUR_START - HOUR_END)};
-	//Then, calculate the offset from the begin hour.
-	//[For example, if we take 12, 12 - 6 = 6]
-	int offset{abs(HOUR_START - hhmm.hours)};
-	//We'll now be able to take into consideration the minutes. We simply divide
-	//the world time in minutes by 60 to get the percentage value between our
-	//current hour and the next hour. For example, 30 would yield 0.5.
-	float minutesPercentage{hhmm.minutes / 60.f};
-
-	//We can divide our minutesPercentage by the hour difference to get the value we should
-	//increment our final result by.
-	float minuteProgress{minutesPercentage / difference};
-
-	//Finally, divide the offset by the difference to get the percentage value for the hours, then
-	//increment it by the minutes percentage.
-	double progressInPercent{double(offset) / double(difference)};
-	progressInPercent += minuteProgress;
-
-	//For the xPos, we're going to want to invert progressInPercent so that the sun/moon goes
-	//from the east to the west and not vice versa
-	//Also, since the sprite's X origin is at its rightmost point, we'll add the sprite's width to
-	//the view size in our xPos calculation
-
-	//We're also going to invert the sin result in yPos so the movement will be down->up->down, rather
-	//than up->down->up
-	double xPos{
-	  (1 - progressInPercent) *
-	  (m_target->getSize().x + m_sunMoonSprite.getGlobalBounds().width)};
-	double yPos{(1 - sin(progressInPercent * pi)) * m_target->getSize().y / 3};
-	//This adjustment was made with some experimenting to get it to look right
-	yPos += m_target->getSize().y / 10;
-
-	m_sunMoonSprite.setPosition(xPos, yPos);
-
-	//In SFML,	 the origin (0,0) is at the top left.
-	//In OpenGL, the origin (0,0) is in the middle.
-	//We'll do a couple of things to account for this
-	sf::Vector2f openGLCoordinates{m_sunMoonSprite.getPosition()};
-	//First, since the sprite's x origin is at its rightmost point, we'll
-	//subtract half its width from the x coordinate.
-	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
-	//Taking into account openGL's texture2D origin is at the top left,
-	//we'll get the appropriate coordinate position of the sun as a ratio
-	//We'll divide y further in order to simulate the horizon being at the
-	//center of the screen, rather than the bottom
-	openGLCoordinates.x /= m_target->getSize().x;
-	openGLCoordinates.y /= m_target->getSize().y / 2;
-
-	//TODO: further refine this
-	//We're going to let the shader determine the appropriate gradient from two
-	//files, sky.png and glow.png, that represent the sun's position in the sky
-	//over time
-	m_shader.setUniform(
-	  "planetPosition",
-	  sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
-	m_shader.setUniform("daytime", daytime);
-
-	//unused; keeping for future testing
-	//m_shader.setUniform("planetProgress", float(progressInPercent));
-	//m_shader.setUniform("lightIntensity", float(sin(progressInPercent * pi)));
+	updateTimeText();
+	updatePlanetTexture();
+	updatePlanetPosition();
+	sendUniformsToShader();
 }
 
 void DayNightCycle::draw(sf::RenderTarget& target,
@@ -182,23 +69,31 @@ void DayNightCycle::draw(sf::RenderTarget& target,
 
 	sf::RenderStates skyStates{&m_shader};
 	target.draw(m_skyBackground, skyStates);
-	//target.draw(m_skyBackground, states);
 
 	target.draw(m_sunMoonSprite, states);
 	target.draw(m_timeText, states);
 }
 
 void DayNightCycle::updateSkyVertices() {
+	static sf::Vector2f lastSize {};
+
 	//In SFML,	 the origin (0,0) is at the top left.
 	//In OpenGL, the origin (0,0) is in the middle.
-	//Therefore, we'll need to tweak some stuff.
-
-	/*
-	We're going to split the screen into 14 equally sized triangles
-	*/
+	//
+	//We're going to split the screen into 14 equally sized triangles
+	//
+	//Also, we're going to skip this whole process if the target size
+	//hasn't changed since the last time we called updateSkyVertices()
 
 	float targetWidth  = m_target->getSize().x;
 	float targetHeight = m_target->getSize().y;
+
+	if(lastSize.x == targetWidth && lastSize.y == targetHeight) {
+		return;
+	}
+
+	lastSize.x = targetWidth;
+	lastSize.y = targetHeight;
 
 	sf::Vector2f center{0, 0};
 	sf::Vector2f centerLeft{-targetWidth / 2, center.y};
@@ -330,4 +225,139 @@ void DayNightCycle::updateSkyVertices() {
 	m_skyBackground[3].position = { -targetWidth / 2, -targetHeight / 2 };
 	m_skyBackground[3].texCoords = { -targetWidth / 2, -targetHeight / 2 };
 	*/
+}
+
+void DayNightCycle::getInput() {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Comma)) {
+		m_world.getTime().pause();
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Period)) {
+		m_world.getTime().unpause();
+	}
+}
+
+void DayNightCycle::updateTimeText() {
+	auto str{m_world.getTime().getString()};
+	m_timeText.setString(str);
+	m_timeText.setPosition(
+	  m_target->getSize().x - 1.2 * m_timeText.getGlobalBounds().width, 0);
+}
+
+void DayNightCycle::updatePlanetTexture() {
+	if (isDaytime()) {
+		m_sunMoonSprite.setTexture(
+		  TextureManager::get_instance().getTexture(TextureManager::Type::SUN));
+	}
+	else{
+		m_sunMoonSprite.setTexture(TextureManager::get_instance().getTexture(
+		  TextureManager::Type::MOON));
+	}
+	//We're going to set the origin to be at the rightmost point horizontally and the
+	//centermost point vertically. Later, when determining xPos, we add the width of the
+	//sprite to our calculation. This is to ensure a seamless transition (at the exact
+	//moment the sun is out of our view, the moon starts to come in, and vice versa)
+	m_sunMoonSprite.setOrigin(m_sunMoonSprite.getGlobalBounds().width,
+	                          m_sunMoonSprite.getGlobalBounds().height / 2);
+}
+
+void DayNightCycle::updatePlanetPosition() {
+	static const double pi{std::atan(1) * 4};
+	auto hhmm{getWrappedTime()};
+	auto hourRange{getCurrentHourRange()};
+	//Get the "percentage" of how far along the X axis the sun should be (for example, at 12, it should be
+	//exactly 50% of the way.
+	//First, calculate the difference between the hours.
+	//[For example, from 6 to 18, this would be 12]
+	int difference{abs(hourRange.first - hourRange.second)};
+	//Then, calculate the offset from the begin hour.
+	//[For example, if we take 12, 12 - 6 = 6]
+	int offset{abs(hourRange.first - hhmm.hours)};
+	//We'll now be able to take into consideration the minutes. We simply divide
+	//the world time in minutes by 60 to get the percentage value between our
+	//current hour and the next hour. For example, 30 would yield 0.5.
+	float minutesPercentage{hhmm.minutes / 60.f};
+	//We can divide our minutesPercentage by the hour difference to get the value we should
+	//increment our final result by.
+	float minuteProgress{minutesPercentage / difference};
+	//Finally, divide the offset by the difference to get the percentage value for the hours, then
+	//increment it by the minutes percentage.
+	double progressInPercent{double(offset) / double(difference)};
+	progressInPercent += minuteProgress;
+	//For the xPos, we're going to want to invert progressInPercent so that the sun/moon goes
+	//from the east to the west and not vice versa.
+	//Also, since the sprite's X origin is at its rightmost point, we'll add the sprite's width to
+	//the view size in our xPos calculation.
+	//We're also going to invert the sin result in yPos so the movement will be down->up->down, rather
+	//than up->down->up.
+	double xPos{
+	  (1 - progressInPercent) *
+	  (m_target->getSize().x + m_sunMoonSprite.getGlobalBounds().width)};
+
+	double yPos{(1 - sin(progressInPercent * pi)) * m_target->getSize().y / 3};
+	//This adjustment was made with some experimenting to get it to look right.
+	yPos += m_target->getSize().y / 10;
+
+	m_sunMoonSprite.setPosition(xPos, yPos);
+}
+
+void DayNightCycle::sendUniformsToShader() {
+	//In SFML,	 the origin (0,0) is at the top left.
+	//In OpenGL, the origin (0,0) is in the middle.
+	//We'll do a couple of things to account for this.
+	sf::Vector2f openGLCoordinates{m_sunMoonSprite.getPosition()};
+	//First, since the sprite's x origin is at its rightmost point, we'll
+	//subtract half its width from the x coordinate.
+	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
+	//Taking into account openGL's texture2D origin is at the top left,
+	//we'll get the appropriate coordinate position of the sun as a ratio.
+	//We'll divide y further in order to simulate the horizon being at the
+	//center of the screen, rather than the bottom.
+	openGLCoordinates.x /= m_target->getSize().x;
+	openGLCoordinates.y /= m_target->getSize().y / 2;
+
+	m_shader.setUniform(
+	  "planetPosition",
+	  sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
+	m_shader.setUniform("daytime", isDaytime());
+}
+
+bool DayNightCycle::isDaytime() const {
+	auto hhmm{m_world.getTime().get()};
+	if (hhmm.hours >= DAY_BEGIN_HOUR && hhmm.hours < DAY_END_HOUR) {
+		return true;
+	}
+	return false;
+}
+
+std::pair<int, int> DayNightCycle::getCurrentHourRange() const {
+	std::pair<int, int> result {};
+	if (isDaytime()) {
+		result = std::make_pair(DAY_BEGIN_HOUR, DAY_END_HOUR);
+	}
+	else {
+		result = std::make_pair(NIGHT_BEGIN_HOUR, NIGHT_END_HOUR);
+	}
+
+	//These two if statements make sure that everything runs smoothly in cases such as the following:
+	//HOUR_START = 19, HOUR_END = 5
+	//In such a case, the algorithm will get confused when we're between 0 and 4 as 0 is not greater
+	//than 19. Adding 24 to the end hour, in addition to doing the same for 0 (see getWrappedTime())
+	//will fix the logic and account for 24h wrapping.
+	if (result.first > result.second) {
+		result.second += 24;
+	}
+
+	return result;
+}
+
+//See getCurrentHourRange() for a more detailed comment about why we may need to add 24.
+HHMM DayNightCycle::getWrappedTime() const {
+	auto worldTime{m_world.getTime()};
+	auto hhmm{worldTime.get()};
+
+	if (hhmm.hours < getCurrentHourRange().first) {
+		hhmm.hours += 24;
+	}
+
+	return hhmm;
 }

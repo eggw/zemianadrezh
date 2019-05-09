@@ -30,6 +30,23 @@ class DayNightCycle : public sf::Drawable {
   private:
   	//Functions -----------------------------------
   	void updateSkyVertices();
+  	//getInput() is a temporary function that detects
+	//if comma or period is pressed and pauses/resumes
+	//the time as necessary. Just for testing for now.
+	void getInput();
+	void updateTimeText();
+	void updatePlanetTexture();
+	void updatePlanetPosition();
+	void sendUniformsToShader();
+	bool isDaytime() const;
+	//If it's currently daytime, gets the values of
+	//the begin and end daytime hours. Otherwise, gets
+	//the values for nighttime.
+	std::pair<int, int> getCurrentHourRange() const;
+	//Simply gets the current time, but also performs an
+	//additional check to see if any additional 24h
+	//wrapping is necessary
+	HHMM getWrappedTime() const;
 	//---------------------------------------------
 
 	//Data members --------------------------------

@@ -11,8 +11,6 @@ UserInterface::UserInterface(sf::RenderWindow& _window,
               m_networkManager{_n},
               m_chatBox(_window, _name),
               m_hotbarInterface(_window) {
-
-	//onResize(m_window.getSize());
 }
 
 void UserInterface::getInput(sf::Event& _event) {
@@ -32,7 +30,6 @@ void UserInterface::draw(sf::RenderStates states) const {
 	m_window.draw(m_chatBox, states);
 	m_window.draw(m_hotbarInterface, states);
 }
-
 
 //We check to see if any new messages have been received from our
 //network manager. If so, we'll add it to the chatbox and clear it from
