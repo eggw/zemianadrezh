@@ -3,7 +3,6 @@
 #include "TextureManager.h"
 #include "FontManager.h"
 
-#include <iostream>
 #include <math.h>
 
 constexpr int DAY_BEGIN_HOUR{5};
@@ -27,16 +26,10 @@ DayNightCycle::DayNightCycle(const World& _world)
 	m_timeText.setOrigin(m_timeText.getGlobalBounds().width / 2,
 	                     m_timeText.getGlobalBounds().height / 2);
 
-	//making the sky blue (temporary until shader is implemented properly)
-	/*
-	for(int i{0}; i < 4; ++i) {
-	    m_skyBackground[i].color = sf::Color(90,112,255);
-	}
-	*/
-
 	if (!m_shader.loadFromFile("assets/shaders/cycle_vertex.glsl",
 	                           "assets/shaders/cycle_fragment.glsl")) {
-		std::cout << "ERROR!" << std::endl;
+		//TODO: error handling?
+		//std::cout << "ERROR!" << std::endl;
 	}
 
 	m_shader.setUniform("sky",

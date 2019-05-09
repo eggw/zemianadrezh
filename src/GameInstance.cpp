@@ -9,7 +9,6 @@
 #include "Components/ComponentPhysics.h"
 #include "Components/ComponentPosition.h"
 
-#include <iostream>
 GameInstance::GameInstance() : m_world() {
 }
 

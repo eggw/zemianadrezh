@@ -5,8 +5,6 @@
 #include <entt/entity/registry.hpp>
 
 #include "World.h"
-#include "Player.h"
-
 #include "Components/ComponentsPlayer.h"
 
 class GameInstance {

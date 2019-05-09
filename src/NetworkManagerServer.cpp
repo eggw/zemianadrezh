@@ -1,7 +1,5 @@
 #include "NetworkManagerServer.h"
 
-#include <iostream>
-
 #include "LoggerNetwork.h"
 #include "Server.h"
 
