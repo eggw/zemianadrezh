@@ -18,6 +18,7 @@ class Server;
 
 class Client : public GameInstance {
 	friend class NetworkManagerClient;
+	friend class ProgramState_Play;
 
   public:
 	Client(sf::RenderWindow& _window,
@@ -39,18 +40,19 @@ class Client : public GameInstance {
 	bool isConnected() const;
 	bool isLocal() const;
 
-  public:
-	NetworkManagerClient m_networkManager;
-
   private:
-	sf::IpAddress m_serverIP;
-	Server*       m_localServer;
-	entt::entity  m_player;
-
-	UserInterface m_interface;
-
-	void initialisePlayer();
+  	//Functions -----------------------------------
+  	void initialisePlayer();
 	void respawnPlayer();
+	//---------------------------------------------
+
+	//Data members --------------------------------
+	NetworkManagerClient m_networkManager;
+	sf::IpAddress        m_serverIP;
+	Server*              m_localServer;
+	entt::entity         m_player;
+	UserInterface        m_interface;
+	//---------------------------------------------
 };
 
 #endif // CLIENT_H_INCLUDED

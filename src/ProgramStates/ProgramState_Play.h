@@ -30,12 +30,20 @@ class ProgramState_Play : public ProgramState {
 	void onResize(sf::Vector2u _newSize);
 
   private:
+  	//Functions -----------------------------------
+  	//This function is responsible for calling RendererChunk's update
+	//function on chunks that have just had their data updated (when
+	//the network manager indicates that chunk data has been sent)
+	void renderUpdatedChunks();
+	void updateSystems(int _timeslice);
+	//---------------------------------------------
+
+	//Data members --------------------------------
 	Client m_client;
 
 	//We'll handle the drawing of non-entity elements with special
-	//renderers. This isn't really all that necessary, though.
+	//renderers.
 	RendererChunk                   m_rendererChunk;
-	RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
 
 	SystemAnimation      m_systemAnimation;
 	SystemDrawing        m_systemDrawing;
@@ -48,11 +56,8 @@ class ProgramState_Play : public ProgramState {
 	sf::View m_view;
 	//m_skyView is the view used to draw the background, sun/moon, etc.
 	sf::View m_skyView;
+	//---------------------------------------------
 
-	//This function is responsible for calling RendererChunk's update
-	//function on chunks that have just had their data updated (when
-	//the network manager indicates that chunk data has been sent)
-	void renderUpdatedChunks();
 };
 
 #endif // PROGRAMSTATE_PLAY_H_INCLUDED

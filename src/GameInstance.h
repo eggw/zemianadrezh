@@ -10,8 +10,6 @@
 #include "Components/ComponentsPlayer.h"
 
 class GameInstance {
-	friend class ProgramState_Play;
-
   public:
 	GameInstance();
 

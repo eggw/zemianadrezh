@@ -17,7 +17,6 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
                        _ipAddress,
                        m_program.getServer()),
               m_rendererChunk(*m_program.m_window, m_client.m_world),
-              m_rendererDayNightCycle(*m_program.m_window),
               m_systemAnimation{},
               m_systemDrawing{*m_program.m_window},
               m_systemPhysics{},
@@ -33,8 +32,6 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
                         {float(m_program.m_window->getSize().x),
                          float(m_program.m_window->getSize().y)}} {
 	m_client.m_networkManager.connect(_ipAddress, Packet::Port_TCP_Server);
-
-	m_rendererDayNightCycle.addObject(&m_dayNightCycle);
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -66,9 +63,7 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 }
 
 void ProgramState_Play::update(int _timeslice) {
-	m_systemAnimation.update(_timeslice, m_client.m_registry);
-	m_systemPhysics.update(_timeslice, m_client.m_registry);
-	m_systemPlayerMovement.update(_timeslice, m_client.m_registry);
+	updateSystems(_timeslice);
 
 	m_dayNightCycle.update();
 	m_view.setCenter(m_client.getPlayerPosition());
@@ -87,7 +82,7 @@ void ProgramState_Play::update(int _timeslice) {
 
 void ProgramState_Play::draw() {
 	m_program.m_window->setView(m_skyView);
-	m_rendererDayNightCycle.draw();
+	m_program.m_window->draw(m_dayNightCycle);
 
 	m_program.m_window->setView(m_view);
 	m_systemDrawing.draw(m_client.m_registry);
@@ -118,4 +113,10 @@ void ProgramState_Play::renderUpdatedChunks() {
 		}
 		m_client.m_networkManager.setChunkDataProcessed(true);
 	}
+}
+
+void ProgramState_Play::updateSystems(int _timeslice) {
+	m_systemAnimation.update(_timeslice, m_client.m_registry);
+	m_systemPhysics.update(_timeslice, m_client.m_registry);
+	m_systemPlayerMovement.update(_timeslice, m_client.m_registry);
 }

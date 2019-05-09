@@ -22,7 +22,7 @@ class Server : public GameInstance {
 	void update(int _timeslice);
 	bool connectionsAllowed() const;
 
-  public:
+  private:
 	NetworkManagerServer m_networkManager;
 	bool                 m_allowConnections;
 };
