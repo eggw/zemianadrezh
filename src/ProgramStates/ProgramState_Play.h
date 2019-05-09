@@ -35,8 +35,6 @@ class ProgramState_Play : public ProgramState {
 	//We'll handle the drawing of non-entity elements with special
 	//renderers. This isn't really all that necessary, though.
 	RendererChunk                   m_rendererChunk;
-	RendererDrawable<ChatBox>       m_rendererChatbox;
-	RendererDrawable<HotbarInterface> m_rendererHotbarInterface;
 	RendererDrawable<DayNightCycle> m_rendererDayNightCycle;
 
 	SystemAnimation      m_systemAnimation;

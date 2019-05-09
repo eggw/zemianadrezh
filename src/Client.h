@@ -3,10 +3,9 @@
 
 #include <entt/entity/registry.hpp>
 
+#include "Interface/UserInterface.h"
 #include "NetworkManagerClient.h"
 #include "GameInstance.h"
-#include "Interface/ChatBox.h"
-#include "Interface/HotbarInterface.h"
 
 /*
 The client class takes an optional pointer to a server.
@@ -29,19 +28,16 @@ class Client : public GameInstance {
 
 	void getInput(sf::Event& _event);
 	void update(int _timeslice);
+	void drawInterface() const;
 
 	void sendPackets();
 	void receivePackets();
 
 	entt::entity         getPlayerId() const;
 	sf::Vector2f         getPlayerPosition() const;
-	const ChatBox*       getChatBox() const;
-	const HotbarInterface* getHotbarInterface() const;
 
 	bool isConnected() const;
 	bool isLocal() const;
-
-	std::pair<std::string, std::string> getPendingMessage() const;
 
   public:
 	NetworkManagerClient m_networkManager;
@@ -51,14 +47,7 @@ class Client : public GameInstance {
 	Server*       m_localServer;
 	entt::entity  m_player;
 
-	//TODO: move these to ProgramState_Play?
-	//Or maybe a more general interface wrapper?
-	ChatBox         m_chatBox;
-	HotbarInterface m_hotbarInterface;
-	std::pair<std::string, std::string> m_pendingMessage;
-
-	void handleIncomingMessages();
-	void handleOutgoingMessages();
+	UserInterface m_interface;
 
 	void initialisePlayer();
 	void respawnPlayer();

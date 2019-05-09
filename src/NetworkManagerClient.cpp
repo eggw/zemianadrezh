@@ -27,6 +27,10 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	m_serverConnection.setBlocking(false);
 }
 
+void NetworkManagerClient::update() {
+	PacketSender::get_instance().update();
+}
+
 void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	int             packetCode = Packet::toInt(_type);
 	PacketSharedPtr packet(new sf::Packet());
@@ -69,10 +73,10 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::CHAT_MESSAGE: {
-		auto message = m_client.getPendingMessage();
-
-		*packet << message.first;
-		*packet << message.second;
+		//At this stage, m_messageToSend should have been set (usually by
+		//UserInterface)
+		*packet << m_messageToSend.first;
+		*packet << m_messageToSend.second;
 
 		PacketSender::get_instance().send(&m_serverConnection, packet);
 
@@ -273,6 +277,10 @@ void NetworkManagerClient::clearLastReceivedMessage() {
 	m_lastReceivedMessage.second = "";
 }
 
+void NetworkManagerClient::setMessageToSend(std::pair<std::string, std::string> _msg) {
+	m_messageToSend = _msg;
+}
+
 bool NetworkManagerClient::chunkDataReceived(std::vector<int>* _ids) const {
 	if (_ids != nullptr) {
 		*_ids = m_lastReceivedChunks;
@@ -285,6 +293,3 @@ void NetworkManagerClient::setChunkDataProcessed(bool _val) {
 	m_chunkDataReceived = !_val;
 }
 
-void NetworkManagerClient::update() {
-	PacketSender::get_instance().update();
-}

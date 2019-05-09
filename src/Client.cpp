@@ -20,8 +20,9 @@ Client::Client(sf::RenderWindow& _window,
               //TODO:
               //ChatBox's second parameter should take in the player's name more...
               //elegantly
-              m_chatBox(_window, _localServer == nullptr ? "RemotePlayer" : "LocalPlayer"),
-              m_hotbarInterface(_window) {
+              m_interface(_window,
+						  m_networkManager,
+						  _localServer == nullptr ? "RemotePlayer" : "LocalPlayer") {
 
 	initialisePlayer();
 	/*
@@ -49,18 +50,17 @@ Client::~Client() {
 }
 
 void Client::getInput(sf::Event& _event) {
-	m_chatBox.getInput(_event);
-	m_hotbarInterface.getInput(_event);
+	m_interface.getInput(_event);
 }
 
 void Client::update(int _timeslice) {
 	m_world.update(_timeslice);
-
-	handleIncomingMessages();
-	handleOutgoingMessages();
 	m_networkManager.update();
+	m_interface.update(_timeslice);
+}
 
-	m_chatBox.update();
+void Client::drawInterface() const {
+	m_interface.draw();
 }
 
 void Client::sendPackets() {
@@ -87,48 +87,12 @@ sf::Vector2f Client::getPlayerPosition() const {
 	return m_registry.get<ComponentPosition>(m_player).m_position;
 }
 
-const ChatBox* Client::getChatBox() const {
-	return &m_chatBox;
-}
-
-const HotbarInterface* Client::getHotbarInterface() const {
-	return &m_hotbarInterface;
-}
-
 bool Client::isConnected() const {
 	return m_networkManager.connectionActive();
 }
 
 bool Client::isLocal() const {
 	return m_localServer != nullptr;
-}
-
-std::pair<std::string, std::string> Client::getPendingMessage() const {
-	return m_pendingMessage;
-}
-
-//We check to see if any new messages have been received from our
-//network manager. If so, we'll add it to the chatbox and clear it from
-//the network manager.
-void Client::handleIncomingMessages() {
-	auto ptr(std::make_unique<std::pair<std::string, std::string>>());
-
-	if (m_networkManager.receivedMessage(ptr.get())) {
-		m_chatBox.appendMessage(ptr->first, ptr->second);
-		m_networkManager.clearLastReceivedMessage();
-	}
-}
-
-//We check to see if there is any new outgoing message from the chatbox,
-//and if so, we'll set it as our latest m_pendingMessage, then send it
-//to the server
-void Client::handleOutgoingMessages() {
-	auto ptr(std::make_unique<std::pair<std::string, std::string>>());
-
-	if (m_chatBox.completedMessage(ptr.get())) {
-		m_pendingMessage = *ptr;
-		m_networkManager.sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
-	}
 }
 
 void Client::initialisePlayer() {
