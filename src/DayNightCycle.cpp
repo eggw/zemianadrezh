@@ -18,7 +18,8 @@ DayNightCycle::DayNightCycle(const World& _world)
               m_skyBackground{sf::PrimitiveType::Triangles, 42},
               m_timeText{},
               m_target{nullptr},
-              m_shader{} {
+              m_shader{},
+              m_lastTargetSize{} {
 	m_timeText.setFont(
 	  FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_timeText.setCharacterSize(30);
@@ -75,8 +76,6 @@ void DayNightCycle::draw(sf::RenderTarget& target,
 }
 
 void DayNightCycle::updateSkyVertices() {
-	static sf::Vector2f lastSize {};
-
 	//In SFML,	 the origin (0,0) is at the top left.
 	//In OpenGL, the origin (0,0) is in the middle.
 	//
@@ -88,12 +87,12 @@ void DayNightCycle::updateSkyVertices() {
 	float targetWidth  = m_target->getSize().x;
 	float targetHeight = m_target->getSize().y;
 
-	if(lastSize.x == targetWidth && lastSize.y == targetHeight) {
+	if(m_lastTargetSize.x == targetWidth && m_lastTargetSize.y == targetHeight) {
 		return;
 	}
 
-	lastSize.x = targetWidth;
-	lastSize.y = targetHeight;
+	m_lastTargetSize.x = targetWidth;
+	m_lastTargetSize.y = targetHeight;
 
 	sf::Vector2f center{0, 0};
 	sf::Vector2f centerLeft{-targetWidth / 2, center.y};

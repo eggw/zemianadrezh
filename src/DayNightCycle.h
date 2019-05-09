@@ -66,6 +66,7 @@ class DayNightCycle : public sf::Drawable {
 	//the draw function.
 	mutable sf::RenderTarget* m_target;
 	mutable sf::Shader        m_shader;
+	mutable sf::Vector2f      m_lastTargetSize;
 	//---------------------------------------------
 };
 
