@@ -32,10 +32,12 @@ class Block {
 	void         setPosition(sf::Vector2f _p);
 
   private:
+  	//Data members --------------------------------
 	int             m_id;
 	BlockData::Type m_type;
 	int             m_damageLevel;
 	sf::Vector2f    m_position;
+	//---------------------------------------------
 };
 
 #endif // BLOCK_H_INCLUDED

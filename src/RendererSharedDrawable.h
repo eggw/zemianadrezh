@@ -46,7 +46,9 @@ class RendererSharedDrawable : public RendererBase<T> {
 		};
 
 	private:
-		mutable std::vector<std::weak_ptr<T>> m_objects;
+	//Data members --------------------------------
+	mutable std::vector<std::weak_ptr<T>> m_objects;
+	//---------------------------------------------
 };
 
 #endif // RENDERERSHAREDDRAWABLE_H_INCLUDED

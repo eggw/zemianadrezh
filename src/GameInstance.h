@@ -14,10 +14,11 @@ class GameInstance {
 	GameInstance();
 
 	//TODO: refactor these functions, either remove them or put them somewhere else
+	//-------------------------------------------------------------------------
 	const World& getWorld() const;
 	const encodedChunks encodeWorldChunks() const;
 	void parseWorldChunk(const WorldChunk::EncodedChunkData& _data);
-	//---------
+	//-------------------------------------------------------------------------
 
 	//Checks if a player with the name given in _data exists, in the entity
 	//registry, and if so, updates their components. Otherwise, calls addPlayer().
@@ -28,6 +29,12 @@ class GameInstance {
 	void removePlayer(std::string& _name);
 
   protected:
+	//Functions -----------------------------------
+	void addPlayer(const ComponentsPlayer& _data);
+	void addPlayer(const ComponentsPlayer& _data, entt::entity _e);
+	//---------------------------------------------
+
+  	//Data members --------------------------------
 	World m_world;
 	//TODO
 	//The reason we [should?] use a shared pointer here is because in the case
@@ -37,10 +44,8 @@ class GameInstance {
 
 	//The registry that will contain all our entities
 	entt::registry m_registry;
-  protected:
-  	//Adds a player to the entity registry
-	void addPlayer(const ComponentsPlayer& _data);
-	void addPlayer(const ComponentsPlayer& _data, entt::entity _e);
+	//---------------------------------------------
+
 };
 
 #endif // GAMEINSTANCE_H_INCLUDED

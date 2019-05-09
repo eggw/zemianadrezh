@@ -28,10 +28,19 @@ class DayNightCycle : public sf::Drawable {
 	void update();
 
   private:
+  	//Functions -----------------------------------
+  	void updateSkyVertices();
+	//---------------------------------------------
+
+	//Data members --------------------------------
 	const World& m_world;
 	sf::Sprite   m_sunMoonSprite;
-	//m_skyBackground will simply contain four vertices at the corners of the
-	//window. Shaders will determine the appropriate gradients depending on the
+	//m_skyBackground will contain the vertices for all 14 triangles
+	//that the screen is divided into. Note that four vertices at the
+	//edges of the screen would also suffice, but let's keep the 14
+	//triangles for now.
+
+	//Shaders will determine the appropriate gradients depending on the
 	//time of day and position of the sun in the sky.
 	sf::VertexArray m_skyBackground;
 	sf::Text        m_timeText;
@@ -40,8 +49,7 @@ class DayNightCycle : public sf::Drawable {
 	//the draw function.
 	mutable sf::RenderTarget* m_target;
 	mutable sf::Shader        m_shader;
-
-	void updateSkyVertices();
+	//---------------------------------------------
 };
 
 #endif // DAYNIGHTCYCLE_H_INCLUDED

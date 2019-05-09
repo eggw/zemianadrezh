@@ -25,7 +25,9 @@ class RendererDrawable : public RendererBase<T> {
 	};
 
   private:
+	//Data members --------------------------------
 	mutable std::vector<const T*> m_objects;
+	//---------------------------------------------
 };
 
 #endif // RENDERERDRAWABLE_H_INCLUDED

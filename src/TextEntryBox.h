@@ -32,6 +32,7 @@ class TextEntryBox : public sf::Drawable {
 	};
 	////////////////////////////////////////////////////////////////////
   private:
+  	//Functions -----------------------------------
 	void onResize(sf::Vector2u _newSize);
 	void updateCaret();
 	void updateView();
@@ -61,8 +62,9 @@ class TextEntryBox : public sf::Drawable {
 	void clearText();
 
 	float textXAtPosition(size_t _index);
+	//---------------------------------------------
 
-  private:
+	//Data members --------------------------------
 	sf::View           m_textView;
 	sf::RectangleShape m_rectangle;
 	sf::RectangleShape m_highlightedRectangle;
@@ -89,6 +91,7 @@ class TextEntryBox : public sf::Drawable {
 
 	unsigned int m_charSize;
 	unsigned int m_maxChars;
+	//---------------------------------------------
 };
 
 #endif // TEXTENTRYBOX_H_INCLUDED

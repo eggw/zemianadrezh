@@ -22,7 +22,9 @@ class TextureManager : public Singleton<TextureManager> {
 	const sf::Texture& getTexture(Type _type);
 
   private:
+	//Data members --------------------------------
 	std::map<Type, sf::Texture> m_textures;
+	//---------------------------------------------
 };
 
 #endif // TEXTUREMANAGER_H_INCLUDED

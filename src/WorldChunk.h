@@ -27,8 +27,10 @@ class WorldChunk {
 	void                   parseData(const EncodedChunkData& _data);
 
   private:
+	//Data members --------------------------------
 	int                m_id;
 	std::vector<Block> m_blocks{};
+	//---------------------------------------------
 };
 
 //Forward declare Packet here and define the overloading in WorldChunk.cpp, so

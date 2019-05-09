@@ -9,6 +9,8 @@ class Player {
 	const std::string& getName() const;
 
   private:
+  	//Data members --------------------------------
 	std::string m_playerName;
+	//---------------------------------------------
 };
 #endif // PLAYER_H_INCLUDED

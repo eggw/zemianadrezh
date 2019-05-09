@@ -45,7 +45,9 @@ class PacketSender : public Singleton<PacketSender> {
 	void update();
 
   private:
+  	//Data members --------------------------------
 	std::vector<TCPPacket> m_packetData;
+	//---------------------------------------------
 };
 
 #endif // PACKETSENDER_H_INCLUDED

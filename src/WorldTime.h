@@ -23,6 +23,8 @@ class WorldTime {
 	void unpause() const;
 
   private:
+	//Data members --------------------------------
 	HHMM         m_time;
 	mutable bool m_paused;
+	//---------------------------------------------
 };

@@ -48,6 +48,7 @@ class Program : public Singleton<Program> {
 	std::unique_ptr<sf::RenderWindow>          m_window;
 
   private:
+  	//Functions -----------------------------------
 	//getInput() is responsibile for detecting the window being
 	//closed, and, of course, calling the current state's getInput()
 	void getInput();
@@ -56,8 +57,10 @@ class Program : public Singleton<Program> {
 	//the previous state.
 	void update(int _timeslice);
 	void draw();
+	bool isAtMainMenu();
+	//---------------------------------------------
 
-	bool                    isAtMainMenu();
+  	//Data members --------------------------------
 	std::unique_ptr<Server> m_localServer{nullptr};
 	//Due to the way menu items work (ProgramState_Menu),
 	//they can call Program functions, but they can't pass
@@ -66,6 +69,7 @@ class Program : public Singleton<Program> {
 	//so that we can initialise the client with
 	//pushState_Play_MP_Join()
 	std::string m_ipAddress{"localhost"};
+	//---------------------------------------------
 };
 
 #endif // PROGRAM_H_INCLUDED

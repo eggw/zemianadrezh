@@ -23,8 +23,10 @@ class World {
 	const WorldTime& getTime() const;
 
   private:
+	//Data members --------------------------------
 	std::vector<WorldChunk> m_chunks;
 	WorldTime               m_time;
+	//---------------------------------------------
 };
 
 #endif // WORLD_H_INCLUDED

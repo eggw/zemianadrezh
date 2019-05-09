@@ -15,7 +15,9 @@ class RendererBase {
 	virtual void draw() const = 0;
 
   protected:
+	//Data members --------------------------------
 	sf::RenderWindow& m_window;
+	//---------------------------------------------
 };
 
 #endif // RENDERERBASE_H_INCLUDED

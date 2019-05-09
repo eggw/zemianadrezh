@@ -18,7 +18,9 @@ class FontManager : public Singleton<FontManager> {
 	float           getLineSpacing(Type _type, unsigned int _characterSize);
 
   private:
+	//Data members --------------------------------
 	std::map<Type, sf::Font> m_fonts;
+	//---------------------------------------------
 };
 
 #endif // FONTMANAGER_H_INCLUDED

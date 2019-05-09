@@ -45,12 +45,8 @@ class RendererChunk : public RendererBase<WorldChunk> {
 	};
 
   private:
-	mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
-	const World&                                         m_world;
-
-	//--------------------------------------------------------------
-
-	//When given a WorldChunk ptr, this function then generates a vertex array
+  	//Functions -----------------------------------
+  	//When given a WorldChunk ptr, update() then generates a vertex array
 	//for all the chunk's tiles. It then checks if the chunk is already present
 	//in m_vertexMap. If so, it simply updates its vertex array, and if not, it
 	//creates a new entry.
@@ -155,6 +151,13 @@ class RendererChunk : public RendererBase<WorldChunk> {
 			m_vertexMap.emplace(_chunk, vertexArray);
 		}
 	};
+	//---------------------------------------------
+
+	//Data members --------------------------------
+	mutable std::map<const WorldChunk*, sf::VertexArray> m_vertexMap;
+	const World&                                         m_world;
+	//---------------------------------------------
+
 };
 
 #endif // RENDERERCHUNK_H_INCLUDED

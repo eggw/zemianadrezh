@@ -18,6 +18,8 @@ class Server;
 
 class Client : public GameInstance {
 	friend class NetworkManagerClient;
+	//TODO: maybe get rid of ProgramState_Play
+	//being a friend.
 	friend class ProgramState_Play;
 
   public:

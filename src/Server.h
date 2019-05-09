@@ -23,8 +23,10 @@ class Server : public GameInstance {
 	bool connectionsAllowed() const;
 
   private:
+	//Data members --------------------------------
 	NetworkManagerServer m_networkManager;
 	bool                 m_allowConnections;
+	//---------------------------------------------
 };
 
 #endif // SERVER_H_INCLUDED

@@ -20,7 +20,9 @@ class BlockDatabase : public Singleton<BlockDatabase> {
 	const BlockData& getData(BlockData::Type _t);
 
   private:
+  	//Data members --------------------------------
 	std::map<BlockData::Type, BlockData> m_database;
+	//---------------------------------------------
 };
 
 #endif // BLOCKDATABASE_H_INCLUDED
