@@ -21,7 +21,7 @@ class InputLocker : public Singleton<InputLocker> {
 	void unlock();
 
   private:
-  	//Data members --------------------------------
+	//Data members --------------------------------
 	bool m_locked;
 	//---------------------------------------------
 };

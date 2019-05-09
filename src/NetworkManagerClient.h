@@ -42,7 +42,7 @@ class NetworkManagerClient {
 	void setChunkDataProcessed(bool _val);
 
   private:
-  	//Data members --------------------------------
+	//Data members --------------------------------
 	Client&       m_client;
 	bool          m_connectionActive;
 	sf::UdpSocket m_udpSocket;

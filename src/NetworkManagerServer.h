@@ -19,9 +19,9 @@ class NetworkManagerServer {
 	                sf::TcpSocket*    _recipient = nullptr,
 	                bool              _exclude   = false);
 
-	void sendPacket(Packet::UDPPacket    _type,
-	                const std::string&   _recipientName,
-	                bool                 _exclude   = false);
+	void sendPacket(Packet::UDPPacket  _type,
+	                const std::string& _recipientName,
+	                bool               _exclude = false);
 
 	void sendChunkData(int _chunkID);
 
@@ -39,7 +39,7 @@ class NetworkManagerServer {
 	void update();
 
   private:
-  	//Since the clients that connect to us via UDP will have varying
+	//Since the clients that connect to us via UDP will have varying
 	//ports, we'll use IPInfo to conveniently store it alongside their IP
 	struct IPInfo {
 		IPInfo(std::string _n, sf::TcpSocket& _t, unsigned short _p)
@@ -52,7 +52,7 @@ class NetworkManagerServer {
 		unsigned short port;
 	};
 
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 	//Generally, our recipients are either going to be:
 	//one specific recipient,
 	//all recipients,
@@ -82,9 +82,8 @@ class NetworkManagerServer {
 	  sf::TcpSocket* _recipient = nullptr,
 	  bool           _exclude   = false);
 
-	std::vector<IPInfo> getUDPRecipients(
-	  const std::string& _recipientName = "",
-	  bool          _exclude   = false);
+	std::vector<IPInfo> getUDPRecipients(const std::string& _recipientName = "",
+	                                     bool               _exclude = false);
 
 	//removeConnection() is used to remove the matching TcpSocket from
 	//m_clientConnections as well as the associated IPInfo in m_clientIPs
@@ -92,8 +91,8 @@ class NetworkManagerServer {
 
 	//---------------------------------------------
 
-  	//Data members --------------------------------
-  	//Note: the reason we have m_clientConnections and m_clientIPs in seperate
+	//Data members --------------------------------
+	//Note: the reason we have m_clientConnections and m_clientIPs in seperate
 	//data structures is because when sf::TcpListener accepts a socket, we only
 	//have access to the socket, and can't send or access any other data alongside
 	//it (in our case, we need the player's name and port the client is using).

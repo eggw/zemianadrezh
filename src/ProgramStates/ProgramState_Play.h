@@ -30,8 +30,8 @@ class ProgramState_Play : public ProgramState {
 	void onResize(sf::Vector2u _newSize);
 
   private:
-  	//Functions -----------------------------------
-  	//This function is responsible for calling RendererChunk's update
+	//Functions -----------------------------------
+	//This function is responsible for calling RendererChunk's update
 	//function on chunks that have just had their data updated (when
 	//the network manager indicates that chunk data has been sent)
 	void renderUpdatedChunks();
@@ -43,7 +43,7 @@ class ProgramState_Play : public ProgramState {
 
 	//We'll handle the drawing of non-entity elements with special
 	//renderers.
-	RendererChunk                   m_rendererChunk;
+	RendererChunk m_rendererChunk;
 
 	SystemAnimation      m_systemAnimation;
 	SystemDrawing        m_systemDrawing;
@@ -57,7 +57,6 @@ class ProgramState_Play : public ProgramState {
 	//m_skyView is the view used to draw the background, sun/moon, etc.
 	sf::View m_skyView;
 	//---------------------------------------------
-
 };
 
 #endif // PROGRAMSTATE_PLAY_H_INCLUDED

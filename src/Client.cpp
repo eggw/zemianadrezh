@@ -21,9 +21,9 @@ Client::Client(sf::RenderWindow& _window,
               //ChatBox's second parameter should take in the player's name more...
               //elegantly
               m_interface(_window,
-						  m_networkManager,
-						  _localServer == nullptr ? "RemotePlayer" : "LocalPlayer") {
-
+                          m_networkManager,
+                          _localServer == nullptr ? "RemotePlayer" :
+                                                    "LocalPlayer") {
 	initialisePlayer();
 	/*
 	TODO/TOFIX
@@ -97,12 +97,13 @@ bool Client::isLocal() const {
 
 void Client::initialisePlayer() {
 	ComponentsPlayer p{};
-	p.compName.m_name = (m_localServer == nullptr ? "RemotePlayer" : "LocalPlayer");
+	p.compName.m_name =
+	  (m_localServer == nullptr ? "RemotePlayer" : "LocalPlayer");
 	addPlayer(p, m_player);
 }
 
 void Client::respawnPlayer() {
 	auto& playerPos = m_registry.get<ComponentPosition>(m_player).m_position;
-	playerPos.x = m_world.getCenter().x;
-	playerPos.y = 0;
+	playerPos.x     = m_world.getCenter().x;
+	playerPos.y     = 0;
 }

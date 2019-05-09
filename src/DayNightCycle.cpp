@@ -80,7 +80,8 @@ void DayNightCycle::updateSkyVertices() {
 	float targetWidth  = m_target->getSize().x;
 	float targetHeight = m_target->getSize().y;
 
-	if(m_lastTargetSize.x == targetWidth && m_lastTargetSize.y == targetHeight) {
+	if (m_lastTargetSize.x == targetWidth &&
+	    m_lastTargetSize.y == targetHeight) {
 		return;
 	}
 
@@ -240,7 +241,7 @@ void DayNightCycle::updatePlanetTexture() {
 		m_sunMoonSprite.setTexture(
 		  TextureManager::get_instance().getTexture(TextureManager::Type::SUN));
 	}
-	else{
+	else {
 		m_sunMoonSprite.setTexture(TextureManager::get_instance().getTexture(
 		  TextureManager::Type::MOON));
 	}
@@ -254,8 +255,8 @@ void DayNightCycle::updatePlanetTexture() {
 
 void DayNightCycle::updatePlanetPosition() {
 	static const double pi{std::atan(1) * 4};
-	auto hhmm{getWrappedTime()};
-	auto hourRange{getCurrentHourRange()};
+	auto                hhmm{getWrappedTime()};
+	auto                hourRange{getCurrentHourRange()};
 	//Get the "percentage" of how far along the X axis the sun should be (for example, at 12, it should be
 	//exactly 50% of the way.
 	//First, calculate the difference between the hours.
@@ -322,7 +323,7 @@ bool DayNightCycle::isDaytime() const {
 }
 
 std::pair<int, int> DayNightCycle::getCurrentHourRange() const {
-	std::pair<int, int> result {};
+	std::pair<int, int> result{};
 	if (isDaytime()) {
 		result = std::make_pair(DAY_BEGIN_HOUR, DAY_END_HOUR);
 	}

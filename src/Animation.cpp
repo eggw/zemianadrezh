@@ -81,8 +81,6 @@ void Animation::setAnimationSpeed(float _speed) {
 	}
 }
 
-
-
 void Animation::update() {
 	//std::cout << "--------------------------" << std::endl;
 	//std::cout << "Run time: " << m_animationTimer.getElapsedTime().asSeconds() << " seconds" << std::endl;
@@ -118,7 +116,6 @@ void Animation::update() {
 const sf::Sprite Animation::getCurrentSprite() const {
 	return getSprite(m_currentIndex);
 }
-
 
 const sf::Sprite Animation::getSprite(int _index) const {
 	sf::Sprite sprite{m_texture, m_textureRects[_index]};

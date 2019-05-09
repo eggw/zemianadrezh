@@ -277,7 +277,8 @@ void NetworkManagerClient::clearLastReceivedMessage() {
 	m_lastReceivedMessage.second = "";
 }
 
-void NetworkManagerClient::setMessageToSend(std::pair<std::string, std::string> _msg) {
+void NetworkManagerClient::setMessageToSend(
+  std::pair<std::string, std::string> _msg) {
 	m_messageToSend = _msg;
 }
 
@@ -292,4 +293,3 @@ bool NetworkManagerClient::chunkDataReceived(std::vector<int>* _ids) const {
 void NetworkManagerClient::setChunkDataProcessed(bool _val) {
 	m_chunkDataReceived = !_val;
 }
-

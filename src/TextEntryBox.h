@@ -32,7 +32,7 @@ class TextEntryBox : public sf::Drawable {
 	};
 	////////////////////////////////////////////////////////////////////
   private:
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 	void onResize(sf::Vector2u _newSize);
 	void updateCaret();
 	void updateView();

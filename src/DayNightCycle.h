@@ -28,9 +28,9 @@ class DayNightCycle : public sf::Drawable {
 	void update();
 
   private:
-  	//Functions -----------------------------------
-  	void updateSkyVertices();
-  	//getInput() is a temporary function that detects
+	//Functions -----------------------------------
+	void updateSkyVertices();
+	//getInput() is a temporary function that detects
 	//if comma or period is pressed and pauses/resumes
 	//the time as necessary. Just for testing for now.
 	void getInput();

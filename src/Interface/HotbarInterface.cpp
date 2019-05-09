@@ -94,7 +94,7 @@ void HotbarInterface::update(int _timeslice) {
 }
 
 void HotbarInterface::draw(sf::RenderTarget& target,
-                         sf::RenderStates  states) const {
+                           sf::RenderStates  states) const {
 	sf::View previousView = target.getView();
 
 	target.setView(m_hotbarView);

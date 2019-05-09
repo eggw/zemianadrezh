@@ -48,7 +48,7 @@ class Program : public Singleton<Program> {
 	std::unique_ptr<sf::RenderWindow>          m_window;
 
   private:
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 	//getInput() is responsibile for detecting the window being
 	//closed, and, of course, calling the current state's getInput()
 	void getInput();
@@ -60,7 +60,7 @@ class Program : public Singleton<Program> {
 	bool isAtMainMenu();
 	//---------------------------------------------
 
-  	//Data members --------------------------------
+	//Data members --------------------------------
 	std::unique_ptr<Server> m_localServer{nullptr};
 	//Due to the way menu items work (ProgramState_Menu),
 	//they can call Program functions, but they can't pass

@@ -43,7 +43,7 @@ class BlockData {
 	sf::Vector2f       getTextureIndeces() const;
 
   private:
-  	//Data members --------------------------------
+	//Data members --------------------------------
 	std::string  m_name;
 	int          m_opacityAlpha;
 	sf::Vector2f m_textureIndeces;

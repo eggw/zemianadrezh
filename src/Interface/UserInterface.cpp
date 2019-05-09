@@ -4,9 +4,9 @@
 
 #include "NetworkManagerClient.h"
 
-UserInterface::UserInterface(sf::RenderWindow& _window,
-							 NetworkManagerClient& _n,
-							 std::string _name)
+UserInterface::UserInterface(sf::RenderWindow&     _window,
+                             NetworkManagerClient& _n,
+                             std::string           _name)
             : m_window{_window},
               m_networkManager{_n},
               m_chatBox(_window, _name),

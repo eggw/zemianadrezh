@@ -13,9 +13,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //set the last argument of m_client's constructor
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
-              m_client(*m_program.m_window,
-                       _ipAddress,
-                       m_program.getServer()),
+              m_client(*m_program.m_window, _ipAddress, m_program.getServer()),
               m_rendererChunk(*m_program.m_window, m_client.m_world),
               m_systemAnimation{},
               m_systemDrawing{*m_program.m_window},
@@ -105,10 +103,10 @@ void ProgramState_Play::onResize(sf::Vector2u _newSize) {
 }
 
 void ProgramState_Play::renderUpdatedChunks() {
-	auto updatedIDs {std::make_unique<std::vector<int>>()};
+	auto updatedIDs{std::make_unique<std::vector<int>>()};
 
 	if (m_client.m_networkManager.chunkDataReceived(updatedIDs.get())) {
-		for(auto id : *updatedIDs) {
+		for (auto id : *updatedIDs) {
 			m_rendererChunk.update(id);
 		}
 		m_client.m_networkManager.setChunkDataProcessed(true);

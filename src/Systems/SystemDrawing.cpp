@@ -16,7 +16,7 @@ void SystemDrawing::draw(entt::registry& _reg) {
 	for (auto& entity : spriteView) {
 		auto sprite = spriteView.get(entity).m_sprite;
 
-		if(_reg.has<ComponentPosition>(entity)){
+		if (_reg.has<ComponentPosition>(entity)) {
 			sprite.setPosition(_reg.get<ComponentPosition>(entity).m_position);
 		}
 
@@ -26,7 +26,7 @@ void SystemDrawing::draw(entt::registry& _reg) {
 	for (auto& entity : animationView) {
 		auto sprite = animationView.get(entity).m_animation.getCurrentSprite();
 
-		if(_reg.has<ComponentPosition>(entity)){
+		if (_reg.has<ComponentPosition>(entity)) {
 			sprite.setPosition(_reg.get<ComponentPosition>(entity).m_position);
 		}
 

@@ -12,17 +12,17 @@ class Animation {
 		return *this;
 	};
 
-	void setAnimationRange(int _beginIndex, int _maxIndex);
-	void setAnimationSpeed(float _speed);
+	void             setAnimationRange(int _beginIndex, int _maxIndex);
+	void             setAnimationSpeed(float _speed);
 	const sf::Sprite getCurrentSprite() const;
-	void update();
+	void             update();
 
   private:
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 	const sf::Sprite getSprite(int _index) const;
-	void addFrame(sf::IntRect _rect);
-	void beginAnimation();
-	void stopAnimation();
+	void             addFrame(sf::IntRect _rect);
+	void             beginAnimation();
+	void             stopAnimation();
 	//---------------------------------------------
 
 	//Data members --------------------------------

@@ -32,10 +32,10 @@ void GameInstance::parseWorldChunk(const WorldChunk::EncodedChunkData& _data) {
 }
 
 void GameInstance::updatePlayer(const ComponentsPlayer& _data) {
-	auto view {m_registry.view<PlayerTag>()};
-	for(auto& entity : view) {
-		auto name {m_registry.get<ComponentName>(entity).m_name};
-		if(name == _data.compName.m_name) {
+	auto view{m_registry.view<PlayerTag>()};
+	for (auto& entity : view) {
+		auto name{m_registry.get<ComponentName>(entity).m_name};
+		if (name == _data.compName.m_name) {
 			m_registry.replace<ComponentPhysics>(entity, _data.compVel);
 			m_registry.replace<ComponentDirection>(entity, _data.compDir);
 			m_registry.replace<ComponentPosition>(entity, _data.compPos);

@@ -36,15 +36,15 @@ class Client : public GameInstance {
 	void sendPackets();
 	void receivePackets();
 
-	entt::entity         getPlayerId() const;
-	sf::Vector2f         getPlayerPosition() const;
+	entt::entity getPlayerId() const;
+	sf::Vector2f getPlayerPosition() const;
 
 	bool isConnected() const;
 	bool isLocal() const;
 
   private:
-  	//Functions -----------------------------------
-  	void initialisePlayer();
+	//Functions -----------------------------------
+	void initialisePlayer();
 	void respawnPlayer();
 	//---------------------------------------------
 
