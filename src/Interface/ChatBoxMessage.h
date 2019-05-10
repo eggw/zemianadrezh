@@ -29,9 +29,11 @@ class ChatBoxMessage : public sf::Drawable {
 	                              size_t _endPos   = 0) const;
 
   private:
+	//Data members --------------------------------
 	sf::MulticolourText m_text;
 	std::string         m_sender;
 	std::string         m_message;
+  	//---------------------------------------------
 };
 
 #endif // CHATBOXMESSAGE_H_INCLUDED

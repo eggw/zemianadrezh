@@ -34,20 +34,6 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
               m_anchoredToBottom(true) {
 	onResize(_window.getSize());
 
-	/*
-	appendMessage("Impending doom approaches... Also this is a test to see if the splitter function works properly");
-	appendMessage("message1", "Test");
-	appendMessage("message2", "Test");
-	appendMessage("message3", "Test");
-	appendMessage("message4", "Test");
-	appendMessage("message5", "Test");
-
-	appendMessage("message6", "Test");
-	appendMessage("message7", "Test");
-	appendMessage("message8", "Test");
-	appendMessage("message9", "Test");
-	*/
-
 	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
 	snapToBottom();
 }
@@ -64,7 +50,7 @@ void ChatBox::appendMessage(const std::string _message,
 
 	m_messages.push_back(newMessage);
 	positionMessage(m_messages.size() - 1);
-	m_clock.restart();
+	resetTransparency();
 
 	if (m_anchoredToBottom) {
 		snapToBottom();
@@ -86,22 +72,18 @@ void ChatBox::getInput(sf::Event& _event) {
 	switch (_event.type) {
 	case sf::Event::KeyPressed: {
 		if (_event.key.code == Key::CHAT_SEND) {
-			m_clock.restart();
-			setTransparency(255);
+			resetTransparency();
 		}
 
 		else if (_event.key.code == Key::CHAT_UP) {
-			m_anchoredToBottom = false;
 			scrollUp();
 		}
 
 		else if (_event.key.code == Key::CHAT_DOWN) {
-			m_anchoredToBottom = false;
 			scrollDown();
 		}
 
 		else if (_event.key.code == Key::CHAT_TOP) {
-			m_anchoredToBottom = false;
 			snapToTop();
 		}
 
@@ -128,7 +110,7 @@ void ChatBox::update() {
 		m_lastMessage = std::make_pair(m_textEntry.getLastString(), m_name);
 	}
 	if (m_textEntry.enteringText()) {
-		m_clock.restart();
+		resetTransparency();
 	}
 	updateShadedRectangleTransparency();
 	updateMessageTransparency();
@@ -255,6 +237,11 @@ void ChatBox::setNewMessageAlert(bool _b) {
 	}
 }
 
+void ChatBox::resetTransparency() {
+	m_clock.restart();
+	setTransparency(255);
+}
+
 void ChatBox::onResize(sf::Vector2u _newSize) {
 	sf::FloatRect textEntryViewport{
 	  0,
@@ -300,8 +287,11 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 //If so, it adjusts the view's center so that the very first message is
 //on top.
 void ChatBox::snapToTop() {
-	m_clock.restart();
-	setTransparency(255);
+	if(!viewAtLowest()) {
+		m_anchoredToBottom = false;
+	}
+
+	resetTransparency();
 
 	if (!m_messages.empty()) {
 		ChatBoxMessage& latestMessage = m_messages.back();
@@ -329,8 +319,7 @@ void ChatBox::snapToTop() {
 //This function checks if the last message is "outside" (below) the view.
 //If so, it adjusts the view's center so that it is visible.
 void ChatBox::snapToBottom() {
-	m_clock.restart();
-	setTransparency(255);
+	resetTransparency();
 	m_anchoredToBottom = true;
 
 	if (!m_messages.empty()) {
@@ -386,8 +375,11 @@ bool ChatBox::viewAtLowest() const {
 }
 
 void ChatBox::scrollUp() {
-	m_clock.restart();
-	setTransparency(255);
+	if(!viewAtLowest()) {
+		m_anchoredToBottom = false;
+	}
+
+	resetTransparency();
 
 	if (!viewAtHighest()) {
 		m_view.setCenter(m_view.getCenter().x,
@@ -399,8 +391,11 @@ void ChatBox::scrollUp() {
 }
 
 void ChatBox::scrollDown() {
-	m_clock.restart();
-	setTransparency(255);
+	if(!viewAtLowest()) {
+		m_anchoredToBottom = false;
+	}
+
+	resetTransparency();
 
 	if (!viewAtLowest()) {
 		m_view.setCenter(m_view.getCenter().x,

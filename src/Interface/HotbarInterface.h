@@ -15,8 +15,6 @@ class HotbarInterface : public sf::Drawable {
 	void onResize(sf::Vector2u _newSize);
 
   private:
-	void setActiveHotbarSlot(int _i);
-
 	struct HotbarRect {
 		HotbarRect(sf::RectangleShape _rectangle, int _number)
 		            : m_rectangle{_rectangle}, m_numberText{} {
@@ -37,11 +35,18 @@ class HotbarInterface : public sf::Drawable {
 		sf::Text           m_numberText;
 	};
 
+  	//Functions -----------------------------------
+	void setActiveHotbarSlot(int _i);
+  	//---------------------------------------------
+
+	//Data members --------------------------------
 	sf::RenderWindow&       m_window;
 	std::vector<HotbarRect> m_hotbar;
 	sf::View                m_hotbarView;
 
 	HotbarRect* m_activeHotbarSlot;
+  	//---------------------------------------------
+
 };
 
 #endif // HOTBARINTERFACE_H_INCLUDED

@@ -20,11 +20,21 @@ class ProgramState_Menu : public ProgramState {
 	                 int _keyCode         = sf::Keyboard::Unknown);
 	void addGap();
 
+  private:
+	//Functions -----------------------------------
+	void detectMouseClicks();
+	void updateTitleText(int _timeslice);
+  	//---------------------------------------------
+
   protected:
+	//Functions -----------------------------------
 	virtual void onResize(sf::Vector2u _newSize);
+  	//---------------------------------------------
 
   protected:
 	typedef std::tuple<bool, void (Program::*)(), sf::Text, int> MenuItem;
+
+	//Data members --------------------------------
 	bool isMousedOver(MenuItem _menuItem);
 	bool isFunctionNull(MenuItem _menuItem);
 	//We'll represent the menu items with a vector of tuples.
@@ -46,10 +56,8 @@ class ProgramState_Menu : public ProgramState {
 	sf::View              m_view;
 
 	static sf::Text m_titleText;
+  	//---------------------------------------------
 
-  private:
-	void detectMouseClicks();
-	void updateTitleText(int _timeslice);
 };
 
 #endif // PROGRAMSTATE_MENU_H_INCLUDED

@@ -20,8 +20,9 @@ class ChatBox : public sf::Drawable {
 	bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
 
   private:
+  	//Functions -----------------------------------
+  	//
 	//Message-related
-	/////////////////////////////////////////
 	void positionMessage(int _index);
 	void setTransparency(int _a);
 	bool messagesTransparent() const;
@@ -29,10 +30,9 @@ class ChatBox : public sf::Drawable {
 	void updateMessageTransparency();
 	void updateMessageAlertTransparency();
 	void setNewMessageAlert(bool _b);
-	/////////////////////////////////////////
+	void resetTransparency();
 
 	//View-related
-	/////////////////////////////////////////
 	void  onResize(sf::Vector2u _newSize);
 	void  snapToTop();
 	void  snapToBottom();
@@ -42,9 +42,9 @@ class ChatBox : public sf::Drawable {
 	bool  viewAtLowest() const;
 	void  scrollUp();
 	void  scrollDown();
-	/////////////////////////////////////////
+  	//---------------------------------------------
 
-  private:
+	//Data members --------------------------------
 	const std::string m_name;
 
 	sf::View m_view;
@@ -56,9 +56,13 @@ class ChatBox : public sf::Drawable {
 	std::pair<std::string, std::string> m_lastMessage;
 
 	TextEntryBox m_textEntry;
-	sf::Clock    m_clock;
+	//m_clock will be used to determine when the
+	//messages in the chatbox will begin to fade
+	//away.
+	sf::Clock m_clock;
 
 	bool m_anchoredToBottom;
+  	//---------------------------------------------
 };
 
 #endif // CHATBOX_H_INCLUDED
