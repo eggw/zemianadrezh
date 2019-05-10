@@ -14,7 +14,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
               m_client(*m_program.m_window, _ipAddress, m_program.getServer()),
-              m_rendererChunk(*m_program.m_window, m_client.m_world),
+              m_rendererChunk(*m_program.m_window, *m_client.m_world),
               m_systemAnimation{},
               m_systemDrawing{*m_program.m_window},
               m_systemPhysics{},
@@ -57,7 +57,7 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 	}
 
 	m_client.getInput(_event);
-	m_systemPlayerMovement.getInput(m_client.m_registry);
+	m_systemPlayerMovement.getInput(*m_client.m_registry);
 }
 
 void ProgramState_Play::update(int _timeslice) {
@@ -83,7 +83,7 @@ void ProgramState_Play::draw() {
 	m_program.m_window->draw(m_dayNightCycle);
 
 	m_program.m_window->setView(m_view);
-	m_systemDrawing.draw(m_client.m_registry);
+	m_systemDrawing.draw(*m_client.m_registry);
 	m_rendererChunk.draw();
 
 	m_client.drawInterface();
@@ -114,7 +114,7 @@ void ProgramState_Play::renderUpdatedChunks() {
 }
 
 void ProgramState_Play::updateSystems(int _timeslice) {
-	m_systemAnimation.update(_timeslice, m_client.m_registry);
-	m_systemPhysics.update(_timeslice, m_client.m_registry);
-	m_systemPlayerMovement.update(_timeslice, m_client.m_registry);
+	m_systemAnimation.update(_timeslice, *m_client.m_registry);
+	m_systemPhysics.update(_timeslice, *m_client.m_registry);
+	m_systemPlayerMovement.update(_timeslice, *m_client.m_registry);
 }

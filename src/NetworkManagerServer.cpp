@@ -122,10 +122,10 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket  _type,
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::UDPPacket::DATA_PLAYER: {
 		for (const auto& recipient : recipients) {
-			auto view = m_server.m_registry.view<PlayerTag>();
+			auto view = m_server.m_registry->view<PlayerTag>();
 			for (auto& entity : view) {
 				const auto name =
-				  m_server.m_registry.get<ComponentName>(entity);
+				  m_server.m_registry->get<ComponentName>(entity);
 				//Perform a quick check to see if the playerdata generated
 				//belongs to the recipient's player; if it does, we'll cancel
 				//and not redundantly send it back to them
@@ -133,11 +133,11 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket  _type,
 					continue;
 				}
 				const auto dir =
-				  m_server.m_registry.get<ComponentDirection>(entity);
+				  m_server.m_registry->get<ComponentDirection>(entity);
 				const auto vel =
-				  m_server.m_registry.get<ComponentPhysics>(entity);
+				  m_server.m_registry->get<ComponentPhysics>(entity);
 				const auto pos =
-				  m_server.m_registry.get<ComponentPosition>(entity);
+				  m_server.m_registry->get<ComponentPosition>(entity);
 
 				ComponentsPlayer data{dir, name, vel, pos};
 				*packet << data;
@@ -241,6 +241,8 @@ void NetworkManagerServer::receiveUDPPackets() {
 			case Packet::UDPPacket::DATA_PLAYER: {
 				ComponentsPlayer p;
 				*packet >> p;
+				//get back to this
+				//TODO: figure out how this should work /w local servers
 				m_server.updatePlayer(p);
 
 				sendPacket(Packet::UDPPacket::DATA_PLAYER,

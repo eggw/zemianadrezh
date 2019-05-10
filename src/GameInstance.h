@@ -11,6 +11,14 @@ class GameInstance {
   public:
 	GameInstance();
 
+	//Before we can do anything with a GameInstance, we should call initialise().
+	//If given a pointer to another GameInstance _g, we'll share _g's world and
+	//registry. This is how a client can share resources with a local server.
+	void initialise(GameInstance* _g);
+	//If not given any parameters, we'll allocate memory for our world and registry.
+	//This is what a server should call to initialise itself.
+	void initialise();
+
 	//TODO: refactor these functions, either remove them or put them somewhere else
 	//-------------------------------------------------------------------------
 	const World&        getWorld() const;
@@ -33,15 +41,10 @@ class GameInstance {
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	World m_world;
-	//TODO
-	//The reason we [should?] use a shared pointer here is because in the case
-	//of a local server, we're going to bypass packet communication completely
-	//and simply assign the client's resources to the memory address of the
-	//server's.
-
-	//The registry that will contain all our entities
-	entt::registry m_registry;
+	//The reason we use shared pointers here is so that a client can share resources
+	//with a local server.
+	std::shared_ptr<World> m_world;
+	std::shared_ptr<entt::registry> m_registry;
 	//---------------------------------------------
 };
 

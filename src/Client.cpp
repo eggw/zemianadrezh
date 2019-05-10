@@ -16,7 +16,7 @@ Client::Client(sf::RenderWindow& _window,
               m_networkManager(*this),
               m_serverIP(_serverIP),
               m_localServer(_localServer),
-              m_player{m_registry.create()},
+              m_player{},
               //TODO:
               //ChatBox's second parameter should take in the player's name more...
               //elegantly
@@ -24,7 +24,7 @@ Client::Client(sf::RenderWindow& _window,
                           m_networkManager,
                           _localServer == nullptr ? "RemotePlayer" :
                                                     "LocalPlayer") {
-	initialisePlayer();
+
 	/*
 	TODO/TOFIX
 	Assigning m_world and m_players to the server's references doesn't properly work.
@@ -35,15 +35,24 @@ Client::Client(sf::RenderWindow& _window,
 	ialised in GameInstance first, but I need to investigate this further.
 	*/
 	if (m_localServer != nullptr) {
-		m_world = m_localServer->getWorld();
+		initialise(m_localServer);
 
+		/*
 		LoggerNetwork::get_instance().log(
 		  LoggerNetwork::LOG_SENDER::CLIENT,
 		  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
+		*/
 	}
+	else {
+		initialise();
+	}
+
+	initialisePlayer();
 }
 
 Client::~Client() {
+	//We won't need to send a QUIT packet if the server was local, as that means
+	//the server is already down.
 	if (!isLocal()) {
 		m_networkManager.sendPacket(Packet::TCPPacket::QUIT);
 	}
@@ -54,7 +63,7 @@ void Client::getInput(sf::Event& _event) {
 }
 
 void Client::update(int _timeslice) {
-	m_world.update(_timeslice);
+	m_world->update(_timeslice);
 	m_networkManager.update();
 	m_interface.update(_timeslice);
 }
@@ -63,6 +72,8 @@ void Client::drawInterface() const {
 	m_interface.draw();
 }
 
+//get back to this
+//TODO: figure out how this should work /w local servers
 void Client::sendPackets() {
 	//Ensure that a reasonable rate of packet sending is maintained.
 	static sf::Clock c;
@@ -84,7 +95,7 @@ entt::entity Client::getPlayerId() const {
 }
 
 sf::Vector2f Client::getPlayerPosition() const {
-	return m_registry.get<ComponentPosition>(m_player).m_position;
+	return m_registry->get<ComponentPosition>(m_player).m_position;
 }
 
 bool Client::isConnected() const {
@@ -96,6 +107,7 @@ bool Client::isLocal() const {
 }
 
 void Client::initialisePlayer() {
+	m_player = m_registry->create();
 	ComponentsPlayer p{};
 	p.compName.m_name =
 	  (m_localServer == nullptr ? "RemotePlayer" : "LocalPlayer");
@@ -103,7 +115,7 @@ void Client::initialisePlayer() {
 }
 
 void Client::respawnPlayer() {
-	auto& playerPos = m_registry.get<ComponentPosition>(m_player).m_position;
-	playerPos.x     = m_world.getCenter().x;
+	auto& playerPos = m_registry->get<ComponentPosition>(m_player).m_position;
+	playerPos.x     = m_world->getCenter().x;
 	playerPos.y     = 0;
 }

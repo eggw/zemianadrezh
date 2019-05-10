@@ -42,10 +42,10 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 		entt::entity e{m_client.m_player};
 		sf::Uint16   port{m_udpSocket.getLocalPort()};
 
-		const auto dir{m_client.m_registry.get<ComponentDirection>(e)};
-		const auto name{m_client.m_registry.get<ComponentName>(e)};
-		const auto vel{m_client.m_registry.get<ComponentPhysics>(e)};
-		const auto pos{m_client.m_registry.get<ComponentPosition>(e)};
+		const auto dir{m_client.m_registry->get<ComponentDirection>(e)};
+		const auto name{m_client.m_registry->get<ComponentName>(e)};
+		const auto vel{m_client.m_registry->get<ComponentPhysics>(e)};
+		const auto pos{m_client.m_registry->get<ComponentPosition>(e)};
 
 		ComponentsPlayer data{dir, name, vel, pos};
 
@@ -100,10 +100,10 @@ void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
 	case Packet::UDPPacket::DATA_PLAYER: {
 		entt::entity e{m_client.m_player};
 
-		auto dir{m_client.m_registry.get<ComponentDirection>(e)};
-		auto name{m_client.m_registry.get<ComponentName>(e)};
-		auto vel{m_client.m_registry.get<ComponentPhysics>(e)};
-		auto pos{m_client.m_registry.get<ComponentPosition>(e)};
+		auto dir{m_client.m_registry->get<ComponentDirection>(e)};
+		auto name{m_client.m_registry->get<ComponentName>(e)};
+		auto vel{m_client.m_registry->get<ComponentPhysics>(e)};
+		auto pos{m_client.m_registry->get<ComponentPosition>(e)};
 
 		*packet << ComponentsPlayer{dir, name, vel, pos};
 

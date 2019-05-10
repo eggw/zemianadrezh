@@ -4,7 +4,8 @@ Server::Server(bool _allowConnections)
             : GameInstance(),
               m_networkManager(*this),
               m_allowConnections(_allowConnections) {
-	m_world.addChunk(0, 2, false);
+	initialise();
+	m_world->addChunk(0, 2, false);
 }
 
 //Automatically send out a packet indicating the server has been closed
