@@ -43,7 +43,7 @@ class GameInstance {
 	//Data members --------------------------------
 	//The reason we use shared pointers here is so that a client can share resources
 	//with a local server.
-	std::shared_ptr<World> m_world;
+	std::shared_ptr<World>          m_world;
 	std::shared_ptr<entt::registry> m_registry;
 	//---------------------------------------------
 };

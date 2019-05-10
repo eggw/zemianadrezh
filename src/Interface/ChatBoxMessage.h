@@ -33,7 +33,7 @@ class ChatBoxMessage : public sf::Drawable {
 	sf::MulticolourText m_text;
 	std::string         m_sender;
 	std::string         m_message;
-  	//---------------------------------------------
+	//---------------------------------------------
 };
 
 #endif // CHATBOXMESSAGE_H_INCLUDED

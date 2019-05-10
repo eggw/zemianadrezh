@@ -24,7 +24,6 @@ Client::Client(sf::RenderWindow& _window,
                           m_networkManager,
                           _localServer == nullptr ? "RemotePlayer" :
                                                     "LocalPlayer") {
-
 	/*
 	TODO/TOFIX
 	Assigning m_world and m_players to the server's references doesn't properly work.
@@ -72,8 +71,6 @@ void Client::drawInterface() const {
 	m_interface.draw();
 }
 
-//get back to this
-//TODO: figure out how this should work /w local servers
 void Client::sendPackets() {
 	//Ensure that a reasonable rate of packet sending is maintained.
 	static sf::Clock c;

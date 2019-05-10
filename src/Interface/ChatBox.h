@@ -20,8 +20,8 @@ class ChatBox : public sf::Drawable {
 	bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
 
   private:
-  	//Functions -----------------------------------
-  	//
+	//Functions -----------------------------------
+	//
 	//Message-related
 	void positionMessage(int _index);
 	void setTransparency(int _a);
@@ -42,7 +42,7 @@ class ChatBox : public sf::Drawable {
 	bool  viewAtLowest() const;
 	void  scrollUp();
 	void  scrollDown();
-  	//---------------------------------------------
+	//---------------------------------------------
 
 	//Data members --------------------------------
 	const std::string m_name;
@@ -62,7 +62,7 @@ class ChatBox : public sf::Drawable {
 	sf::Clock m_clock;
 
 	bool m_anchoredToBottom;
-  	//---------------------------------------------
+	//---------------------------------------------
 };
 
 #endif // CHATBOX_H_INCLUDED

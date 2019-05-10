@@ -38,15 +38,31 @@ void Program::gameLoop() {
 		getInput();
 
 		int realTime{timesliceClock.getElapsedTime().asMilliseconds()};
+
 		while (simulationTime < realTime) {
 			simulationTime += FIXED_TIMESLICE;
+
+			//The way packet sending between client and server works is
+			//as follows:
+			//
+			//(*)The client sends its player data to the server
+			//    [NetworkManagerClient] -> [NetworkManagerServer]
+			//
+			//(*) The server then sets its copy of the player according
+			//to the data received.
+			//
+			//When sharing GameInstance::m_world & ::m_registry with
+			//a local server, the exchange takes place virtually instantly.
+			//
+			//For this reason, it is important that the client updates
+			//and gets input just before the local server does.
+
+			update(FIXED_TIMESLICE);
 
 			if (localServerInitialised()) {
 				m_localServer->receivePackets();
 				m_localServer->update(FIXED_TIMESLICE);
 			}
-
-			update(FIXED_TIMESLICE);
 		}
 
 		draw();

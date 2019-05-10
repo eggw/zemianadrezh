@@ -287,7 +287,7 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 //If so, it adjusts the view's center so that the very first message is
 //on top.
 void ChatBox::snapToTop() {
-	if(!viewAtLowest()) {
+	if (!viewAtLowest()) {
 		m_anchoredToBottom = false;
 	}
 
@@ -375,7 +375,7 @@ bool ChatBox::viewAtLowest() const {
 }
 
 void ChatBox::scrollUp() {
-	if(!viewAtLowest()) {
+	if (!viewAtLowest()) {
 		m_anchoredToBottom = false;
 	}
 
@@ -391,7 +391,7 @@ void ChatBox::scrollUp() {
 }
 
 void ChatBox::scrollDown() {
-	if(!viewAtLowest()) {
+	if (!viewAtLowest()) {
 		m_anchoredToBottom = false;
 	}
 

@@ -241,8 +241,6 @@ void NetworkManagerServer::receiveUDPPackets() {
 			case Packet::UDPPacket::DATA_PLAYER: {
 				ComponentsPlayer p;
 				*packet >> p;
-				//get back to this
-				//TODO: figure out how this should work /w local servers
 				m_server.updatePlayer(p);
 
 				sendPacket(Packet::UDPPacket::DATA_PLAYER,

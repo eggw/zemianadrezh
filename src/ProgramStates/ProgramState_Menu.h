@@ -24,12 +24,12 @@ class ProgramState_Menu : public ProgramState {
 	//Functions -----------------------------------
 	void detectMouseClicks();
 	void updateTitleText(int _timeslice);
-  	//---------------------------------------------
+	//---------------------------------------------
 
   protected:
 	//Functions -----------------------------------
 	virtual void onResize(sf::Vector2u _newSize);
-  	//---------------------------------------------
+	//---------------------------------------------
 
   protected:
 	typedef std::tuple<bool, void (Program::*)(), sf::Text, int> MenuItem;
@@ -56,8 +56,7 @@ class ProgramState_Menu : public ProgramState {
 	sf::View              m_view;
 
 	static sf::Text m_titleText;
-  	//---------------------------------------------
-
+	//---------------------------------------------
 };
 
 #endif // PROGRAMSTATE_MENU_H_INCLUDED

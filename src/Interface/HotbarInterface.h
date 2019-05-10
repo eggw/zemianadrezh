@@ -35,9 +35,9 @@ class HotbarInterface : public sf::Drawable {
 		sf::Text           m_numberText;
 	};
 
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 	void setActiveHotbarSlot(int _i);
-  	//---------------------------------------------
+	//---------------------------------------------
 
 	//Data members --------------------------------
 	sf::RenderWindow&       m_window;
@@ -45,8 +45,7 @@ class HotbarInterface : public sf::Drawable {
 	sf::View                m_hotbarView;
 
 	HotbarRect* m_activeHotbarSlot;
-  	//---------------------------------------------
-
+	//---------------------------------------------
 };
 
 #endif // HOTBARINTERFACE_H_INCLUDED

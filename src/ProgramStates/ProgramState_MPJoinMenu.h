@@ -13,14 +13,14 @@ class ProgramState_MPJoinMenu : public ProgramState_Menu {
 	void draw();
 
   protected:
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 	void onResize(sf::Vector2u _newSize);
-  	//---------------------------------------------
+	//---------------------------------------------
 
   private:
 	//Data members --------------------------------
 	TextEntryBox m_IPEntry;
-  	//---------------------------------------------
+	//---------------------------------------------
 };
 
 #endif // PROGRAMSTATE_MPJOINMENU_H_INCLUDED
