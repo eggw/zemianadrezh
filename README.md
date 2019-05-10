@@ -33,6 +33,10 @@ As of 10/5/2019, the following features are in:
 
 *at the moment, there is no client-side latency prediction or compensation of any sort, leading to somewhat jittery movement of remote players.
 
+An image showing the game in its current state:
+
+![img](https://i.imgur.com/rx1KYEk.png)
+
 
 ## Dependencies
 
