@@ -8,11 +8,13 @@ The long term goal is to implement a variety of mechanics inherent to a game of 
 
 * Enemies and friendly NPCs (AI)
 
-* A day-night cycle
+* A day-night cycle with effects beyond just aesthetic ones (such as enemies spawning at night)
 
 * An inventory system
 
 * Combat (including equipment, weapons, and other items)
+
+* Destroyable and placeable blocks and wall tiles 
 
 All this should work seamlessly over a network connection.
 
