@@ -13,7 +13,7 @@ constexpr float        IPENTRY_X_POS{0.5f - (IPENTRY_WIDTH_FACTOR / 2)};
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
-            : ProgramState_Menu(_program), m_IPEntry(18, 45) {
+            : ProgramState_Menu(_program), m_IPEntry(true, true, 18, 45) {
 	addMenuItem(
 	  "Connect", &Program::pushState_Play_MP_Join, sf::Keyboard::Enter);
 
@@ -21,9 +21,6 @@ ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
 	addMenuItem("Back to Main Menu", &Program::returnToMainMenu);
 
 	onResize(_program.m_window.getSize());
-
-	m_IPEntry.setAlwaysVisible(true);
-	m_IPEntry.setAlwaysActive(true);
 	m_IPEntry.setText("localhost");
 }
 

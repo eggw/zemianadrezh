@@ -20,7 +20,10 @@ const bool keysPressedTogether(std::vector<sf::Keyboard::Key> _keys) {
 	return allPressed;
 }
 
-TextEntryBox::TextEntryBox(unsigned int _charSize, unsigned int _maxChars)
+TextEntryBox::TextEntryBox(bool         _alwaysVisible,
+                           bool         _alwaysActive,
+                           unsigned int _charSize,
+                           unsigned int _maxChars)
             : m_textView(),
               m_rectangle(),
               m_selectionBegin(0),
@@ -29,8 +32,8 @@ TextEntryBox::TextEntryBox(unsigned int _charSize, unsigned int _maxChars)
               m_text(),
               m_enteringText{false},
               m_inputComplete{false},
-              m_alwaysVisible{false},
-              m_alwaysActive{false},
+              m_alwaysVisible{_alwaysVisible},
+              m_alwaysActive{_alwaysActive},
               m_charSize{_charSize},
               m_maxChars{_maxChars} {
 	m_rectangle.setFillColor(sf::Color(0, 0, 0, 120));
@@ -223,14 +226,6 @@ void TextEntryBox::setActive() {
 
 void TextEntryBox::setInactive() {
 	m_enteringText = false;
-}
-
-void TextEntryBox::setAlwaysVisible(bool _val) {
-	m_alwaysVisible = _val;
-}
-
-void TextEntryBox::setAlwaysActive(bool _val) {
-	m_alwaysActive = _val;
 }
 
 float TextEntryBox::getHeightAsPixels() const {

@@ -5,7 +5,10 @@
 
 class TextEntryBox : public sf::Drawable {
   public:
-	TextEntryBox(unsigned int _charSize = 18, unsigned int _maxChars = 255);
+	TextEntryBox(bool         _alwaysVisible,
+	             bool         _alwaysActive,
+	             unsigned int _charSize = 18,
+	             unsigned int _maxChars = 255);
 
 	void initialise(sf::Vector2u _windowSize, sf::FloatRect _viewPort);
 
@@ -21,8 +24,6 @@ class TextEntryBox : public sf::Drawable {
 
 	void setActive();
 	void setInactive();
-	void setAlwaysVisible(bool _val);
-	void setAlwaysActive(bool _val);
 
 	float getHeightAsPixels() const;
 	float getHeightAsRatio(sf::Vector2u _windowSize) const;

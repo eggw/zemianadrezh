@@ -32,7 +32,7 @@ ChatBox::ChatBox(const std::string& _name)
               m_shadedRectangle{},
               m_messages{},
               m_lastMessage{},
-              m_textEntry{},
+              m_textEntry{false, false},
               m_clock{},
               m_anchoredToBottom{true} {
 	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
