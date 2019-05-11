@@ -1,3 +1,11 @@
+//////////////////////////////////////////////|
+//Contains tests at the end of the file       |
+//////////////////////////////////////////////|
+#include "doctest.h";
+//--------------------------------------------|
+// (*) World parsing/unparsing
+//--------------------------------------------|
+
 #include "World.h"
 
 #include "TextureManager.h"
@@ -73,6 +81,28 @@ void World::update(int _timeslice) {
 const WorldTime& World::getTime() const {
 	return m_time;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------TESTS-------------------------------------//
+/////////////////////////////////////////////////////////////////////////////////////
+
+TEST_CASE("Testing world unparsing/reparsing") {
+	World world{};
+	world.addChunk(0, 1, false);
+	auto encodedData{world.encodeChunks().back()};
+
+	const auto toDecode{encodedData};
+	world.parseChunk(toDecode);
+
+	auto reEncoded{world.encodeChunks().back()};
+	SUBCASE("test if re-encoded world chunks match") {
+		CHECK(encodedData.id == reEncoded.id);
+		CHECK(encodedData.blocks == reEncoded.blocks);
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------//
+/////////////////////////////////////////////////////////////////////////////////////
 
 /*
 This is useful for debugging inconsistencies between encoded/decoded

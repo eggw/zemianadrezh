@@ -28,15 +28,6 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
               m_interface(m_networkManager,
                           _localServer == nullptr ? "RemotePlayer" :
                                                     "LocalPlayer") {
-	/*
-	TODO/TOFIX
-	Assigning m_world and m_players to the server's references doesn't properly work.
-	To test it, comment out m_world.update() in Client.cpp and uncomment it in Server.cpp
-
-	Even when they're supposed to be shared (i.e. Client's m_world is supposed to refer to
-	Server's m_world), that doesn't seem to be the case. Probably because m_world is init-
-	ialised in GameInstance first, but I need to investigate this further.
-	*/
 	if (m_localServer != nullptr) {
 		initialise(m_localServer);
 	}
