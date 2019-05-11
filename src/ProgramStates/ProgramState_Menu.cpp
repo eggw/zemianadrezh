@@ -20,9 +20,9 @@ ProgramState_Menu::ProgramState_Menu(Program& _program,
             : ProgramState(_program, _visibleOverPreviousState),
               m_view{sf::FloatRect(0,
                                    0,
-                                   float(m_program.m_window->getSize().x),
-                                   float(m_program.m_window->getSize().y))} {
-	m_program.m_window->setView(m_view);
+                                   float(m_program.m_window.getSize().x),
+                                   float(m_program.m_window.getSize().y))} {
+	m_program.m_window.setView(m_view);
 
 	m_titleText.setFont(
 	  FontManager::get_instance().getFont(FontManager::Type::ANDY));
@@ -32,7 +32,7 @@ ProgramState_Menu::ProgramState_Menu(Program& _program,
 	m_titleText.setOrigin(m_titleText.getLocalBounds().width / 2,
 	                      m_titleText.getLocalBounds().height / 2);
 
-	onResize(m_program.m_window->getSize());
+	onResize(m_program.m_window.getSize());
 }
 
 ProgramState_Menu::~ProgramState_Menu() {
@@ -84,8 +84,8 @@ void ProgramState_Menu::getInput(sf::Event& _event) {
 }
 
 bool ProgramState_Menu::isMousedOver(ProgramState_Menu::MenuItem _menuItem) {
-	sf::Vector2i mousePos = sf::Mouse::getPosition(*m_program.m_window);
-	sf::Vector2f pixelPos{m_program.m_window->mapPixelToCoords(mousePos)};
+	sf::Vector2i mousePos = sf::Mouse::getPosition(m_program.m_window);
+	sf::Vector2f pixelPos{m_program.m_window.mapPixelToCoords(mousePos)};
 
 	return std::get<2>(_menuItem).getGlobalBounds().intersects(
 	  {pixelPos.x, pixelPos.y, 1, 1});
@@ -101,12 +101,12 @@ void ProgramState_Menu::update(int _timeslice) {
 }
 
 void ProgramState_Menu::draw() {
-	m_program.m_window->setView(m_view);
+	m_program.m_window.setView(m_view);
 	for (const auto& menuItem : m_menuItems) {
-		m_program.m_window->draw(std::get<2>(menuItem));
+		m_program.m_window.draw(std::get<2>(menuItem));
 	}
 
-	m_program.m_window->draw(m_titleText);
+	m_program.m_window.draw(m_titleText);
 }
 
 void ProgramState_Menu::addMenuItem(const std::string& _string,
@@ -133,8 +133,8 @@ void ProgramState_Menu::addMenuItem(const std::string& _string,
 	//Set the element in the center to be in the middle of the
 	//screen
 
-	std::get<2>(*it).setPosition(m_program.m_window->getSize().x / 2,
-	                             m_program.m_window->getSize().y / 2);
+	std::get<2>(*it).setPosition(m_program.m_window.getSize().x / 2,
+	                             m_program.m_window.getSize().y / 2);
 
 	//Then, set the position of all elements above the center
 	while (it != m_menuItems.begin()) {
@@ -164,7 +164,7 @@ void ProgramState_Menu::onResize(sf::Vector2u _newSize) {
 	ProgramState::onResize(_newSize);
 	m_view.setSize({float(_newSize.x), float(_newSize.y)});
 
-	float newTitleY{m_view.getCenter().y - m_program.m_window->getSize().y / 3};
+	float newTitleY{m_view.getCenter().y - m_program.m_window.getSize().y / 3};
 	m_titleText.setPosition({m_view.getCenter().x, newTitleY});
 }
 

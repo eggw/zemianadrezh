@@ -29,9 +29,9 @@ bool ProgramState::isVisibleOverPreviousState() const {
 }
 
 void ProgramState::onStateSwitch() {
-	onResize(m_program.m_window->getSize());
+	onResize(m_program.m_window.getSize());
 }
 
 void ProgramState::onResize(sf::Vector2u _newSize) {
-	m_program.m_window->setSize(_newSize);
+	m_program.m_window.setSize(_newSize);
 }

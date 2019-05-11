@@ -10,6 +10,8 @@ ISSUES:
 */
 
 int main(int argc, char** argv) {
+	sf::RenderWindow window{sf::VideoMode(800, 600), "zemianadrezh"};
+	window.setFramerateLimit(144);
 	//doctest related setup
 	//For more information, see:
 	//https://github.com/onqtam/doctest/blob/master/doc/markdown/main.md
@@ -25,6 +27,6 @@ int main(int argc, char** argv) {
     }
 
 	//After all tests are successfully run, we'll actually launch the Program
-	Program program;
+	Program program(window);
 	return 0;
 }

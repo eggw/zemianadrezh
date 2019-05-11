@@ -12,7 +12,7 @@ class ProgramState;
 
 class Program : public Singleton<Program> {
   public:
-	Program();
+	Program(sf::RenderWindow& _window);
 	~Program();
 
 	void init();
@@ -45,7 +45,7 @@ class Program : public Singleton<Program> {
 	Server* getServer() const;
 
 	std::vector<std::unique_ptr<ProgramState>> m_states;
-	std::unique_ptr<sf::RenderWindow>          m_window;
+	sf::RenderWindow&                          m_window;
 
   private:
 	//Functions -----------------------------------

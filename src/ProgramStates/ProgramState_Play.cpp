@@ -14,21 +14,21 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
               m_client(_ipAddress, m_program.getServer()),
-              m_rendererChunk(*m_program.m_window, *m_client.m_world),
+              m_rendererChunk(m_program.m_window, *m_client.m_world),
               m_systemAnimation{},
-              m_systemDrawing{*m_program.m_window},
+              m_systemDrawing{m_program.m_window},
               m_systemPhysics{},
               m_systemPlayerMovement{m_client.getPlayerId()},
               m_dayNightCycle(m_client.getWorld()),
               m_view{sf::FloatRect(0,
                                    0,
-                                   float(m_program.m_window->getSize().x),
-                                   float(m_program.m_window->getSize().y))},
+                                   float(m_program.m_window.getSize().x),
+                                   float(m_program.m_window.getSize().y))},
 
-              m_skyView{{float(m_program.m_window->getSize().x / 2),
-                         float(m_program.m_window->getSize().y / 2)},
-                        {float(m_program.m_window->getSize().x),
-                         float(m_program.m_window->getSize().y)}} {
+              m_skyView{{float(m_program.m_window.getSize().x / 2),
+                         float(m_program.m_window.getSize().y / 2)},
+                        {float(m_program.m_window.getSize().x),
+                         float(m_program.m_window.getSize().y)}} {
 	m_client.connectToServer(_ipAddress, Packet::Port_TCP_Server);
 }
 
@@ -48,9 +48,9 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 	else if (_event.type == sf::Event::MouseButtonPressed) {
 		if (_event.key.code == sf::Mouse::Left) {
 			//Temporary; to be used later
-			sf::Vector2i coords{sf::Mouse::getPosition(*m_program.m_window)};
+			sf::Vector2i coords{sf::Mouse::getPosition(m_program.m_window)};
 			sf::Vector2i coordsInWorld{
-			  m_program.m_window->mapPixelToCoords(coords)};
+			  m_program.m_window.mapPixelToCoords(coords)};
 			std::cout << "LMB pressed at " << coordsInWorld.x << ", "
 			          << coordsInWorld.y << std::endl;
 		}
@@ -79,14 +79,14 @@ void ProgramState_Play::update(int _timeslice) {
 }
 
 void ProgramState_Play::draw() {
-	m_program.m_window->setView(m_skyView);
-	m_program.m_window->draw(m_dayNightCycle);
+	m_program.m_window.setView(m_skyView);
+	m_program.m_window.draw(m_dayNightCycle);
 
-	m_program.m_window->setView(m_view);
+	m_program.m_window.setView(m_view);
 	m_systemDrawing.draw(*m_client.m_registry);
 	m_rendererChunk.draw();
 
-	m_program.m_window->draw(m_client);
+	m_program.m_window.draw(m_client);
 }
 
 bool ProgramState_Play::clientConnected() const {
