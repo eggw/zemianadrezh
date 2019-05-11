@@ -306,6 +306,10 @@ void NetworkManagerServer::update() {
 	PacketSender::get_instance().update();
 }
 
+size_t NetworkManagerServer::connectedPlayers() const {
+	return m_clientConnections.size();
+}
+
 std::vector<sf::TcpSocket*> NetworkManagerServer::getTCPRecipients(
   sf::TcpSocket* _recipient,
   bool           _exclude) {

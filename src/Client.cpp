@@ -39,6 +39,7 @@ Client::Client(sf::IpAddress _serverIP,
 	}
 
 	initialisePlayer();
+
 	m_networkManager.connect(m_serverIP, Packet::Port_TCP_Server);
 }
 
@@ -118,9 +119,22 @@ void Client::respawnPlayer() {
 TEST_CASE("Testing client-server connection") {
 	sf::IpAddress    ip{sf::IpAddress::LocalHost};
 	Server           server{true};
-	Client           client {ip, &server};
+
+	SUBCASE("testing server size before joining") {
+		CHECK(server.connectedPlayers() == 0);
+	}
+
+	Client client {ip, &server};
+	server.acceptConnections();
+	server.update(0);
 
 	CHECK(client.isConnected());
+	CHECK(client.isLocal());
+
+	SUBCASE("testing server size after joining") {
+		CHECK(server.connectedPlayers() == 1);
+	}
+
 }
 /////////////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------------

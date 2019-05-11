@@ -10,7 +10,7 @@
 #include "Components/ComponentsPlayer.h"
 
 NetworkManagerClient::NetworkManagerClient(Client& _client)
-            : m_client{_client}, m_connectionActive{true}, m_udpSocket{} {
+            : m_client{_client}, m_connectionActive{false}, m_udpSocket{} {
 	m_udpSocket.setBlocking(false);
 
 	if (m_udpSocket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
@@ -251,6 +251,7 @@ void NetworkManagerClient::connect(const sf::IpAddress& _ip,
 	m_serverConnection.setBlocking(false);
 
 	if (successfullyConnected) {
+		m_connectionActive = true;
 		sendPacket(Packet::TCPPacket::JUSTJOINED);
 	}
 }

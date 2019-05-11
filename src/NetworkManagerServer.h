@@ -38,6 +38,8 @@ class NetworkManagerServer {
 	void accept();
 	void update();
 
+	size_t connectedPlayers() const;
+
   private:
 	//Since the clients that connect to us via UDP will have varying
 	//ports, we'll use IPInfo to conveniently store it alongside their IP

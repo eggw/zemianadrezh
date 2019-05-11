@@ -19,8 +19,11 @@ class Server : public GameInstance {
 	//This is because the server doesn't send any unsolicited
 	//packets; rather, it responds to packets sent by Clients
 	void receivePackets();
+	void acceptConnections();
 	void update(int _timeslice);
+
 	bool connectionsAllowed() const;
+	size_t connectedPlayers() const;
 
   private:
 	//Data members --------------------------------

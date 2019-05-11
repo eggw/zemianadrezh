@@ -56,6 +56,7 @@ void Program::gameLoop() {
 			update(FIXED_TIMESLICE);
 
 			if (localServerInitialised()) {
+				m_localServer->acceptConnections();
 				m_localServer->receivePackets();
 				m_localServer->update(FIXED_TIMESLICE);
 			}

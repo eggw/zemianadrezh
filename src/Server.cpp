@@ -19,13 +19,20 @@ void Server::receivePackets() {
 	m_networkManager.receiveTCPPackets();
 }
 
+void Server::acceptConnections() {
+	m_networkManager.accept();
+}
+
 void Server::update(int _timeslice) {
 	//TODO: figure out how to keep server/client world times synced
 	//m_world.update(_timeslice);
-	m_networkManager.accept();
 	m_networkManager.update();
 }
 
 bool Server::connectionsAllowed() const {
 	return m_allowConnections;
+}
+
+size_t Server::connectedPlayers() const {
+	return m_networkManager.connectedPlayers();
 }
