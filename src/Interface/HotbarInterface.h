@@ -6,7 +6,7 @@
 
 class HotbarInterface : public sf::Drawable {
   public:
-	HotbarInterface(sf::RenderWindow& _window);
+	HotbarInterface();
 
 	void getInput(sf::Event& _event);
 	void update(int _timeslice);
@@ -40,7 +40,9 @@ class HotbarInterface : public sf::Drawable {
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	sf::RenderWindow&       m_window;
+	mutable sf::RenderTarget* m_target;
+	sf::Vector2u              m_lastTargetSize;
+
 	std::vector<HotbarRect> m_hotbar;
 	sf::View                m_hotbarView;
 

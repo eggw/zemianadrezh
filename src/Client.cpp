@@ -9,9 +9,8 @@
 #include "Components/ComponentAnimation.h"
 #include "Components/ComponentsPlayer.h"
 
-Client::Client(sf::RenderWindow& _window,
-               sf::IpAddress     _serverIP,
-               Server*           _localServer)
+Client::Client(sf::IpAddress _serverIP,
+               Server*       _localServer)
             : GameInstance(),
               m_networkManager(*this),
               m_serverIP(_serverIP),
@@ -20,8 +19,7 @@ Client::Client(sf::RenderWindow& _window,
               //TODO:
               //ChatBox's second parameter should take in the player's name more...
               //elegantly
-              m_interface(_window,
-                          m_networkManager,
+              m_interface(m_networkManager,
                           _localServer == nullptr ? "RemotePlayer" :
                                                     "LocalPlayer") {
 	/*
@@ -35,12 +33,6 @@ Client::Client(sf::RenderWindow& _window,
 	*/
 	if (m_localServer != nullptr) {
 		initialise(m_localServer);
-
-		/*
-		LoggerNetwork::get_instance().log(
-		  LoggerNetwork::LOG_SENDER::CLIENT,
-		  LoggerNetwork::LOG_MESSAGE::CONNECTION_LOCALHOST);
-		*/
 	}
 	else {
 		initialise();
@@ -67,8 +59,8 @@ void Client::update(int _timeslice) {
 	m_interface.update(_timeslice);
 }
 
-void Client::drawInterface() const {
-	m_interface.draw();
+void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	target.draw(m_interface, states);
 }
 
 void Client::connectToServer(const sf::IpAddress& _ip, unsigned short _port) {

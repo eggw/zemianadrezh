@@ -20,18 +20,11 @@ int main(int argc, char** argv) {
     //don't break in the debugger when assertions fail
     context.setOption("no-breaks", true);
     int res = context.run();
-    if(context.shouldExit()) { // important - query flags (and --exit) rely on the user doing this
-        return res;            // propagate the result of the tests
-	}
+    if(res != 0) {
+		return res;
+    }
 
-
-	//After all tests are run, we'll actually launch the Program
+	//After all tests are successfully run, we'll actually launch the Program
 	Program program;
-
-
-	//your program - if the testing framework is integrated in your production code
-    int returnCode = 0;
-
-    //the result from doctest is propagated here as well
-    return res + returnCode;
+	return 0;
 }

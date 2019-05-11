@@ -11,15 +11,14 @@
 
 class NetworkManagerClient;
 
-class UserInterface {
+class UserInterface : public sf::Drawable {
   public:
-	UserInterface(sf::RenderWindow&     _window,
-	              NetworkManagerClient& _n,
+	UserInterface(NetworkManagerClient& _n,
 	              std::string           _name);
 
 	void getInput(sf::Event& _event);
 	void update(int _timeslice);
-	void draw(sf::RenderStates states = sf::RenderStates::Default) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
   private:
 	//Functions -----------------------------------
@@ -28,10 +27,10 @@ class UserInterface {
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	sf::RenderWindow&     m_window;
-	NetworkManagerClient& m_networkManager;
-	ChatBox               m_chatBox;
-	HotbarInterface       m_hotbarInterface;
+	mutable sf::RenderTarget*     m_target;
+	NetworkManagerClient&         m_networkManager;
+	ChatBox                       m_chatBox;
+	HotbarInterface               m_hotbarInterface;
 	//---------------------------------------------
 };
 

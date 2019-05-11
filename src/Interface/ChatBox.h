@@ -9,7 +9,7 @@
 
 class ChatBox : public sf::Drawable {
   public:
-	ChatBox(sf::RenderWindow& _window, const std::string& _name);
+	ChatBox(const std::string& _name);
 
 	void appendMessage(const std::string _message,
 	                   const std::string _sender = "");
@@ -45,6 +45,9 @@ class ChatBox : public sf::Drawable {
 	//---------------------------------------------
 
 	//Data members --------------------------------
+	mutable sf::RenderTarget* m_target;
+	sf::Vector2u              m_lastTargetSize;
+
 	const std::string m_name;
 
 	sf::View m_view;

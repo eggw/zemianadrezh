@@ -13,7 +13,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //set the last argument of m_client's constructor
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
-              m_client(*m_program.m_window, _ipAddress, m_program.getServer()),
+              m_client(_ipAddress, m_program.getServer()),
               m_rendererChunk(*m_program.m_window, *m_client.m_world),
               m_systemAnimation{},
               m_systemDrawing{*m_program.m_window},
@@ -86,7 +86,7 @@ void ProgramState_Play::draw() {
 	m_systemDrawing.draw(*m_client.m_registry);
 	m_rendererChunk.draw();
 
-	m_client.drawInterface();
+	m_program.m_window->draw(m_client);
 }
 
 bool ProgramState_Play::clientConnected() const {

@@ -16,22 +16,22 @@ server.
 
 class Server;
 
-class Client : public GameInstance {
+class Client : public GameInstance, public sf::Drawable {
 	friend class NetworkManagerClient;
 	//TODO: maybe get rid of ProgramState_Play
 	//being a friend.
 	friend class ProgramState_Play;
 
   public:
-	Client(sf::RenderWindow& _window,
-	       sf::IpAddress     _serverIP,
-	       Server*           _localServer = nullptr);
+	Client(sf::IpAddress _serverIP,
+	       Server*       _localServer = nullptr);
 
 	~Client();
 
 	void getInput(sf::Event& _event);
 	void update(int _timeslice);
-	void drawInterface() const;
+	//Client's draw function simply draws the interface
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void connectToServer(const sf::IpAddress& _ip, unsigned short _port);
 

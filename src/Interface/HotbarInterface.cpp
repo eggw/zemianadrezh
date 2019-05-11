@@ -2,8 +2,11 @@
 
 #include "Keybinds.h"
 
-HotbarInterface::HotbarInterface(sf::RenderWindow& _window)
-            : m_window{_window}, m_hotbarView(), m_activeHotbarSlot{nullptr} {
+HotbarInterface::HotbarInterface()
+            : m_target{nullptr},
+              m_lastTargetSize{},
+              m_hotbarView{},
+			  m_activeHotbarSlot{nullptr} {
 	int hotbarRectWidth{40};
 	int hotbarRectHeight{40};
 
@@ -27,8 +30,6 @@ HotbarInterface::HotbarInterface(sf::RenderWindow& _window)
 	}
 
 	setActiveHotbarSlot(1);
-
-	onResize(m_window.getSize());
 }
 
 void HotbarInterface::getInput(sf::Event& _event) {
@@ -80,31 +81,39 @@ void HotbarInterface::getInput(sf::Event& _event) {
 		}
 	}
 
-	case sf::Event::Resized: {
-		sf::Vector2u newSize{_event.size.width, _event.size.height};
-		onResize(newSize);
-		break;
-	}
 	default:
 		break;
 	}
 }
 
 void HotbarInterface::update(int _timeslice) {
+	//onResize() will need to be called at least once after
+	//m_target is set, so this code will be needed here.
+	//As a result, we also won't really need to detect
+	//a Resized event in getInput(), since this part
+	//will handle that as well.
+	if(m_target != nullptr) {
+		if(m_target->getSize() != m_lastTargetSize) {
+			m_lastTargetSize = m_target->getSize();
+			onResize(m_lastTargetSize);
+		}
+	}
 }
 
 void HotbarInterface::draw(sf::RenderTarget& target,
                            sf::RenderStates  states) const {
-	sf::View previousView = target.getView();
+	m_target = &target;
 
-	target.setView(m_hotbarView);
+	sf::View previousView = m_target->getView();
+
+	m_target->setView(m_hotbarView);
 
 	for (auto& rect : m_hotbar) {
-		target.draw(rect.m_rectangle);
-		target.draw(rect.m_numberText);
+		m_target->draw(rect.m_rectangle);
+		m_target->draw(rect.m_numberText);
 	}
 
-	target.setView(previousView);
+	m_target->setView(previousView);
 }
 
 void HotbarInterface::onResize(sf::Vector2u _newSize) {

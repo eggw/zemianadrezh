@@ -23,8 +23,10 @@ const float Y_BUFFERSPACE{1.3f * LINESPACING};
 //last message
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
-            : m_name(_name),
+ChatBox::ChatBox(const std::string& _name)
+            : m_target{nullptr},
+              m_lastTargetSize{},
+			  m_name(_name),
               m_view(),
               m_shadedRectangleView(),
               m_shadedRectangle(),
@@ -32,7 +34,6 @@ ChatBox::ChatBox(sf::RenderWindow& _window, const std::string& _name)
               m_textEntry(),
               m_clock(),
               m_anchoredToBottom(true) {
-	onResize(_window.getSize());
 
 	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
 	snapToBottom();
@@ -94,17 +95,24 @@ void ChatBox::getInput(sf::Event& _event) {
 		break;
 	}
 
-	case sf::Event::Resized: {
-		sf::Vector2u newSize{_event.size.width, _event.size.height};
-		onResize(newSize);
-		break;
-	}
 	default:
 		break;
 	}
 }
 
 void ChatBox::update() {
+	//onResize() will need to be called at least once after
+	//m_target is set, so this code will be needed here.
+	//As a result, we also won't really need to detect
+	//a Resized event in getInput(), since this part
+	//will handle that as well.
+	if(m_target != nullptr) {
+		if(m_target->getSize() != m_lastTargetSize) {
+			m_lastTargetSize = m_target->getSize();
+			onResize(m_lastTargetSize);
+		}
+	}
+
 	m_textEntry.update();
 	if (m_textEntry.inputComplete()) {
 		m_lastMessage = std::make_pair(m_textEntry.getLastString(), m_name);
@@ -118,21 +126,22 @@ void ChatBox::update() {
 }
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	sf::View previousView = target.getView();
+	m_target = &target;
 
-	target.setView(m_shadedRectangleView);
-	target.draw(m_shadedRectangle, states);
+	sf::View previousView = m_target->getView();
+	m_target->setView(m_shadedRectangleView);
+	m_target->draw(m_shadedRectangle, states);
 
-	target.setView(m_view);
+	m_target->setView(m_view);
 	if (!messagesTransparent()) {
 		for (const auto& message : m_messages) {
-			target.draw(message, states);
+			m_target->draw(message, states);
 		}
 	}
 
-	target.draw(m_textEntry, states);
+	m_target->draw(m_textEntry, states);
 
-	target.setView(previousView);
+	m_target->setView(previousView);
 }
 
 bool ChatBox::completedMessage(std::pair<std::string, std::string>* _ptr) {
