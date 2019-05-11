@@ -25,7 +25,7 @@ void Server::acceptConnections() {
 
 void Server::update(int _timeslice) {
 	//TODO: figure out how to keep server/client world times synced
-	//m_world.update(_timeslice);
+	//m_world->update(_timeslice);
 	m_networkManager.update();
 }
 

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////|
 //Contains tests at the end of the file       |
 //////////////////////////////////////////////|
-#include "doctest.h";
+#include "debug.h";
 //--------------------------------------------|
 // (*) World parsing/unparsing
 //--------------------------------------------|
@@ -89,11 +89,9 @@ const WorldTime& World::getTime() const {
 TEST_CASE("Testing world unparsing/reparsing") {
 	World world{};
 	world.addChunk(0, 1, false);
-	auto encodedData{world.encodeChunks().back()};
-
+	auto       encodedData{world.encodeChunks().back()};
 	const auto toDecode{encodedData};
 	world.parseChunk(toDecode);
-
 	auto reEncoded{world.encodeChunks().back()};
 	SUBCASE("test if re-encoded world chunks match") {
 		CHECK(encodedData.id == reEncoded.id);
@@ -102,22 +100,4 @@ TEST_CASE("Testing world unparsing/reparsing") {
 }
 /////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------//
-/////////////////////////////////////////////////////////////////////////////////////
-
-/*
-This is useful for debugging inconsistencies between encoded/decoded
-world data, just keeping it as a comment in case it's ever needed
-again
-#include <fstream>
-#include <map>
-#include <string>
-#include <iostream>
-void tempLog(std::string _str) {
-    std::ofstream output;
-    output.open("log_world.txt", std::fstream::app);
-    output << _str;
-    output << "\n";
-    output.close();
-    return;
-}
-*/
+//////////////////////////////////////////////////////////////////////////////////////

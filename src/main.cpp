@@ -1,5 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT
-#include "doctest.h"
+#include "debug.h";
 
 #include "Program.h"
 
@@ -11,14 +11,14 @@ int main(int argc, char** argv) {
 	//https://github.com/onqtam/doctest/blob/master/doc/markdown/main.md
 	//------------------------------------------------------------
 	doctest::Context context;
-    context.applyCommandLine(argc, argv);
+	context.applyCommandLine(argc, argv);
 
-    //don't break in the debugger when assertions fail
-    context.setOption("no-breaks", true);
-    int res = context.run();
-    if(res != 0) {
+	//don't break in the debugger when assertions fail
+	context.setOption("no-breaks", true);
+	int res = context.run();
+	if (res != 0) {
 		return res;
-    }
+	}
 
 	//After all tests are successfully run, we'll actually launch the Program
 	Program program(window);
