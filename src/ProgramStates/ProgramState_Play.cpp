@@ -29,7 +29,6 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
                          float(m_program.m_window.getSize().y / 2)},
                         {float(m_program.m_window.getSize().x),
                          float(m_program.m_window.getSize().y)}} {
-	m_client.connectToServer(_ipAddress, Packet::Port_TCP_Server);
 }
 
 ProgramState_Play::~ProgramState_Play() {

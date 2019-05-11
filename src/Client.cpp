@@ -39,6 +39,7 @@ Client::Client(sf::IpAddress _serverIP,
 	}
 
 	initialisePlayer();
+	m_networkManager.connect(m_serverIP, Packet::Port_TCP_Server);
 }
 
 Client::~Client() {
@@ -62,11 +63,6 @@ void Client::update(int _timeslice) {
 void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(m_interface, states);
 }
-
-void Client::connectToServer(const sf::IpAddress& _ip, unsigned short _port) {
-	m_networkManager.connect(_ip, _port);
-}
-
 
 void Client::sendPackets() {
 	//Ensure that a reasonable rate of packet sending is maintained.
@@ -113,3 +109,22 @@ void Client::respawnPlayer() {
 	playerPos.x     = m_world->getCenter().x;
 	playerPos.y     = 0;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------TESTS---------------------------------------
+/////////////////////////////////////////////////////////////////////////////////////
+#include "doctest.h"
+
+TEST_CASE("Testing client-server communication") {
+	sf::IpAddress    ip{sf::IpAddress::LocalHost};
+	Server           server{true};
+
+	Client client {ip, &server};
+
+	SUBCASE("client connection") {
+		CHECK(client.isConnected());
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////////////
