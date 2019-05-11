@@ -42,7 +42,7 @@ An image showing the game in its current state:
 
 ## Dependencies
 
-This project makes use of [SFML 2.5.1](https://www.sfml-dev.org/) and [entt](https://github.com/skypjack/entt). The latter has been included directly in the source in the dependencies dir, as it is header-only.
+This project makes use of [SFML 2.5.1](https://www.sfml-dev.org/) and [entt](https://github.com/skypjack/entt), as well as [doctest](https://github.com/onqtam/doctest) for testing. The latter two have been included directly in the dependencies dir, as they are header-only.
 
 ## Contributing
 
