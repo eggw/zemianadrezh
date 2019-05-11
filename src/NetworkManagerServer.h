@@ -8,6 +8,7 @@
 
 #include "PacketTypes.h"
 #include "PacketSender.h"
+#include "Message.h"
 
 class Server;
 
@@ -29,7 +30,7 @@ class NetworkManagerServer {
 	void receiveUDPPackets();
 
 	//Sends a message to all connected players
-	void sendMessage(const std::string& _message, const std::string& _sender);
+	void sendMessage(const Message& _msg);
 	//Sends a "QUIT" packet to all connected players containing
 	//the name of the player who quit
 	void notifyRemoved(const std::string& _name);
@@ -104,13 +105,13 @@ class NetworkManagerServer {
 	//player's name and port. It is then that the IPInfo containing the player's
 	//name and client's port is pushed back to m_clientIPs.
 
-	Server&                                          m_server;
-	sf::TcpListener                                  m_listener;
-	sf::UdpSocket                                    m_udpSocket;
-	std::vector<std::unique_ptr<sf::TcpSocket>>      m_clientConnections;
-	std::map<const sf::TcpSocket*, IPInfo>           m_clientIPs;
-	std::vector<std::pair<std::string, std::string>> m_messages;
-	std::string                                      m_lastRemovedPlayer;
+	Server&                                     m_server;
+	sf::TcpListener                             m_listener;
+	sf::UdpSocket                               m_udpSocket;
+	std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
+	std::map<const sf::TcpSocket*, IPInfo>      m_clientIPs;
+	std::vector<Message>                        m_messages;
+	std::string                                 m_lastRemovedPlayer;
 	//---------------------------------------------
 };
 

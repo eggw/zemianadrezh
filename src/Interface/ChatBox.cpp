@@ -26,24 +26,22 @@ const float Y_BUFFERSPACE{1.3f * LINESPACING};
 ChatBox::ChatBox(const std::string& _name)
             : m_target{nullptr},
               m_lastTargetSize{},
-			  m_name(_name),
-              m_view(),
-              m_shadedRectangleView(),
-              m_shadedRectangle(),
-              m_messages(),
-              m_textEntry(),
-              m_clock(),
-              m_anchoredToBottom(true) {
-
+              m_name{_name},
+              m_view{},
+              m_shadedRectangleView{},
+              m_shadedRectangle{},
+              m_messages{},
+              m_lastMessage{},
+              m_textEntry{},
+              m_clock{},
+              m_anchoredToBottom{true} {
 	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
 	snapToBottom();
 }
 
-void ChatBox::appendMessage(const std::string _message,
-                            const std::string _sender) {
+void ChatBox::appendMessage(const Message _msg) {
 	ChatBoxMessage newMessage{
-	  _sender,
-	  _message,
+	  _msg,
 	  FontManager::get_instance().getFont(FontManager::Type::ANDY),
 	  CHARACTER_SIZE};
 
@@ -106,8 +104,8 @@ void ChatBox::update() {
 	//As a result, we also won't really need to detect
 	//a Resized event in getInput(), since this part
 	//will handle that as well.
-	if(m_target != nullptr) {
-		if(m_target->getSize() != m_lastTargetSize) {
+	if (m_target != nullptr) {
+		if (m_target->getSize() != m_lastTargetSize) {
 			m_lastTargetSize = m_target->getSize();
 			onResize(m_lastTargetSize);
 		}
@@ -115,7 +113,7 @@ void ChatBox::update() {
 
 	m_textEntry.update();
 	if (m_textEntry.inputComplete()) {
-		m_lastMessage = std::make_pair(m_textEntry.getLastString(), m_name);
+		m_lastMessage = {m_name, m_textEntry.getLastString()};
 	}
 	if (m_textEntry.enteringText()) {
 		resetTransparency();
@@ -144,14 +142,14 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	m_target->setView(previousView);
 }
 
-bool ChatBox::completedMessage(std::pair<std::string, std::string>* _ptr) {
-	if (m_lastMessage.first == "" && m_lastMessage.second == "") {
+bool ChatBox::completedMessage(Message* _ptr) {
+	if (m_lastMessage.sender == "" && m_lastMessage.content == "") {
 		return false;
 	}
 
-	*_ptr                = m_lastMessage;
-	m_lastMessage.first  = "";
-	m_lastMessage.second = "";
+	*_ptr                 = m_lastMessage;
+	m_lastMessage.sender  = "";
+	m_lastMessage.content = "";
 
 	return true;
 }

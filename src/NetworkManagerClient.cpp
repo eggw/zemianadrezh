@@ -75,8 +75,8 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	case Packet::TCPPacket::CHAT_MESSAGE: {
 		//At this stage, m_messageToSend should have been set (usually by
 		//UserInterface)
-		*packet << m_messageToSend.first;
-		*packet << m_messageToSend.second;
+		*packet << m_messageToSend.sender;
+		*packet << m_messageToSend.content;
 
 		PacketSender::get_instance().send(&m_serverConnection, packet);
 
@@ -166,12 +166,12 @@ void NetworkManagerClient::receiveTCPPackets() {
 
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::TCPPacket::CHAT_MESSAGE: {
-			std::string message;
 			std::string sender;
-			*packet >> message;
+			std::string message;
 			*packet >> sender;
+			*packet >> message;
 
-			m_lastReceivedMessage = std::make_pair(message, sender);
+			m_lastReceivedMessage = {sender, message};
 			break;
 		}
 		//////////////////////////////////////////////////////////////////////////////
@@ -268,9 +268,8 @@ bool NetworkManagerClient::connectionActive() const {
 	return m_connectionActive && !invalidHost;
 }
 
-bool NetworkManagerClient::receivedMessage(
-  std::pair<std::string, std::string>* _ptr) {
-	bool valid{m_lastReceivedMessage.first != ""};
+bool NetworkManagerClient::receivedMessage(Message* _ptr) {
+	bool valid{m_lastReceivedMessage.sender != ""};
 
 	if (_ptr != nullptr) {
 		*_ptr = m_lastReceivedMessage;
@@ -280,12 +279,11 @@ bool NetworkManagerClient::receivedMessage(
 }
 
 void NetworkManagerClient::clearLastReceivedMessage() {
-	m_lastReceivedMessage.first  = "";
-	m_lastReceivedMessage.second = "";
+	m_lastReceivedMessage.sender  = "";
+	m_lastReceivedMessage.content = "";
 }
 
-void NetworkManagerClient::setMessageToSend(
-  std::pair<std::string, std::string> _msg) {
+void NetworkManagerClient::setMessageToSend(Message _msg) {
 	m_messageToSend = _msg;
 }
 

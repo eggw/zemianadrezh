@@ -8,12 +8,13 @@ TODO: add functions/make stuff private
 #include <SFML/Graphics.hpp>
 #include "MulticolourText/MulticolourText.hpp"
 
+#include "Message.h"
+
 class ChatBoxMessage : public sf::Drawable {
   public:
-	ChatBoxMessage(const std::string& _sender,
-	               const std::string& _message,
-	               const sf::Font&    _font,
-	               unsigned int       _charSize);
+	ChatBoxMessage(const Message&  _msg,
+	               const sf::Font& _font,
+	               unsigned int    _charSize);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
@@ -31,8 +32,7 @@ class ChatBoxMessage : public sf::Drawable {
   private:
 	//Data members --------------------------------
 	sf::MulticolourText m_text;
-	std::string         m_sender;
-	std::string         m_message;
+	Message             m_message;
 	//---------------------------------------------
 };
 

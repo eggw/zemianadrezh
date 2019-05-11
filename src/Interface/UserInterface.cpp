@@ -4,8 +4,7 @@
 
 #include "NetworkManagerClient.h"
 
-UserInterface::UserInterface(NetworkManagerClient& _n,
-                             std::string           _name)
+UserInterface::UserInterface(NetworkManagerClient& _n, std::string _name)
             : m_target{nullptr},
               m_networkManager{_n},
               m_chatBox(_name),
@@ -25,7 +24,8 @@ void UserInterface::update(int _timeslice) {
 	m_hotbarInterface.update(_timeslice);
 }
 
-void UserInterface::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void UserInterface::draw(sf::RenderTarget& target,
+                         sf::RenderStates  states) const {
 	m_target = &target;
 	m_target->draw(m_chatBox, states);
 	m_target->draw(m_hotbarInterface, states);
@@ -35,10 +35,10 @@ void UserInterface::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 //network manager. If so, we'll add it to the chatbox and clear it from
 //the network manager.
 void UserInterface::handleIncomingMessages() {
-	auto ptr(std::make_unique<std::pair<std::string, std::string>>());
+	auto ptr(std::make_unique<Message>());
 
 	if (m_networkManager.receivedMessage(ptr.get())) {
-		m_chatBox.appendMessage(ptr->first, ptr->second);
+		m_chatBox.appendMessage(*ptr);
 		m_networkManager.clearLastReceivedMessage();
 	}
 }
@@ -47,7 +47,7 @@ void UserInterface::handleIncomingMessages() {
 //and if so, we'll set it as our latest pending message, and order the
 //server to send a message packet.
 void UserInterface::handleOutgoingMessages() {
-	auto ptr(std::make_unique<std::pair<std::string, std::string>>());
+	auto ptr(std::make_unique<Message>());
 
 	if (m_chatBox.completedMessage(ptr.get())) {
 		m_networkManager.setMessageToSend(*ptr);

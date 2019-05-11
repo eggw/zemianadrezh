@@ -83,15 +83,13 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::CHAT_MESSAGE: {
-		std::string message = m_messages.back().first;
-		std::string sender  = m_messages.back().second;
-		*packet << message;
-		*packet << sender;
+		Message msg = m_messages.back();
+		*packet << msg.sender;
+		*packet << msg.content;
 
 		for (const auto& recipient : recipients) {
 			PacketSender::get_instance().send(recipient, packet);
 		}
-
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
@@ -178,7 +176,8 @@ void NetworkManagerServer::receiveTCPPackets() {
 				m_server.updatePlayer(data);
 				sendPacket(Packet::TCPPacket::DATA_WORLD);
 				sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
-				sendMessage("Welcome, " + data.compName.m_name + "!", "Server");
+				sendMessage(
+				  {"Server", "Welcome, " + data.compName.m_name + "!"});
 				break;
 			}
 			//////////////////////////////////////////////////////////////////////////////
@@ -203,7 +202,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 				std::string sender;
 				*packet >> message;
 				*packet >> sender;
-				m_messages.push_back(std::make_pair(message, sender));
+				m_messages.push_back({message, sender});
 
 				sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 				break;
@@ -220,7 +219,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 		std::string name{m_clientIPs.at(toRemove).playerName};
 		removeConnection(toRemove);
 		m_server.removePlayer(name);
-		sendMessage("Goodbye, " + name + "!", "Server");
+		sendMessage({"Server", "Goodbye, " + name + "!"});
 		notifyRemoved(name);
 	}
 }
@@ -253,13 +252,12 @@ void NetworkManagerServer::receiveUDPPackets() {
 	}
 }
 
-void NetworkManagerServer::sendMessage(const std::string& _message,
-                                       const std::string& _sender) {
+void NetworkManagerServer::sendMessage(const Message& _msg) {
 	if (m_messages.size() >= 50) {
 		m_messages.clear();
 	}
 
-	m_messages.push_back(std::make_pair(_message, _sender));
+	m_messages.push_back({_msg});
 	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 }
 

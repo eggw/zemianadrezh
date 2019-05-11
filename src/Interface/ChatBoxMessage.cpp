@@ -9,19 +9,18 @@ void removeNewlines(std::string& _str) {
 	}
 }
 
-ChatBoxMessage::ChatBoxMessage(const std::string& _sender,
-                               const std::string& _message,
-                               const sf::Font&    _font,
-                               unsigned int       _charSize)
-            : m_text{}, m_sender{_sender}, m_message{_message} {
+ChatBoxMessage::ChatBoxMessage(const Message&  _msg,
+                               const sf::Font& _font,
+                               unsigned int    _charSize)
+            : m_text{}, m_message{_msg} {
 	m_text.setFont(_font);
 	m_text.setCharacterSize(_charSize);
 
-	std::string finalStr{_message};
-	if (_sender != "") {
-		finalStr = ("<" + _sender + "> " + finalStr);
+	std::string finalStr{""};
+	if (m_message.sender != "") {
+		finalStr = ("<" + m_message.sender + "> ");
 	}
-
+	finalStr += m_message.content;
 	setString(finalStr);
 }
 
@@ -82,18 +81,20 @@ void ChatBoxMessage::setString(const std::string& _str) {
 	//the result to the end position of setFillColor().
 	//Since getNumberOfLines returns 1 normally, we'll decrement our
 	//initial result.
-	unsigned int endOffset{getNumberOfLines(1, m_sender.length())};
+	unsigned int endOffset{getNumberOfLines(1, m_message.sender.length())};
 	--endOffset;
 
-	if (m_sender == "Server") {
-		m_text.setFillColor(sf::Color::Red, 1, m_sender.length() + endOffset);
+	if (m_message.sender == "Server") {
+		m_text.setFillColor(
+		  sf::Color::Red, 1, m_message.sender.length() + endOffset);
 	}
-	else if (m_sender == "LocalPlayer") {
-		m_text.setFillColor(sf::Color::Cyan, 1, m_sender.length() + endOffset);
+	else if (m_message.sender == "LocalPlayer") {
+		m_text.setFillColor(
+		  sf::Color::Cyan, 1, m_message.sender.length() + endOffset);
 	}
 	else {
 		m_text.setFillColor(
-		  sf::Color::Magenta, 1, m_sender.length() + endOffset);
+		  sf::Color::Magenta, 1, m_message.sender.length() + endOffset);
 	}
 }
 

@@ -7,17 +7,18 @@
 #include "TextEntryBox.h"
 #include "Interface/ChatBoxMessage.h"
 
+#include "Message.h"
+
 class ChatBox : public sf::Drawable {
   public:
 	ChatBox(const std::string& _name);
 
-	void appendMessage(const std::string _message,
-	                   const std::string _sender = "");
+	void appendMessage(const Message _msg);
 	void getInput(sf::Event& _event);
 	void update();
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	bool completedMessage(std::pair<std::string, std::string>* _ptr = nullptr);
+	bool completedMessage(Message* _ptr = nullptr);
 
   private:
 	//Functions -----------------------------------
@@ -50,15 +51,13 @@ class ChatBox : public sf::Drawable {
 
 	const std::string m_name;
 
-	sf::View m_view;
-	sf::View m_shadedRectangleView;
-
+	sf::View           m_view;
+	sf::View           m_shadedRectangleView;
 	sf::RectangleShape m_shadedRectangle;
 
-	std::vector<ChatBoxMessage>         m_messages;
-	std::pair<std::string, std::string> m_lastMessage;
-
-	TextEntryBox m_textEntry;
+	std::vector<ChatBoxMessage> m_messages;
+	Message                     m_lastMessage;
+	TextEntryBox                m_textEntry;
 	//m_clock will be used to determine when the
 	//messages in the chatbox will begin to fade
 	//away.
