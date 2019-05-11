@@ -10,11 +10,6 @@
 #include "RendererSharedDrawable.h"
 #include "DayNightCycle.h"
 
-#include "Systems/SystemAnimation.h"
-#include "Systems/SystemDrawing.h"
-#include "Systems/SystemPhysics.h"
-#include "Systems/SystemPlayerMovement.h"
-
 class ProgramState_Play : public ProgramState {
   public:
 	ProgramState_Play(Program& _program, sf::IpAddress _ipAddress);
@@ -35,7 +30,6 @@ class ProgramState_Play : public ProgramState {
 	//function on chunks that have just had their data updated (when
 	//the network manager indicates that chunk data has been sent)
 	void renderUpdatedChunks();
-	void updateSystems(int _timeslice);
 	//---------------------------------------------
 
 	//Data members --------------------------------
@@ -44,12 +38,6 @@ class ProgramState_Play : public ProgramState {
 	//We'll handle the drawing of non-entity elements with special
 	//renderers.
 	RendererChunk m_rendererChunk;
-
-	SystemAnimation      m_systemAnimation;
-	SystemDrawing        m_systemDrawing;
-	SystemPhysics        m_systemPhysics;
-	SystemPlayerMovement m_systemPlayerMovement;
-
 	DayNightCycle m_dayNightCycle;
 
 	//m_view is the view used to draw chunks, players, items, etc.

@@ -4,14 +4,16 @@
 #include "Components/ComponentAnimation.h"
 #include "Components/ComponentPosition.h"
 
-SystemDrawing::SystemDrawing(sf::RenderWindow& _window) : m_window{_window} {
+SystemDrawing::SystemDrawing() {
 }
 
 //This function will iterate through all our sprite components, set their
 //position if they have a position component, and then draw the resulting
 //sprite. It will do the same for animation components.
 
-void SystemDrawing::draw(entt::registry& _reg) {
+void SystemDrawing::draw(entt::registry&   _reg,
+                         sf::RenderTarget& _target,
+                         sf::RenderStates  _states) const {
 	auto spriteView = _reg.view<ComponentSprite>();
 	for (auto& entity : spriteView) {
 		auto sprite = spriteView.get(entity).m_sprite;
@@ -20,7 +22,7 @@ void SystemDrawing::draw(entt::registry& _reg) {
 			sprite.setPosition(_reg.get<ComponentPosition>(entity).m_position);
 		}
 
-		m_window.draw(sprite);
+		_target.draw(sprite, _states);
 	}
 	auto animationView = _reg.view<ComponentAnimation>();
 	for (auto& entity : animationView) {
@@ -30,6 +32,6 @@ void SystemDrawing::draw(entt::registry& _reg) {
 			sprite.setPosition(_reg.get<ComponentPosition>(entity).m_position);
 		}
 
-		m_window.draw(sprite);
+		_target.draw(sprite, _states);
 	}
 }

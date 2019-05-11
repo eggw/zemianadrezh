@@ -27,7 +27,11 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
               //elegantly
               m_interface(m_networkManager,
                           _localServer == nullptr ? "RemotePlayer" :
-                                                    "LocalPlayer") {
+                                                    "LocalPlayer"),
+              m_systemAnimation{},
+              m_systemDrawing{},
+              m_systemPhysics{},
+              m_systemPlayerMovement{getPlayerId()} {
 	if (m_localServer != nullptr) {
 		initialise(m_localServer);
 	}
@@ -50,9 +54,12 @@ Client::~Client() {
 
 void Client::getInput(sf::Event& _event) {
 	m_interface.getInput(_event);
+	m_systemPlayerMovement.getInput(*m_registry);
 }
 
 void Client::update(int _timeslice) {
+	updateSystems(_timeslice);
+
 	m_world->update(_timeslice);
 	m_networkManager.update();
 	m_interface.update(_timeslice);
@@ -60,6 +67,13 @@ void Client::update(int _timeslice) {
 
 void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(m_interface, states);
+	m_systemDrawing.draw(*m_registry, target, states);
+}
+
+void Client::updateSystems(int _timeslice) {
+	m_systemAnimation.update(_timeslice, *m_registry);
+	m_systemPhysics.update(_timeslice, *m_registry);
+	m_systemPlayerMovement.update(_timeslice, *m_registry);
 }
 
 void Client::sendPlayerPacket() {
@@ -78,7 +92,7 @@ void Client::receivePackets() {
 	m_networkManager.receiveTCPPackets();
 }
 
-entt::entity Client::getPlayerId() const {
+const entt::entity& Client::getPlayerId() const {
 	return m_player;
 }
 

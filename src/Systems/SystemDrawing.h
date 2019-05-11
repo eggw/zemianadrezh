@@ -6,11 +6,10 @@
 
 class SystemDrawing {
   public:
-	SystemDrawing(sf::RenderWindow& _window);
-	void draw(entt::registry& _reg);
-
-  private:
-	sf::RenderWindow& m_window;
+	SystemDrawing();
+	void draw(entt::registry&   _reg,
+	          sf::RenderTarget& _target,
+	          sf::RenderStates  _states) const;
 };
 
 #endif // SYSTEMDRAWING_H_INCLUDED

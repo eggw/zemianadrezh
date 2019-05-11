@@ -15,10 +15,6 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //instance of Server and Client
               m_client(_ipAddress, m_program.getServer()),
               m_rendererChunk(m_program.m_window, *m_client.m_world),
-              m_systemAnimation{},
-              m_systemDrawing{m_program.m_window},
-              m_systemPhysics{},
-              m_systemPlayerMovement{m_client.getPlayerId()},
               m_dayNightCycle(m_client.m_world->getTime()),
               m_view{sf::FloatRect(0,
                                    0,
@@ -56,12 +52,9 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 	}
 
 	m_client.getInput(_event);
-	m_systemPlayerMovement.getInput(*m_client.m_registry);
 }
 
 void ProgramState_Play::update(int _timeslice) {
-	updateSystems(_timeslice);
-
 	m_dayNightCycle.update(m_client.m_world->getTime());
 	m_view.setCenter(m_client.getPlayerPosition());
 
@@ -82,7 +75,6 @@ void ProgramState_Play::draw() {
 	m_program.m_window.draw(m_dayNightCycle);
 
 	m_program.m_window.setView(m_view);
-	m_systemDrawing.draw(*m_client.m_registry);
 	m_rendererChunk.draw();
 
 	m_program.m_window.draw(m_client);
@@ -110,10 +102,4 @@ void ProgramState_Play::renderUpdatedChunks() {
 		}
 		m_client.m_networkManager.setChunkDataProcessed(true);
 	}
-}
-
-void ProgramState_Play::updateSystems(int _timeslice) {
-	m_systemAnimation.update(_timeslice, *m_client.m_registry);
-	m_systemPhysics.update(_timeslice, *m_client.m_registry);
-	m_systemPlayerMovement.update(_timeslice, *m_client.m_registry);
 }
