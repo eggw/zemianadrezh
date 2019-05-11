@@ -70,7 +70,7 @@ void ProgramState_Play::update(int _timeslice) {
 	renderUpdatedChunks();
 
 	m_client.update(_timeslice);
-	m_client.sendPackets();
+	m_client.sendPlayerPacket();
 
 	if (!m_client.isConnected()) {
 		m_program.pushState_MPConnectionLost();

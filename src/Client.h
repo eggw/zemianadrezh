@@ -33,7 +33,7 @@ class Client : public GameInstance, public sf::Drawable {
 	//Client's draw function simply draws the interface
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	void sendPackets();
+	void sendPlayerPacket();
 	void receivePackets();
 
 	entt::entity getPlayerId() const;

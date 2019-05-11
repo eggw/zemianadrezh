@@ -64,7 +64,7 @@ void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(m_interface, states);
 }
 
-void Client::sendPackets() {
+void Client::sendPlayerPacket() {
 	//Ensure that a reasonable rate of packet sending is maintained.
 	static sf::Clock c;
 	static float     secondsBetweenPackets{0.015};
@@ -115,15 +115,12 @@ void Client::respawnPlayer() {
 /////////////////////////////////////////////////////////////////////////////////////
 #include "doctest.h"
 
-TEST_CASE("Testing client-server communication") {
+TEST_CASE("Testing client-server connection") {
 	sf::IpAddress    ip{sf::IpAddress::LocalHost};
 	Server           server{true};
+	Client           client {ip, &server};
 
-	Client client {ip, &server};
-
-	SUBCASE("client connection") {
-		CHECK(client.isConnected());
-	}
+	CHECK(client.isConnected());
 }
 /////////////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------------
