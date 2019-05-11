@@ -124,17 +124,27 @@ TEST_CASE("Testing client-server connection") {
 		CHECK(server.connectedPlayers() == 0);
 	}
 
-	Client client {ip, &server};
-	server.acceptConnections();
-	server.update(0);
+	SUBCASE("creating client and connecting to server") {
+		Client client {ip, &server};
+		server.acceptConnections();
+		//TODO
+		//Testing is failing here sometimes, investigate further
 
-	CHECK(client.isConnected());
-	CHECK(client.isLocal());
+		CHECK(client.isConnected());
+		CHECK(client.isLocal());
 
-	SUBCASE("testing server size after joining") {
-		CHECK(server.connectedPlayers() == 1);
+		SUBCASE("testing server size after joining") {
+			CHECK(server.connectedPlayers() == 1);
+		}
 	}
 
+	//Client is out of scope, the destructor should have been called
+	//and thus a QUIT packet sent to the server
+	server.receivePackets();
+
+	SUBCASE("testing server size after client quit") {
+		CHECK(server.connectedPlayers() == 0);
+	}
 }
 /////////////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------------

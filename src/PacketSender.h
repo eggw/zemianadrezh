@@ -35,13 +35,21 @@ class PacketSender : public Singleton<PacketSender> {
 
 	PacketSender();
 
+	//Attempts to send the packet, and if not successful, moves
+	//it along with its sending socket into m_packetData, where
+	//sending the very same packet object can be attempted again
 	void send(sf::TcpSocket* _socket, const PacketSharedPtr _packet);
 
+	//Send is also overloaded to take in UdpSockets. We don't have
+	//to do the whole TCP thing of reattempting to send the same
+	//packet with UDP sockets.
 	void send(sf::UdpSocket*        _socket,
 	          const PacketSharedPtr _packet,
 	          const sf::IpAddress&  _recipient,
 	          unsigned short        _port);
 
+	//Loops through m_packetData, attempts to send the packets,
+	//and removes them from the vector if the attempt was successful
 	void update();
 
   private:

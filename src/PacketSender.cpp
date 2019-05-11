@@ -3,9 +3,7 @@
 PacketSender::PacketSender() {
 }
 
-//Attempts to send the packet, and if not successful, moves
-//it along with its sending socket into m_packetData, where
-//sending the very same packet object can be attempted again
+
 void PacketSender::send(sf::TcpSocket* _socket, const PacketSharedPtr _packet) {
 	TCPPacket data{_socket, _packet};
 
@@ -15,9 +13,6 @@ void PacketSender::send(sf::TcpSocket* _socket, const PacketSharedPtr _packet) {
 	}
 }
 
-//Send is also overloaded to take in UdpSockets. We don't have
-//to do the whole TCP thing of reattempting to send the same
-//packet with UDP sockets.
 void PacketSender::send(sf::UdpSocket*        _socket,
                         const PacketSharedPtr _packet,
                         const sf::IpAddress&  _recipient,
@@ -25,8 +20,7 @@ void PacketSender::send(sf::UdpSocket*        _socket,
 	_socket->send(*_packet, _recipient, _port);
 }
 
-//Loops through m_packetData, attempts to send the packets,
-//and removes them from the vector if the attempt was successful
+
 void PacketSender::update() {
 	m_packetData.erase(
 	  std::remove_if(m_packetData.begin(),
