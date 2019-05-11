@@ -71,6 +71,11 @@ void Client::drawInterface() const {
 	m_interface.draw();
 }
 
+void Client::connectToServer(const sf::IpAddress& _ip, unsigned short _port) {
+	m_networkManager.connect(_ip, _port);
+}
+
+
 void Client::sendPackets() {
 	//Ensure that a reasonable rate of packet sending is maintained.
 	static sf::Clock c;

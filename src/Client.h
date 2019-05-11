@@ -33,6 +33,8 @@ class Client : public GameInstance {
 	void update(int _timeslice);
 	void drawInterface() const;
 
+	void connectToServer(const sf::IpAddress& _ip, unsigned short _port);
+
 	void sendPackets();
 	void receivePackets();
 
