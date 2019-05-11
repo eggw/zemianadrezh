@@ -1,5 +1,12 @@
-#include "Client.h"
+//////////////////////////////////////////////|
+//Contains tests at the end of the file       |
+//////////////////////////////////////////////|
+#include "doctest.h";
+//--------------------------------------------|
+// (*) Client - Server connection
+//--------------------------------------------|
 
+#include "Client.h"
 #include "Server.h"
 
 #include "LoggerNetwork.h"
@@ -9,8 +16,7 @@
 #include "Components/ComponentAnimation.h"
 #include "Components/ComponentsPlayer.h"
 
-Client::Client(sf::IpAddress _serverIP,
-               Server*       _localServer)
+Client::Client(sf::IpAddress _serverIP, Server* _localServer)
             : GameInstance(),
               m_networkManager(*this),
               m_serverIP(_serverIP),
@@ -112,20 +118,19 @@ void Client::respawnPlayer() {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-//---------------------------------------TESTS---------------------------------------
+//---------------------------------------TESTS-------------------------------------//
 /////////////////////////////////////////////////////////////////////////////////////
-#include "doctest.h"
 
 TEST_CASE("Testing client-server connection") {
-	sf::IpAddress    ip{sf::IpAddress::LocalHost};
-	Server           server{true};
+	sf::IpAddress ip{sf::IpAddress::LocalHost};
+	Server        server{true};
 
 	SUBCASE("testing server size before joining") {
 		CHECK(server.connectedPlayers() == 0);
 	}
 
 	SUBCASE("creating client and connecting to server") {
-		Client client {ip, &server};
+		Client client{ip, &server};
 		server.acceptConnections();
 		//TODO
 		//Testing is failing here sometimes, investigate further
@@ -147,5 +152,5 @@ TEST_CASE("Testing client-server connection") {
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////
-//-----------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------//
 /////////////////////////////////////////////////////////////////////////////////////

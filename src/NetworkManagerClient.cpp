@@ -189,18 +189,24 @@ void NetworkManagerClient::receiveTCPPackets() {
 	}
 }
 
-void NetworkManagerClient::receiveUDPPackets() {
+//This function is used to display the number of received packets per second as long
+//as they're not 0. Used in the beginning of receiveUDPPackets()
+void logToConsole(int& _i) {
 	static sf::Clock clock{};
-	static int       receivedCount{0};
 	if (clock.getElapsedTime().asSeconds() >= 1) {
-		std::cout << "[CLIENT] UDP packets received: " << receivedCount
-		          << std::endl;
-		std::cout << "-----------------------------------------------"
-		          << std::endl;
-		receivedCount = 0;
+		if (_i > 0) {
+			std::cout << "[CLIENT] UDP packets received: " << _i << std::endl;
+			std::cout << "----------------------------------" << std::endl;
+			_i = 0;
+		}
 		clock.restart();
 	}
-	//--------------------------------------------------------------------------
+}
+
+void NetworkManagerClient::receiveUDPPackets() {
+	static int UDPPacketsReceived{0};
+	logToConsole(UDPPacketsReceived);
+
 	int            packetCode;
 	PacketUPtr     packet(new sf::Packet());
 	unsigned short port{m_udpSocket.getLocalPort()};
@@ -209,7 +215,7 @@ void NetworkManagerClient::receiveUDPPackets() {
 
 	while (m_udpSocket.receive(*packet, address, port) ==
 	       sf::Socket::Status::Done) {
-		receivedCount++;
+		UDPPacketsReceived++;
 		*packet >> packetCode;
 		Packet::UDPPacket packetType{Packet::toUDPType(packetCode)};
 
