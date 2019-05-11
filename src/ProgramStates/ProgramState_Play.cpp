@@ -19,7 +19,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               m_systemDrawing{m_program.m_window},
               m_systemPhysics{},
               m_systemPlayerMovement{m_client.getPlayerId()},
-              m_dayNightCycle(m_client.getWorld()),
+              m_dayNightCycle(m_client.m_world->getTime()),
               m_view{sf::FloatRect(0,
                                    0,
                                    float(m_program.m_window.getSize().x),
@@ -62,7 +62,7 @@ void ProgramState_Play::getInput(sf::Event& _event) {
 void ProgramState_Play::update(int _timeslice) {
 	updateSystems(_timeslice);
 
-	m_dayNightCycle.update();
+	m_dayNightCycle.update(m_client.m_world->getTime());
 	m_view.setCenter(m_client.getPlayerPosition());
 
 	m_client.receivePackets();

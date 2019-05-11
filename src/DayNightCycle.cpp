@@ -11,8 +11,8 @@ constexpr int DAY_END_HOUR{19};
 constexpr int NIGHT_BEGIN_HOUR{19};
 constexpr int NIGHT_END_HOUR{5};
 
-DayNightCycle::DayNightCycle(const World& _world)
-            : m_world{_world},
+DayNightCycle::DayNightCycle(const WorldTime& _time)
+            : m_worldTime{_time},
               m_sunMoonSprite{},
               m_skyBackground{sf::PrimitiveType::Triangles, 42},
               m_timeText{},
@@ -38,18 +38,15 @@ DayNightCycle::DayNightCycle(const World& _world)
 	m_shader.setUniform("glow",
 	                    TextureManager::get_instance().getTexture(
 	                      TextureManager::Type::CYCLE_GLOW_GRADIENT));
-
-	update();
 }
 
-void DayNightCycle::update() {
+void DayNightCycle::update(const WorldTime& _time) {
 	//A draw call needs to be attempted at least once to set our target
 	//before updating can begin
 	if (m_target == nullptr) {
 		return;
 	}
 
-	getInput();
 	updateSkyVertices();
 	updateTimeText();
 	updatePlanetTexture();
@@ -220,17 +217,8 @@ void DayNightCycle::updateSkyVertices() {
 	*/
 }
 
-void DayNightCycle::getInput() {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Comma)) {
-		m_world.getTime().pause();
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Period)) {
-		m_world.getTime().unpause();
-	}
-}
-
 void DayNightCycle::updateTimeText() {
-	auto str{m_world.getTime().getString()};
+	auto str{m_worldTime.getString()};
 	m_timeText.setString(str);
 	m_timeText.setPosition(
 	  m_target->getSize().x - 1.2 * m_timeText.getGlobalBounds().width, 0);
@@ -315,7 +303,7 @@ void DayNightCycle::sendUniformsToShader() {
 }
 
 bool DayNightCycle::isDaytime() const {
-	auto hhmm{m_world.getTime().get()};
+	auto hhmm{m_worldTime.get()};
 	if (hhmm.hours >= DAY_BEGIN_HOUR && hhmm.hours < DAY_END_HOUR) {
 		return true;
 	}
@@ -345,7 +333,7 @@ std::pair<int, int> DayNightCycle::getCurrentHourRange() const {
 
 //See getCurrentHourRange() for a more detailed comment about why we may need to add 24.
 HHMM DayNightCycle::getWrappedTime() const {
-	auto worldTime{m_world.getTime()};
+	auto worldTime{m_worldTime};
 	auto hhmm{worldTime.get()};
 
 	if (hhmm.hours < getCurrentHourRange().first) {

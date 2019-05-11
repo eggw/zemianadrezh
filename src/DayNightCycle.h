@@ -20,20 +20,16 @@ https://csc.lsu.edu/~kooima/misc/cs594/final/part2.html
 
 class DayNightCycle : public sf::Drawable {
   public:
-	DayNightCycle(const World& _world);
+	DayNightCycle(const WorldTime& _time);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	//This function will deal with managing either the sun or the moon's
 	//sprite and position, depending on the world time
-	void update();
+	void update(const WorldTime& _time);
 
   private:
 	//Functions -----------------------------------
 	void updateSkyVertices();
-	//getInput() is a temporary function that detects
-	//if comma or period is pressed and pauses/resumes
-	//the time as necessary. Just for testing for now.
-	void getInput();
 	void updateTimeText();
 	void updatePlanetTexture();
 	void updatePlanetPosition();
@@ -50,8 +46,8 @@ class DayNightCycle : public sf::Drawable {
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	const World& m_world;
-	sf::Sprite   m_sunMoonSprite;
+	const WorldTime& m_worldTime;
+	sf::Sprite       m_sunMoonSprite;
 	//m_skyBackground will contain the vertices for all 14 triangles
 	//that the screen is divided into. Note that four vertices at the
 	//edges of the screen would also suffice, but let's keep the 14
