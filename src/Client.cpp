@@ -136,7 +136,15 @@ TEST_CASE("Testing client-server connection") {
 
 	SUBCASE("creating client and connecting to server") {
 		Client client{ip, &server};
-		server.acceptConnections();
+
+		//Because we're testing a local server-client connection, we're
+		//going to want to be sure that the server accepts the connection.
+		//
+		//If we don't use a while loop, it sometimes occasionally doesn't
+		//work.
+		while(server.connectedPlayers() == 0) {
+			server.acceptConnections();
+		}
 
 		CHECK(client.isConnected());
 		CHECK(client.isLocal());
