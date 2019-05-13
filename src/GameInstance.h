@@ -9,15 +9,7 @@
 
 class GameInstance {
   public:
-	GameInstance();
-
-	//Before we can do anything with a GameInstance, we should call initialise().
-	//If given a pointer to another GameInstance _g, we'll share _g's world and
-	//registry. This is how a client can share resources with a local server.
-	void initialise(GameInstance* _g);
-	//If not given any parameters, we'll allocate memory for our world and registry.
-	//This is what a server should call to initialise itself.
-	void initialise();
+	GameInstance(GameInstance* _g = nullptr);
 
 	//TODO: refactor these functions, either remove them or put them somewhere else
 	//-------------------------------------------------------------------------
@@ -38,6 +30,12 @@ class GameInstance {
 	//Functions -----------------------------------
 	void addPlayer(const ComponentsPlayer& _data);
 	void addPlayer(const ComponentsPlayer& _data, entt::entity _e);
+	//If given a pointer to another GameInstance _g, we'll share _g's world and
+	//registry. This is how a client can share resources with a local server.
+	void initialise(GameInstance* _g);
+	//If not given any parameters, we'll allocate memory for our world and registry.
+	//This is what a server should call to initialise itself.
+	void initialise();
 	//---------------------------------------------
 
 	//Data members --------------------------------

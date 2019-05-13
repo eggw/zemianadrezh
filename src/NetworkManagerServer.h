@@ -31,9 +31,12 @@ class NetworkManagerServer {
 
 	//Sends a message to all connected players
 	void sendMessage(const Message& _msg);
-	//Sends a "QUIT" packet to all connected players containing
-	//the name of the player who quit
-	void notifyRemoved(const std::string& _name);
+	//Handles everything to do with removing a player, including
+	//removing it from m_clientIPs and m_clientConnections,
+	//calling Server::removePlayer(), and sending a QUIT packet
+	//to all connected clients containing the name of the player
+	//who was removed
+	void removePlayer(const sf::TcpSocket* _connection = nullptr);
 
 	void listen();
 	void accept();

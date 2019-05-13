@@ -9,17 +9,13 @@
 #include "Components/ComponentPhysics.h"
 #include "Components/ComponentPosition.h"
 
-GameInstance::GameInstance() : m_world{nullptr}, m_registry{nullptr} {
-}
-
-void GameInstance::initialise(GameInstance* _g) {
-	m_world    = _g->m_world;
-	m_registry = _g->m_registry;
-}
-
-void GameInstance::initialise() {
-	m_world    = std::make_shared<World>();
-	m_registry = std::make_shared<entt::registry>();
+GameInstance::GameInstance(GameInstance* _g) : m_world{nullptr}, m_registry{nullptr} {
+	if(_g == nullptr) {
+		initialise();
+	}
+	else {
+		initialise(_g);
+	}
 }
 
 const World& GameInstance::getWorld() const {
@@ -88,4 +84,14 @@ void GameInstance::addPlayer(const ComponentsPlayer& _data, entt::entity _e) {
 	m_registry->assign<ComponentPhysics>(_e, _data.compVel);
 	m_registry->assign<ComponentDirection>(_e, _data.compDir);
 	m_registry->assign<ComponentPosition>(_e, _data.compPos);
+}
+
+void GameInstance::initialise(GameInstance* _g) {
+	m_world    = _g->m_world;
+	m_registry = _g->m_registry;
+}
+
+void GameInstance::initialise() {
+	m_world    = std::make_shared<World>();
+	m_registry = std::make_shared<entt::registry>();
 }

@@ -8,17 +8,16 @@
 #include "Components/ComponentPhysics.h"
 #include "Components/ComponentDirection.h"
 
-SystemPlayerMovement::SystemPlayerMovement(entt::entity _uid)
-            : m_playerID{_uid} {
+SystemPlayerMovement::SystemPlayerMovement() {
 }
 
-void SystemPlayerMovement::getInput(entt::registry& _reg) {
+void SystemPlayerMovement::getInput(entt::registry& _reg, entt::entity _uid) {
 	if (InputLocker::get_instance().isLocked()) {
 		return;
 	}
 
-	auto& vel        = _reg.get<ComponentPhysics>(m_playerID).m_velocity;
-	auto& facingLeft = _reg.get<ComponentDirection>(m_playerID).m_facingLeft;
+	auto& vel        = _reg.get<ComponentPhysics>(_uid).m_velocity;
+	auto& facingLeft = _reg.get<ComponentDirection>(_uid).m_facingLeft;
 
 	if (sf::Keyboard::isKeyPressed(Key::LEFT_KEY)) {
 		facingLeft = true;
@@ -32,7 +31,4 @@ void SystemPlayerMovement::getInput(entt::registry& _reg) {
 	else {
 		vel.x = 0;
 	}
-}
-
-void SystemPlayerMovement::update(int _timeslice, entt::registry& _reg) {
 }

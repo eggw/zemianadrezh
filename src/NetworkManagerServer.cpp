@@ -215,13 +215,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 		}
 	}
 
-	if (toRemove != nullptr) {
-		std::string name{m_clientIPs.at(toRemove).playerName};
-		removeConnection(toRemove);
-		m_server.removePlayer(name);
-		sendMessage({"Server", "Goodbye, " + name + "!"});
-		notifyRemoved(name);
-	}
+	removePlayer(toRemove);
 }
 
 void NetworkManagerServer::receiveUDPPackets() {
@@ -261,8 +255,16 @@ void NetworkManagerServer::sendMessage(const Message& _msg) {
 	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
 }
 
-void NetworkManagerServer::notifyRemoved(const std::string& _name) {
-	m_lastRemovedPlayer = _name;
+void NetworkManagerServer::removePlayer(const sf::TcpSocket* _connection) {
+	if(_connection == nullptr) {
+		return;
+	}
+
+	std::string name{m_clientIPs.at(_connection).playerName};
+	removeConnection(_connection);
+	m_server.removePlayer(name);
+	sendMessage({"Server", "Goodbye, " + name + "!"});
+	m_lastRemovedPlayer = name;
 	sendPacket(Packet::TCPPacket::QUIT);
 }
 

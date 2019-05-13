@@ -17,7 +17,7 @@
 #include "Components/ComponentsPlayer.h"
 
 Client::Client(sf::IpAddress _serverIP, Server* _localServer)
-            : GameInstance(),
+            : GameInstance(_localServer),
               m_networkManager(*this),
               m_serverIP(_serverIP),
               m_localServer(_localServer),
@@ -31,13 +31,11 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
               m_systemAnimation{},
               m_systemDrawing{},
               m_systemPhysics{},
-              m_systemPlayerMovement{getPlayerId()} {
-	if (m_localServer != nullptr) {
-		initialise(m_localServer);
-	}
-	else {
-		initialise();
-	}
+              m_systemPlayerMovement{},
+              m_rendererChunk(*m_world),
+              m_dayNightCycle(m_world->getTime()),
+              m_view{},
+              m_skyView{} {
 
 	initialisePlayer();
 
@@ -45,20 +43,18 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
 }
 
 Client::~Client() {
-	//We won't need to send a QUIT packet if the server was local, as that means
-	//the server is already down.
-	if (!isLocal()) {
-		m_networkManager.sendPacket(Packet::TCPPacket::QUIT);
-	}
+	m_networkManager.sendPacket(Packet::TCPPacket::QUIT);
 }
 
 void Client::getInput(sf::Event& _event) {
 	m_interface.getInput(_event);
-	m_systemPlayerMovement.getInput(*m_registry);
+	m_systemPlayerMovement.getInput(*m_registry, m_player);
 }
 
 void Client::update(int _timeslice) {
+	renderUpdatedChunks();
 	updateSystems(_timeslice);
+	m_dayNightCycle.update(m_world->getTime());
 
 	m_world->update(_timeslice);
 	m_networkManager.update();
@@ -66,6 +62,14 @@ void Client::update(int _timeslice) {
 }
 
 void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	adjustViews(target);
+
+	target.setView(m_skyView);
+	target.draw(m_dayNightCycle);
+
+	target.setView(m_view);
+	m_rendererChunk.draw(target, states);
+
 	target.draw(m_interface, states);
 	m_systemDrawing.draw(*m_registry, target, states);
 }
@@ -73,7 +77,6 @@ void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 void Client::updateSystems(int _timeslice) {
 	m_systemAnimation.update(_timeslice, *m_registry);
 	m_systemPhysics.update(_timeslice, *m_registry);
-	m_systemPlayerMovement.update(_timeslice, *m_registry);
 }
 
 void Client::sendPlayerPacket() {
@@ -90,14 +93,6 @@ void Client::sendPlayerPacket() {
 void Client::receivePackets() {
 	m_networkManager.receiveUDPPackets();
 	m_networkManager.receiveTCPPackets();
-}
-
-const entt::entity& Client::getPlayerId() const {
-	return m_player;
-}
-
-sf::Vector2f Client::getPlayerPosition() const {
-	return m_registry->get<ComponentPosition>(m_player).m_position;
 }
 
 bool Client::isConnected() const {
@@ -122,6 +117,36 @@ void Client::respawnPlayer() {
 	playerPos.y     = 0;
 }
 
+void Client::adjustViews(sf::RenderTarget& _target) const {
+	m_view.reset({0,0,
+                  float(_target.getSize().x),
+                  float(_target.getSize().y)});
+
+	m_skyView.reset({0,0,
+				     float(_target.getSize().x),
+					 float(_target.getSize().y)});
+
+
+	m_view.setCenter(getPlayerPosition());
+	m_skyView.setCenter({float(_target.getSize().x / 2),
+						 float(_target.getSize().y / 2)});
+}
+
+void Client::renderUpdatedChunks() {
+	auto updatedIDs{std::make_unique<std::vector<int>>()};
+
+	if (m_networkManager.chunkDataReceived(updatedIDs.get())) {
+		for (auto id : *updatedIDs) {
+			m_rendererChunk.update(id);
+		}
+		m_networkManager.setChunkDataProcessed(true);
+	}
+}
+
+sf::Vector2f Client::getPlayerPosition() const {
+	return m_registry->get<ComponentPosition>(m_player).m_position;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------TESTS-------------------------------------//
 /////////////////////////////////////////////////////////////////////////////////////
@@ -140,8 +165,10 @@ TEST_CASE("Testing client-server connection") {
 		//Because we're testing a local server-client connection, we're
 		//going to want to be sure that the server accepts the connection.
 		//
-		//If we don't use a while loop, it sometimes occasionally doesn't
-		//work.
+		//If we don't use a while loop, it sometimes won't work due to the
+		//procedural nature of calling these functions just once. In a real
+		//scenario, the server will be constantly accepting connections.
+
 		while(server.connectedPlayers() == 0) {
 			server.acceptConnections();
 		}
