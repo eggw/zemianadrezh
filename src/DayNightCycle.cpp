@@ -1,9 +1,10 @@
 #include "DayNightCycle.h"
 
+#include <math.h>
+
 #include "TextureManager.h"
 #include "FontManager.h"
-
-#include <math.h>
+#include "WorldTime.h"
 
 constexpr int DAY_BEGIN_HOUR{5};
 constexpr int DAY_END_HOUR{19};
@@ -11,9 +12,8 @@ constexpr int DAY_END_HOUR{19};
 constexpr int NIGHT_BEGIN_HOUR{19};
 constexpr int NIGHT_END_HOUR{5};
 
-DayNightCycle::DayNightCycle(const WorldTime& _time)
-            : m_worldTime{_time},
-              m_sunMoonSprite{},
+DayNightCycle::DayNightCycle()
+            : m_sunMoonSprite{},
               m_skyBackground{sf::PrimitiveType::Triangles, 42},
               m_timeText{},
               m_target{nullptr},
@@ -48,10 +48,10 @@ void DayNightCycle::update(const WorldTime& _time) {
 	}
 
 	updateSkyVertices();
-	updateTimeText();
-	updatePlanetTexture();
-	updatePlanetPosition();
-	sendUniformsToShader();
+	updateTimeText(_time);
+	updatePlanetTexture(_time);
+	updatePlanetPosition(_time);
+	sendUniformsToShader(_time);
 }
 
 void DayNightCycle::draw(sf::RenderTarget& target,
@@ -60,7 +60,6 @@ void DayNightCycle::draw(sf::RenderTarget& target,
 
 	sf::RenderStates skyStates{&m_shader};
 	target.draw(m_skyBackground, skyStates);
-
 	target.draw(m_sunMoonSprite, states);
 	target.draw(m_timeText, states);
 }
@@ -217,15 +216,15 @@ void DayNightCycle::updateSkyVertices() {
 	*/
 }
 
-void DayNightCycle::updateTimeText() {
-	auto str{m_worldTime.getString()};
+void DayNightCycle::updateTimeText(const WorldTime& _time) {
+	auto str{_time.getString()};
 	m_timeText.setString(str);
 	m_timeText.setPosition(
 	  m_target->getSize().x - 1.2 * m_timeText.getGlobalBounds().width, 0);
 }
 
-void DayNightCycle::updatePlanetTexture() {
-	if (isDaytime()) {
+void DayNightCycle::updatePlanetTexture(const WorldTime& _time) {
+	if (isDaytime(_time)) {
 		m_sunMoonSprite.setTexture(
 		  TextureManager::get_instance().getTexture(TextureManager::Type::SUN));
 	}
@@ -241,10 +240,10 @@ void DayNightCycle::updatePlanetTexture() {
 	                          m_sunMoonSprite.getGlobalBounds().height / 2);
 }
 
-void DayNightCycle::updatePlanetPosition() {
+void DayNightCycle::updatePlanetPosition(const WorldTime& _time) {
 	static const double pi{std::atan(1) * 4};
-	auto                hhmm{getWrappedTime()};
-	auto                hourRange{getCurrentHourRange()};
+	auto                hhmm{getWrappedTime(_time)};
+	auto                hourRange{getCurrentHourRange(_time)};
 	//Get the "percentage" of how far along the X axis the sun should be (for example, at 12, it should be
 	//exactly 50% of the way.
 	//First, calculate the difference between the hours.
@@ -281,7 +280,7 @@ void DayNightCycle::updatePlanetPosition() {
 	m_sunMoonSprite.setPosition(xPos, yPos);
 }
 
-void DayNightCycle::sendUniformsToShader() {
+void DayNightCycle::sendUniformsToShader(const WorldTime& _time) {
 	//In SFML,	 the origin (0,0) is at the top left.
 	//In OpenGL, the origin (0,0) is in the middle.
 	//We'll do a couple of things to account for this.
@@ -299,20 +298,20 @@ void DayNightCycle::sendUniformsToShader() {
 	m_shader.setUniform(
 	  "planetPosition",
 	  sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
-	m_shader.setUniform("daytime", isDaytime());
+	m_shader.setUniform("daytime", isDaytime(_time));
 }
 
-bool DayNightCycle::isDaytime() const {
-	auto hhmm{m_worldTime.get()};
+bool DayNightCycle::isDaytime(const WorldTime& _time) const {
+	auto hhmm{_time.get()};
 	if (hhmm.hours >= DAY_BEGIN_HOUR && hhmm.hours < DAY_END_HOUR) {
 		return true;
 	}
 	return false;
 }
 
-std::pair<int, int> DayNightCycle::getCurrentHourRange() const {
+std::pair<int, int> DayNightCycle::getCurrentHourRange(const WorldTime& _time) const {
 	std::pair<int, int> result{};
-	if (isDaytime()) {
+	if (isDaytime(_time)) {
 		result = std::make_pair(DAY_BEGIN_HOUR, DAY_END_HOUR);
 	}
 	else {
@@ -332,11 +331,10 @@ std::pair<int, int> DayNightCycle::getCurrentHourRange() const {
 }
 
 //See getCurrentHourRange() for a more detailed comment about why we may need to add 24.
-HHMM DayNightCycle::getWrappedTime() const {
-	auto worldTime{m_worldTime};
-	auto hhmm{worldTime.get()};
+HHMM DayNightCycle::getWrappedTime(const WorldTime& _time) const {
+	auto hhmm{_time.get()};
 
-	if (hhmm.hours < getCurrentHourRange().first) {
+	if (hhmm.hours < getCurrentHourRange(_time).first) {
 		hhmm.hours += 24;
 	}
 

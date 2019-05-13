@@ -3,8 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "World.h"
-
 /*
 This class handles everything to do with the VISUAL effects of the day-night cycle, including:
 
@@ -18,9 +16,13 @@ Saving this for future reference:
 https://csc.lsu.edu/~kooima/misc/cs594/final/part2.html
 */
 
+//Defined in WorldTime.h, included in DayNightCycle.cpp
+class WorldTime;
+struct HHMM;
+
 class DayNightCycle : public sf::Drawable {
   public:
-	DayNightCycle(const WorldTime& _time);
+	DayNightCycle();
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	//This function will deal with managing either the sun or the moon's
@@ -30,23 +32,22 @@ class DayNightCycle : public sf::Drawable {
   private:
 	//Functions -----------------------------------
 	void updateSkyVertices();
-	void updateTimeText();
-	void updatePlanetTexture();
-	void updatePlanetPosition();
-	void sendUniformsToShader();
-	bool isDaytime() const;
+	void updateTimeText(const WorldTime& _time);
+	void updatePlanetTexture(const WorldTime& _time);
+	void updatePlanetPosition(const WorldTime& _time);
+	void sendUniformsToShader(const WorldTime& _time);
+	bool isDaytime(const WorldTime& _time) const;
 	//If it's currently daytime, gets the values of
 	//the begin and end daytime hours. Otherwise, gets
 	//the values for nighttime.
-	std::pair<int, int> getCurrentHourRange() const;
+	std::pair<int, int> getCurrentHourRange(const WorldTime& _time) const;
 	//Simply gets the current time, but also performs an
 	//additional check to see if any additional 24h
 	//wrapping is necessary
-	HHMM getWrappedTime() const;
+	HHMM getWrappedTime(const WorldTime& _time) const;
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	const WorldTime& m_worldTime;
 	sf::Sprite       m_sunMoonSprite;
 	//m_skyBackground will contain the vertices for all 14 triangles
 	//that the screen is divided into. Note that four vertices at the

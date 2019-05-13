@@ -33,7 +33,6 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
               m_systemPhysics{},
               m_systemPlayerMovement{},
               m_rendererChunk(*m_world),
-              m_dayNightCycle(m_world->getTime()),
               m_view{},
               m_skyView{} {
 
@@ -54,7 +53,7 @@ void Client::getInput(sf::Event& _event) {
 void Client::update(int _timeslice) {
 	renderUpdatedChunks();
 	updateSystems(_timeslice);
-	m_dayNightCycle.update(m_world->getTime());
+
 
 	m_world->update(_timeslice);
 	m_networkManager.update();
@@ -65,7 +64,7 @@ void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	adjustViews(target);
 
 	target.setView(m_skyView);
-	target.draw(m_dayNightCycle);
+	m_world->drawDayNightCycle(target, states);
 
 	target.setView(m_view);
 	m_rendererChunk.draw(target, states);

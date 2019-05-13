@@ -13,7 +13,6 @@
 #include "Systems/SystemPlayerMovement.h"
 
 #include "RendererChunk.h"
-#include "DayNightCycle.h"
 
 /*
 The client class takes an optional pointer to a server.
@@ -73,8 +72,6 @@ class Client
 	SystemPlayerMovement m_systemPlayerMovement;
 
 	RendererChunk m_rendererChunk;
-	DayNightCycle m_dayNightCycle;
-
 	//m_view is the view used to draw chunks, players, items, etc.
 	mutable sf::View m_view;
 	//m_skyView is the view used to draw the background, sun/moon, etc.

@@ -1,8 +1,11 @@
 #ifndef WORLD_H_INCLUDED
 #define WORLD_H_INCLUDED
 
+#include <SFML/Graphics.hpp>
+
 #include "WorldChunk.h"
 #include "WorldTime.h"
+#include "DayNightCycle.h"
 
 typedef std::vector<WorldChunk::EncodedChunkData> encodedChunks;
 
@@ -19,13 +22,13 @@ class World {
 	void                parseChunk(const WorldChunk::EncodedChunkData& _data);
 
 	void update(int _timeslice);
-
-	const WorldTime& getTime() const;
+	void drawDayNightCycle(sf::RenderTarget& target, sf::RenderStates states) const;
 
   private:
 	//Data members --------------------------------
 	std::vector<WorldChunk> m_chunks;
 	WorldTime               m_time;
+	DayNightCycle           m_dayNightCycle;
 	//---------------------------------------------
 };
 

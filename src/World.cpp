@@ -10,7 +10,7 @@
 
 #include "TextureManager.h"
 
-World::World() : m_time{{5, 0}} {
+World::World() : m_time{{5, 0}}, m_dayNightCycle{} {
 }
 
 const sf::Vector2f World::getCenter() const {
@@ -74,12 +74,13 @@ void World::update(int _timeslice) {
 
 	//if(clock.getElapsedTime().asSeconds() >= 0.05){
 	m_time.tick();
+	m_dayNightCycle.update(m_time);
 	//	clock.restart();
 	//}
 }
 
-const WorldTime& World::getTime() const {
-	return m_time;
+void World::drawDayNightCycle(sf::RenderTarget& target, sf::RenderStates states) const {
+	target.draw(m_dayNightCycle, states);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
