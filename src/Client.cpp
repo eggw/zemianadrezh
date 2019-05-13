@@ -149,7 +149,6 @@ sf::Vector2f Client::getPlayerPosition() const {
 /////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------TESTS-------------------------------------//
 /////////////////////////////////////////////////////////////////////////////////////
-
 TEST_CASE("Testing client-server connection") {
 	sf::IpAddress ip{sf::IpAddress::LocalHost};
 	Server        server{true};

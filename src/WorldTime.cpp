@@ -1,3 +1,11 @@
+//////////////////////////////////////////////|
+//Contains tests at the end of the file       |
+//////////////////////////////////////////////|
+#include "debug.h"
+//--------------------------------------------|
+// (*) WorldTime functionality
+//--------------------------------------------|
+
 #include "WorldTime.h"
 
 WorldTime::WorldTime(HHMM _t) : m_time{0, 0}, m_paused{false} {
@@ -43,3 +51,34 @@ void WorldTime::pause() const {
 void WorldTime::unpause() const {
 	m_paused = false;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------TESTS-------------------------------------//
+/////////////////////////////////////////////////////////////////////////////////////
+TEST_CASE("Testing world time functionality") {
+	WorldTime t{{24,61}};
+
+	SUBCASE("testing hour and minute overflow") {
+		CHECK (t.get().hours == 0);
+		CHECK (t.get().minutes == 0);
+	}
+
+	t.pause();
+	t.tick();
+
+	SUBCASE("testing pausing...") {
+		CHECK (t.get().hours == 0);
+		CHECK (t.get().minutes == 0);
+	}
+
+	t.unpause();
+	t.tick();
+
+	SUBCASE("testing unpausing...") {
+		CHECK (t.get().hours == 0);
+		CHECK (t.get().minutes == 1);
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------//
+/////////////////////////////////////////////////////////////////////////////////////

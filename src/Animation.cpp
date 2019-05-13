@@ -82,35 +82,22 @@ void Animation::setAnimationSpeed(float _speed) {
 }
 
 void Animation::update() {
-	//std::cout << "--------------------------" << std::endl;
-	//std::cout << "Run time: " << m_animationTimer.getElapsedTime().asSeconds() << " seconds" << std::endl;
-	//std::cout << "m_currentIndex: " << m_currentIndex <<
-	//"(" << m_minIndex << ", " << m_maxIndex << ")" << std::endl;
-	//std::cout << "m_animationSpeed: " << m_animationSpeed << std::endl;
-	//So long as the animation is running
+	//So long as the animation is running...
 	if (m_animationRunning) {
-		//std::cout << "Animation running" << std::endl;
 		//And enough time has passed...
 		if (m_animationTimer.getElapsedTime().asSeconds() >= m_animationSpeed) {
 			//Either increment m_currentIndex, taking us to the next
 			//step in the animation, or go back to the first frame.
 			if (m_currentIndex < m_maxIndex) {
 				m_currentIndex++;
-				//std::cout << "setting m_currentIndex to " << m_currentIndex << std::endl;
 			}
 			else {
 				m_currentIndex = m_minIndex;
-				//std::cout << "setting m_minIndex to " << m_minIndex << std::endl;
 			}
 
 			m_animationTimer.restart();
 		}
 	}
-	else {
-		//std::cout << "Animation not running" << std::endl;
-	}
-
-	//std::cout << "--------------------------" << std::endl;
 }
 
 const sf::Sprite Animation::getCurrentSprite() const {
