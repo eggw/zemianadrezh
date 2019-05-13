@@ -44,8 +44,8 @@ void World::addChunk(int _beginID, int _num, bool _empty) {
 	}
 }
 
-const encodedChunks World::encodeChunks() const {
-	encodedChunks data;
+const EncodedChunks World::encodeChunks() const {
+	EncodedChunks data;
 
 	for (auto& chunk : m_chunks) {
 		data.emplace_back(chunk.encodeData());

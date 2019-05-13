@@ -14,7 +14,7 @@ class GameInstance {
 	//TODO: refactor these functions, either remove them or put them somewhere else
 	//-------------------------------------------------------------------------
 	const World&        getWorld() const;
-	const encodedChunks encodeWorldChunks() const;
+	const EncodedChunks encodeWorldChunks() const;
 	void parseWorldChunk(const WorldChunk::EncodedChunkData& _data);
 	//-------------------------------------------------------------------------
 

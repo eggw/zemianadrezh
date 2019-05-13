@@ -29,7 +29,7 @@ GameInstance::getPlayers() const {
 }
 */
 
-const encodedChunks GameInstance::encodeWorldChunks() const {
+const EncodedChunks GameInstance::encodeWorldChunks() const {
 	return m_world->encodeChunks();
 }
 
