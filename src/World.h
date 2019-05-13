@@ -7,6 +7,7 @@
 #include "WorldTime.h"
 #include "DayNightCycle.h"
 
+class RendererChunk;
 typedef std::vector<WorldChunk::EncodedChunkData> EncodedChunks;
 
 class World {
@@ -14,6 +15,7 @@ class World {
 
   public:
 	World();
+	~World();
 
 	const sf::Vector2f getCenter() const;
 	void               addChunk(int _beginID, int _num, bool _empty);
@@ -22,13 +24,17 @@ class World {
 	void                parseChunk(const WorldChunk::EncodedChunkData& _data);
 
 	void update(int _timeslice);
-	void drawDayNightCycle(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawBackground(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawChunks(sf::RenderTarget& target, sf::RenderStates states) const;
+
+	void renderUpdatedChunk(int _chunkID);
 
   private:
 	//Data members --------------------------------
-	std::vector<WorldChunk> m_chunks;
-	WorldTime               m_time;
-	DayNightCycle           m_dayNightCycle;
+	std::vector<WorldChunk>        m_chunks;
+	std::unique_ptr<RendererChunk> m_rendererChunk;
+	WorldTime                      m_time;
+	DayNightCycle                  m_dayNightCycle;
 	//---------------------------------------------
 };
 

@@ -16,7 +16,6 @@ Saving this for future reference:
 https://csc.lsu.edu/~kooima/misc/cs594/final/part2.html
 */
 
-//Defined in WorldTime.h, included in DayNightCycle.cpp
 class WorldTime;
 struct HHMM;
 

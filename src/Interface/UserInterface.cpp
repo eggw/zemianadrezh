@@ -5,8 +5,7 @@
 #include "NetworkManagerClient.h"
 
 UserInterface::UserInterface(NetworkManagerClient& _n, std::string _name)
-            : m_target{nullptr},
-              m_networkManager{_n},
+            : m_networkManager{_n},
               m_chatBox(_name),
               m_hotbarInterface() {
 }
@@ -26,9 +25,8 @@ void UserInterface::update(int _timeslice) {
 
 void UserInterface::draw(sf::RenderTarget& target,
                          sf::RenderStates  states) const {
-	m_target = &target;
-	m_target->draw(m_chatBox, states);
-	m_target->draw(m_hotbarInterface, states);
+	target.draw(m_chatBox, states);
+	target.draw(m_hotbarInterface, states);
 }
 
 //We check to see if any new messages have been received from our

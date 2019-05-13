@@ -18,17 +18,6 @@ GameInstance::GameInstance(GameInstance* _g) : m_world{nullptr}, m_registry{null
 	}
 }
 
-const World& GameInstance::getWorld() const {
-	return *m_world;
-}
-
-/*
-const std::shared_ptr<std::vector<std::shared_ptr<Player>>>
-GameInstance::getPlayers() const {
-    return m_players;
-}
-*/
-
 const EncodedChunks GameInstance::encodeWorldChunks() const {
 	return m_world->encodeChunks();
 }

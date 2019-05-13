@@ -16,6 +16,8 @@ class NetworkManagerServer {
   public:
 	NetworkManagerServer(Server& _server);
 
+	//There's an explanation that applies to these
+	//functions below
 	void sendPacket(Packet::TCPPacket _type,
 	                sf::TcpSocket*    _recipient = nullptr,
 	                bool              _exclude   = false);
@@ -84,6 +86,7 @@ class NetworkManagerServer {
 	//specified.
 	//
 	//These functions are utilised in the sendPacket() functions.
+	//
 	std::vector<sf::TcpSocket*> getTCPRecipients(
 	  sf::TcpSocket* _recipient = nullptr,
 	  bool           _exclude   = false);

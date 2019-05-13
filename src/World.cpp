@@ -8,9 +8,16 @@
 
 #include "World.h"
 
+#include "RendererChunk.h"
 #include "TextureManager.h"
 
-World::World() : m_time{{5, 0}}, m_dayNightCycle{} {
+World::World() : m_chunks{},
+                 m_rendererChunk{std::make_unique<RendererChunk>(*this)},
+                 m_time{{5, 0}},
+                 m_dayNightCycle{} {
+}
+
+World::~World() {
 }
 
 const sf::Vector2f World::getCenter() const {
@@ -70,17 +77,20 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 }
 
 void World::update(int _timeslice) {
-	//static sf::Clock clock;
-
-	//if(clock.getElapsedTime().asSeconds() >= 0.05){
 	m_time.tick();
 	m_dayNightCycle.update(m_time);
-	//	clock.restart();
-	//}
 }
 
-void World::drawDayNightCycle(sf::RenderTarget& target, sf::RenderStates states) const {
+void World::drawBackground(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(m_dayNightCycle, states);
+}
+
+void World::drawChunks(sf::RenderTarget& target, sf::RenderStates states) const {
+	m_rendererChunk->draw(target, states);
+}
+
+void World::renderUpdatedChunk(int _chunkID) {
+	m_rendererChunk->update(_chunkID);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

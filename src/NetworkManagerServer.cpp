@@ -63,7 +63,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 
 	//////////////////////////////////////////////////////////////////////////////
 	case Packet::TCPPacket::DATA_WORLD: {
-		EncodedChunks worldData = m_server.getWorld().encodeChunks();
+		auto worldData = m_server.encodeWorldChunks();
 		/*
 		At the moment, a packet is generated and sent for each chunk
 		to each player. In the future, chunks will be sent on an ID basis.

@@ -160,10 +160,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 				m_client.parseWorldChunk(chunkData);
 			}
 
-			m_lastReceivedChunks.push_back(chunkData.id);
-
-			m_chunkDataReceived = true;
-			setChunkDataProcessed(false);
+			m_client.renderUpdatedChunk(chunkData.id);
 			break;
 		}
 		//////////////////////////////////////////////////////////////////////////////
@@ -290,16 +287,4 @@ void NetworkManagerClient::clearLastReceivedMessage() {
 
 void NetworkManagerClient::setMessageToSend(Message _msg) {
 	m_messageToSend = _msg;
-}
-
-bool NetworkManagerClient::chunkDataReceived(std::vector<int>* _ids) const {
-	if (_ids != nullptr) {
-		*_ids = m_lastReceivedChunks;
-	}
-
-	return m_chunkDataReceived;
-}
-
-void NetworkManagerClient::setChunkDataProcessed(bool _val) {
-	m_chunkDataReceived = !_val;
 }

@@ -32,7 +32,6 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
               m_systemDrawing{},
               m_systemPhysics{},
               m_systemPlayerMovement{},
-              m_rendererChunk(*m_world),
               m_view{},
               m_skyView{} {
 
@@ -51,10 +50,7 @@ void Client::getInput(sf::Event& _event) {
 }
 
 void Client::update(int _timeslice) {
-	renderUpdatedChunks();
 	updateSystems(_timeslice);
-
-
 	m_world->update(_timeslice);
 	m_networkManager.update();
 	m_interface.update(_timeslice);
@@ -64,10 +60,10 @@ void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	adjustViews(target);
 
 	target.setView(m_skyView);
-	m_world->drawDayNightCycle(target, states);
+	m_world->drawBackground(target, states);
 
 	target.setView(m_view);
-	m_rendererChunk.draw(target, states);
+	m_world->drawChunks(target, states);
 
 	target.draw(m_interface, states);
 	m_systemDrawing.draw(*m_registry, target, states);
@@ -131,15 +127,8 @@ void Client::adjustViews(sf::RenderTarget& _target) const {
 						 float(_target.getSize().y / 2)});
 }
 
-void Client::renderUpdatedChunks() {
-	auto updatedIDs{std::make_unique<std::vector<int>>()};
-
-	if (m_networkManager.chunkDataReceived(updatedIDs.get())) {
-		for (auto id : *updatedIDs) {
-			m_rendererChunk.update(id);
-		}
-		m_networkManager.setChunkDataProcessed(true);
-	}
+void Client::renderUpdatedChunk(int _chunkID) {
+	m_world->renderUpdatedChunk(_chunkID);
 }
 
 sf::Vector2f Client::getPlayerPosition() const {

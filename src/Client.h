@@ -38,8 +38,8 @@ class Client
 
 	void updateSystems(int _timeslice);
 
-	void sendPlayerPacket();
 	void receivePackets();
+	void sendPlayerPacket();
 
 	bool isConnected() const;
 	bool isLocal() const;
@@ -53,8 +53,8 @@ class Client
 	void adjustViews(sf::RenderTarget& _target) const;
 	//This function is responsible for calling RendererChunk's update
 	//function on chunks that have just had their data updated (when
-	//the network manager indicates that chunk data has been sent)
-	void renderUpdatedChunks();
+	//the network manager indicates that chunk data has been received)
+	void renderUpdatedChunk(int _chunkID);
 
 	sf::Vector2f getPlayerPosition() const;
 	//---------------------------------------------
@@ -71,7 +71,6 @@ class Client
 	SystemPhysics        m_systemPhysics;
 	SystemPlayerMovement m_systemPlayerMovement;
 
-	RendererChunk m_rendererChunk;
 	//m_view is the view used to draw chunks, players, items, etc.
 	mutable sf::View m_view;
 	//m_skyView is the view used to draw the background, sun/moon, etc.
