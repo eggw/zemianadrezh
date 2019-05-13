@@ -45,6 +45,16 @@ class NetworkManagerClient {
   private:
 	//Data members --------------------------------
 	Client&       m_client;
+	//m_playerSpawned is set to true once a RESPAWN::PLAYER packet
+	//has been received at least once.
+	//
+	//All UDP packet sending is disabled until this is set to true.
+	//This is to make sure that the player is spawned in the correct
+	//position before sending out any further position updates.
+	bool          m_playerSpawned;
+	//m_connectionActive is set to true once there is an active
+	//connection to a server, and set to false if the connection
+	//is lost.
 	bool          m_connectionActive;
 	sf::UdpSocket m_udpSocket;
 	sf::TcpSocket m_serverConnection;

@@ -10,7 +10,7 @@
 #include "Components/ComponentsPlayer.h"
 
 NetworkManagerClient::NetworkManagerClient(Client& _client)
-            : m_client{_client}, m_connectionActive{false}, m_udpSocket{} {
+            : m_client{_client}, m_playerSpawned{false}, m_connectionActive{false}, m_udpSocket{} {
 	m_udpSocket.setBlocking(false);
 
 	if (m_udpSocket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
@@ -90,6 +90,10 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 }
 
 void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
+	if(!m_playerSpawned) {
+		return;
+	}
+
 	int             packetCode = Packet::toInt(_type);
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
@@ -179,6 +183,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 		case Packet::TCPPacket::RESPAWN_PLAYER: {
 			m_client.respawnPlayer();
+			m_playerSpawned = true;
 			break;
 		}
 			//////////////////////////////////////////////////////////////////////////////
