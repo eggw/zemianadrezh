@@ -29,9 +29,14 @@ class Block {
 	sf::FloatRect    getTextureRect() const;
 
 	sf::Vector2f getPosition() const;
-	void         setPosition(sf::Vector2f _p);
 
   private:
+  	//Functions -----------------------------------
+	//Based on the id, this function will set the
+	//appropriate position.
+  	void initialisePosition();
+  	//---------------------------------------------
+
 	//Data members --------------------------------
 	int             m_id;
 	BlockData::Type m_type;

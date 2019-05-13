@@ -5,9 +5,6 @@
 
 #include "Block.h"
 
-constexpr int CHUNK_DIMENSIONS_X = 32;
-constexpr int CHUNK_DIMENSIONS_Y = 32;
-
 class WorldChunk {
   public:
 	struct EncodedChunkData {

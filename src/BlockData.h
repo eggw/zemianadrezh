@@ -7,6 +7,9 @@
 constexpr int BLOCK_DIMENSIONS_X = 16;
 constexpr int BLOCK_DIMENSIONS_Y = 16;
 
+constexpr int CHUNK_DIMENSIONS_X = 32;
+constexpr int CHUNK_DIMENSIONS_Y = 32;
+
 /*
 BlockData contains all the information we need to know
 about a certain block type.

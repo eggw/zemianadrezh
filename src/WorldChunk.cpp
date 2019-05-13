@@ -53,7 +53,6 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id} {
 			}
 
 			Block block{index, t};
-			block.setPosition({float(x), float(y)});
 
 			++index;
 
