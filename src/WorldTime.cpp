@@ -56,27 +56,27 @@ void WorldTime::unpause() const {
 //---------------------------------------TESTS-------------------------------------//
 /////////////////////////////////////////////////////////////////////////////////////
 TEST_CASE("Testing world time functionality") {
-	WorldTime t{{24,61}};
+	WorldTime t{{24, 61}};
 
 	SUBCASE("testing hour and minute overflow") {
-		CHECK (t.get().hours == 0);
-		CHECK (t.get().minutes == 0);
+		CHECK(t.get().hours == 0);
+		CHECK(t.get().minutes == 0);
 	}
 
 	t.pause();
 	t.tick();
 
 	SUBCASE("testing pausing...") {
-		CHECK (t.get().hours == 0);
-		CHECK (t.get().minutes == 0);
+		CHECK(t.get().hours == 0);
+		CHECK(t.get().minutes == 0);
 	}
 
 	t.unpause();
 	t.tick();
 
 	SUBCASE("testing unpausing...") {
-		CHECK (t.get().hours == 0);
-		CHECK (t.get().minutes == 1);
+		CHECK(t.get().hours == 0);
+		CHECK(t.get().minutes == 1);
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////

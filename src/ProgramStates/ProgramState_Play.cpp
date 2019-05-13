@@ -13,7 +13,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //set the last argument of m_client's constructor
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
-              m_client(_ipAddress, m_program.getServer()){
+              m_client(_ipAddress, m_program.getServer()) {
 }
 
 ProgramState_Play::~ProgramState_Play() {
@@ -64,5 +64,3 @@ bool ProgramState_Play::clientConnected() const {
 void ProgramState_Play::onResize(sf::Vector2u _newSize) {
 	ProgramState::onResize(_newSize);
 }
-
-

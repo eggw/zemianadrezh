@@ -24,10 +24,11 @@ class World {
 	void                parseChunk(const WorldChunk::EncodedChunkData& _data);
 
 	void update(int _timeslice);
-	void drawBackground(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawBackground(sf::RenderTarget& target,
+	                    sf::RenderStates  states) const;
 	void drawChunks(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	void renderUpdatedChunk(int _chunkID);
+	void renderUpdatedChunk(int _chunkID) const;
 
   private:
 	//Data members --------------------------------

@@ -12,7 +12,9 @@ class RendererBase {
 
 	virtual ~RendererBase(){};
 
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const = 0;
+	virtual void draw(
+	  sf::RenderTarget& target,
+	  sf::RenderStates  states = sf::RenderStates::Default) const = 0;
 };
 
 #endif // RENDERERBASE_H_INCLUDED

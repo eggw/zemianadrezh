@@ -309,7 +309,8 @@ bool DayNightCycle::isDaytime(const WorldTime& _time) const {
 	return false;
 }
 
-std::pair<int, int> DayNightCycle::getCurrentHourRange(const WorldTime& _time) const {
+std::pair<int, int> DayNightCycle::getCurrentHourRange(
+  const WorldTime& _time) const {
 	std::pair<int, int> result{};
 	if (isDaytime(_time)) {
 		result = std::make_pair(DAY_BEGIN_HOUR, DAY_END_HOUR);

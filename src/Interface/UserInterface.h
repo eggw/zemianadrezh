@@ -13,8 +13,7 @@ class NetworkManagerClient;
 
 class UserInterface : public sf::Drawable {
   public:
-	UserInterface(NetworkManagerClient& _n,
-	              std::string           _name);
+	UserInterface(NetworkManagerClient& _n, std::string _name);
 
 	void getInput(sf::Event& _event);
 	void update(int _timeslice);
@@ -27,10 +26,10 @@ class UserInterface : public sf::Drawable {
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	mutable sf::RenderTarget*     m_target;
-	NetworkManagerClient&         m_networkManager;
-	ChatBox                       m_chatBox;
-	HotbarInterface               m_hotbarInterface;
+	mutable sf::RenderTarget* m_target;
+	NetworkManagerClient&     m_networkManager;
+	ChatBox                   m_chatBox;
+	HotbarInterface           m_hotbarInterface;
 	//---------------------------------------------
 };
 

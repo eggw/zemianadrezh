@@ -34,7 +34,6 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
               m_systemPlayerMovement{},
               m_view{},
               m_skyView{} {
-
 	initialisePlayer();
 
 	m_networkManager.connect(m_serverIP, Packet::Port_TCP_Server);
@@ -113,21 +112,18 @@ void Client::respawnPlayer() {
 }
 
 void Client::adjustViews(sf::RenderTarget& _target) const {
-	m_view.reset({0,0,
-                  float(_target.getSize().x),
-                  float(_target.getSize().y)});
+	m_view.reset(
+	  {0, 0, float(_target.getSize().x), float(_target.getSize().y)});
 
-	m_skyView.reset({0,0,
-				     float(_target.getSize().x),
-					 float(_target.getSize().y)});
-
+	m_skyView.reset(
+	  {0, 0, float(_target.getSize().x), float(_target.getSize().y)});
 
 	m_view.setCenter(getPlayerPosition());
-	m_skyView.setCenter({float(_target.getSize().x / 2),
-						 float(_target.getSize().y / 2)});
+	m_skyView.setCenter(
+	  {float(_target.getSize().x / 2), float(_target.getSize().y / 2)});
 }
 
-void Client::renderUpdatedChunk(int _chunkID) {
+void Client::renderUpdatedChunk(int _chunkID) const {
 	m_world->renderUpdatedChunk(_chunkID);
 }
 
@@ -156,7 +152,7 @@ TEST_CASE("Testing client-server connection") {
 		//procedural nature of calling these functions just once. In a real
 		//scenario, the server will be constantly accepting connections.
 
-		while(server.connectedPlayers() == 0) {
+		while (server.connectedPlayers() == 0) {
 			server.acceptConnections();
 		}
 

@@ -27,15 +27,15 @@ class Block {
 	void             setType(BlockData::Type _t);
 	const BlockData& getData() const;
 	sf::FloatRect    getTextureRect() const;
-
-	sf::Vector2f getPosition() const;
+	sf::Vector2f     getPosition() const;
 
   private:
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 	//Based on the id, this function will set the
-	//appropriate position.
-  	void initialisePosition();
-  	//---------------------------------------------
+	//appropriate position in a 2D coordinate
+	//system.
+	void initialisePosition();
+	//---------------------------------------------
 
 	//Data members --------------------------------
 	int             m_id;

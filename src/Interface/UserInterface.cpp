@@ -5,9 +5,7 @@
 #include "NetworkManagerClient.h"
 
 UserInterface::UserInterface(NetworkManagerClient& _n, std::string _name)
-            : m_networkManager{_n},
-              m_chatBox(_name),
-              m_hotbarInterface() {
+            : m_networkManager{_n}, m_chatBox(_name), m_hotbarInterface() {
 }
 
 void UserInterface::getInput(sf::Event& _event) {

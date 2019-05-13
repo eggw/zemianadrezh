@@ -22,7 +22,7 @@ class Server : public GameInstance {
 	void acceptConnections();
 	void update(int _timeslice);
 
-	bool connectionsAllowed() const;
+	bool   connectionsAllowed() const;
 	size_t connectedPlayers() const;
 
   private:

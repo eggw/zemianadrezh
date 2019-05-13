@@ -33,7 +33,8 @@ class RendererChunk : public RendererBase<WorldChunk> {
 		update(ptr);
 	}
 
-	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const {
+	void draw(sf::RenderTarget& target,
+	          sf::RenderStates  states = sf::RenderStates::Default) const {
 		static auto blocks{TextureManager::get_instance().getTexture(
 		  TextureManager::Type::BLOCKS)};
 		for (const auto& element : m_vertexMap) {

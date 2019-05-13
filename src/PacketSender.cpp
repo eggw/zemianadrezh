@@ -3,7 +3,6 @@
 PacketSender::PacketSender() {
 }
 
-
 void PacketSender::send(sf::TcpSocket* _socket, const PacketSharedPtr _packet) {
 	TCPPacket data{_socket, _packet};
 
@@ -19,7 +18,6 @@ void PacketSender::send(sf::UdpSocket*        _socket,
                         unsigned short        _port) {
 	_socket->send(*_packet, _recipient, _port);
 }
-
 
 void PacketSender::update() {
 	m_packetData.erase(

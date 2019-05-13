@@ -11,10 +11,11 @@
 #include "RendererChunk.h"
 #include "TextureManager.h"
 
-World::World() : m_chunks{},
-                 m_rendererChunk{std::make_unique<RendererChunk>(*this)},
-                 m_time{{5, 0}},
-                 m_dayNightCycle{} {
+World::World()
+            : m_chunks{},
+              m_rendererChunk{std::make_unique<RendererChunk>(*this)},
+              m_time{{5, 0}},
+              m_dayNightCycle{} {
 }
 
 World::~World() {
@@ -81,15 +82,17 @@ void World::update(int _timeslice) {
 	m_dayNightCycle.update(m_time);
 }
 
-void World::drawBackground(sf::RenderTarget& target, sf::RenderStates states) const {
+void World::drawBackground(sf::RenderTarget& target,
+                           sf::RenderStates  states) const {
 	target.draw(m_dayNightCycle, states);
 }
 
-void World::drawChunks(sf::RenderTarget& target, sf::RenderStates states) const {
+void World::drawChunks(sf::RenderTarget& target,
+                       sf::RenderStates  states) const {
 	m_rendererChunk->draw(target, states);
 }
 
-void World::renderUpdatedChunk(int _chunkID) {
+void World::renderUpdatedChunk(int _chunkID) const {
 	m_rendererChunk->update(_chunkID);
 }
 

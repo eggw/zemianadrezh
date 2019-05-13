@@ -256,7 +256,7 @@ void NetworkManagerServer::sendMessage(const Message& _msg) {
 }
 
 void NetworkManagerServer::removePlayer(const sf::TcpSocket* _connection) {
-	if(_connection == nullptr) {
+	if (_connection == nullptr) {
 		return;
 	}
 

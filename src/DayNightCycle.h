@@ -47,7 +47,7 @@ class DayNightCycle : public sf::Drawable {
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	sf::Sprite       m_sunMoonSprite;
+	sf::Sprite m_sunMoonSprite;
 	//m_skyBackground will contain the vertices for all 14 triangles
 	//that the screen is divided into. Note that four vertices at the
 	//edges of the screen would also suffice, but let's keep the 14

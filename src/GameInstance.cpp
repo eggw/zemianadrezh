@@ -9,8 +9,9 @@
 #include "Components/ComponentPhysics.h"
 #include "Components/ComponentPosition.h"
 
-GameInstance::GameInstance(GameInstance* _g) : m_world{nullptr}, m_registry{nullptr} {
-	if(_g == nullptr) {
+GameInstance::GameInstance(GameInstance* _g)
+            : m_world{nullptr}, m_registry{nullptr} {
+	if (_g == nullptr) {
 		initialise();
 	}
 	else {

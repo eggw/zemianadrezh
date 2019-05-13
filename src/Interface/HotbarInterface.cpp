@@ -6,7 +6,7 @@ HotbarInterface::HotbarInterface()
             : m_target{nullptr},
               m_lastTargetSize{},
               m_hotbarView{},
-			  m_activeHotbarSlot{nullptr} {
+              m_activeHotbarSlot{nullptr} {
 	int hotbarRectWidth{40};
 	int hotbarRectHeight{40};
 
@@ -92,8 +92,8 @@ void HotbarInterface::update(int _timeslice) {
 	//As a result, we also won't really need to detect
 	//a Resized event in getInput(), since this part
 	//will handle that as well.
-	if(m_target != nullptr) {
-		if(m_target->getSize() != m_lastTargetSize) {
+	if (m_target != nullptr) {
+		if (m_target->getSize() != m_lastTargetSize) {
 			m_lastTargetSize = m_target->getSize();
 			onResize(m_lastTargetSize);
 		}
