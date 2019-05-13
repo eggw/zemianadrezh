@@ -6,8 +6,6 @@
 #include "Server.h"
 #include "Client.h"
 #include "RendererChunk.h"
-#include "RendererDrawable.h"
-#include "RendererSharedDrawable.h"
 #include "DayNightCycle.h"
 
 class ProgramState_Play : public ProgramState {

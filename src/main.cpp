@@ -1,5 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT
-#include "debug.h";
+#include "debug.h"
 
 #include "Program.h"
 

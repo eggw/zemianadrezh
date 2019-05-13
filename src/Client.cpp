@@ -1,7 +1,7 @@
 //////////////////////////////////////////////|
 //Contains tests at the end of the file       |
 //////////////////////////////////////////////|
-#include "debug.h";
+#include "debug.h"
 //--------------------------------------------|
 // (*) Client - Server connection
 //--------------------------------------------|
@@ -137,8 +137,6 @@ TEST_CASE("Testing client-server connection") {
 	SUBCASE("creating client and connecting to server") {
 		Client client{ip, &server};
 		server.acceptConnections();
-		//TODO
-		//Testing is failing here sometimes, investigate further
 
 		CHECK(client.isConnected());
 		CHECK(client.isLocal());

@@ -8,16 +8,11 @@
 template<class T>
 class RendererBase {
   public:
-	RendererBase(sf::RenderWindow& _window) : m_window(_window){};
+	RendererBase(){};
 
 	virtual ~RendererBase(){};
 
-	virtual void draw() const = 0;
-
-  protected:
-	//Data members --------------------------------
-	sf::RenderWindow& m_window;
-	//---------------------------------------------
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const = 0;
 };
 
 #endif // RENDERERBASE_H_INCLUDED

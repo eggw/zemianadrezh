@@ -9,8 +9,7 @@
 
 class RendererChunk : public RendererBase<WorldChunk> {
   public:
-	RendererChunk(sf::RenderWindow& _window, World& _world)
-	            : RendererBase<WorldChunk>(_window), m_world{_world} {};
+	RendererChunk(World& _world) : m_world{_world} {};
 
 	~RendererChunk(){};
 
@@ -34,11 +33,11 @@ class RendererChunk : public RendererBase<WorldChunk> {
 		update(ptr);
 	}
 
-	void draw() const {
+	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const {
 		static auto blocks{TextureManager::get_instance().getTexture(
 		  TextureManager::Type::BLOCKS)};
 		for (const auto& element : m_vertexMap) {
-			RendererBase<WorldChunk>::m_window.draw(element.second, &blocks);
+			target.draw(element.second, &blocks);
 		}
 	};
 

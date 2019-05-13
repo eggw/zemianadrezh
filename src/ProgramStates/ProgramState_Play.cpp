@@ -14,7 +14,7 @@ ProgramState_Play::ProgramState_Play(Program&      _program,
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
               m_client(_ipAddress, m_program.getServer()),
-              m_rendererChunk(m_program.m_window, *m_client.m_world),
+              m_rendererChunk(*m_client.m_world),
               m_dayNightCycle(m_client.m_world->getTime()),
               m_view{sf::FloatRect(0,
                                    0,
@@ -75,7 +75,7 @@ void ProgramState_Play::draw() {
 	m_program.m_window.draw(m_dayNightCycle);
 
 	m_program.m_window.setView(m_view);
-	m_rendererChunk.draw();
+	m_rendererChunk.draw(m_program.m_window);
 
 	m_program.m_window.draw(m_client);
 }
