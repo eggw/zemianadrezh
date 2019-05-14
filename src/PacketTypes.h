@@ -8,9 +8,9 @@ namespace Packet {
 	constexpr unsigned short Port_TCP_Server{7777};
 	constexpr unsigned short Port_UDP_Server{7777};
 
-	enum class TCPPacket
+	enum class TCP
 	{
-		JUSTJOINED,
+		JUST_JOINED,
 		QUIT,
 		CONNECTIONLOST,
 		//Used when sending messages
@@ -26,25 +26,25 @@ namespace Packet {
 		RESPAWN_PLAYER
 	};
 
-	enum class UDPPacket
+	enum class UDP
 	{
 		//Used by the client to send its
 		//position to the server
 		DATA_PLAYER,
 	};
 
-	constexpr auto toInt(TCPPacket _t) {
-		return static_cast<std::underlying_type_t<TCPPacket>>(_t);
+	constexpr auto toInt(Packet::TCP _t) {
+		return static_cast<std::underlying_type_t<Packet::TCP>>(_t);
 	}
-	constexpr TCPPacket toTCPType(int _i) {
-		return static_cast<TCPPacket>(_i);
+	constexpr Packet::TCP toTCPType(int _i) {
+		return static_cast<Packet::TCP>(_i);
 	}
 
-	constexpr auto toInt(UDPPacket _t) {
-		return static_cast<std::underlying_type_t<UDPPacket>>(_t);
+	constexpr auto toInt(Packet::UDP _t) {
+		return static_cast<std::underlying_type_t<Packet::UDP>>(_t);
 	}
-	constexpr UDPPacket toUDPType(int _i) {
-		return static_cast<UDPPacket>(_i);
+	constexpr Packet::UDP toUDPType(int _i) {
+		return static_cast<Packet::UDP>(_i);
 	}
 } // namespace Packet
 

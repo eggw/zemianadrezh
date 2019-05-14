@@ -47,6 +47,6 @@ void UserInterface::handleOutgoingMessages() {
 
 	if (m_chatBox.completedMessage(ptr.get())) {
 		m_networkManager.setMessageToSend(*ptr);
-		m_networkManager.sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
+		m_networkManager.sendPacket(Packet::TCP::CHAT_MESSAGE);
 	}
 }

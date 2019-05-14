@@ -40,7 +40,7 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
 }
 
 Client::~Client() {
-	m_networkManager.sendPacket(Packet::TCPPacket::QUIT);
+	m_networkManager.sendPacket(Packet::TCP::QUIT);
 }
 
 void Client::getInput(sf::Event& _event) {
@@ -79,7 +79,7 @@ void Client::sendPlayerPacket() {
 	static float     secondsBetweenPackets{0.015};
 
 	if (c.getElapsedTime().asSeconds() >= secondsBetweenPackets) {
-		m_networkManager.sendPacket(Packet::UDPPacket::DATA_PLAYER);
+		m_networkManager.sendPacket(Packet::UDP::DATA_PLAYER);
 		c.restart();
 	}
 }

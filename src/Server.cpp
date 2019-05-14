@@ -11,7 +11,7 @@ Server::Server(bool _allowConnections)
 //Automatically send out a packet indicating the server has been closed
 //upon its destruction
 Server::~Server() {
-	m_networkManager.sendPacket(Packet::TCPPacket::CONNECTIONLOST);
+	m_networkManager.sendPacket(Packet::TCP::CONNECTIONLOST);
 }
 
 void Server::receivePackets() {

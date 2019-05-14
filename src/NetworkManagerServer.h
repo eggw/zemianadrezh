@@ -18,11 +18,11 @@ class NetworkManagerServer {
 
 	//There's an explanation that applies to these
 	//functions below
-	void sendPacket(Packet::TCPPacket _type,
+	void sendPacket(Packet::TCP _type,
 	                sf::TcpSocket*    _recipient = nullptr,
 	                bool              _exclude   = false);
 
-	void sendPacket(Packet::UDPPacket  _type,
+	void sendPacket(Packet::UDP  _type,
 	                const std::string& _recipientName,
 	                bool               _exclude = false);
 

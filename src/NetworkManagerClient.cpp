@@ -34,14 +34,14 @@ void NetworkManagerClient::update() {
 	PacketSender::get_instance().update();
 }
 
-void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
+void NetworkManagerClient::sendPacket(Packet::TCP _type) {
 	int             packetCode = Packet::toInt(_type);
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
 
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::JUSTJOINED: {
+	case Packet::TCP::JUST_JOINED: {
 		entt::entity e{m_client.m_player};
 		sf::Uint16   port{m_udpSocket.getLocalPort()};
 
@@ -61,21 +61,21 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::QUIT: {
+	case Packet::TCP::QUIT: {
 		PacketSender::get_instance().send(&m_serverConnection, packet);
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::REQUEST_WORLD: {
+	case Packet::TCP::REQUEST_WORLD: {
 		PacketSender::get_instance().send(&m_serverConnection, packet);
 		break;
 	}
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::CHAT_MESSAGE: {
+	case Packet::TCP::CHAT_MESSAGE: {
 		//At this stage, m_messageToSend should have been set (usually by
 		//UserInterface)
 		*packet << m_messageToSend.sender;
@@ -92,7 +92,7 @@ void NetworkManagerClient::sendPacket(Packet::TCPPacket _type) {
 	}
 }
 
-void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
+void NetworkManagerClient::sendPacket(Packet::UDP _type) {
 	if (!m_playerSpawned) {
 		return;
 	}
@@ -104,7 +104,7 @@ void NetworkManagerClient::sendPacket(Packet::UDPPacket _type) {
 
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::UDPPacket::DATA_PLAYER: {
+	case Packet::UDP::DATA_PLAYER: {
 		entt::entity e{m_client.m_player};
 
 		auto dir{m_client.m_registry->get<ComponentDirection>(e)};
@@ -129,11 +129,11 @@ void NetworkManagerClient::receiveTCPPackets() {
 
 	while (m_serverConnection.receive(*packet) == sf::Socket::Status::Done) {
 		*packet >> packetCode;
-		Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
+		Packet::TCP packetType{Packet::toTCPType(packetCode)};
 
 		switch (packetType) {
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCPPacket::QUIT: {
+		case Packet::TCP::QUIT: {
 			std::string name{};
 			*packet >> name;
 			m_client.removePlayer(name);
@@ -142,14 +142,14 @@ void NetworkManagerClient::receiveTCPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCPPacket::CONNECTIONLOST: {
+		case Packet::TCP::CONNECTIONLOST: {
 			m_connectionActive = false;
 			break;
 		}
 		//////////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCPPacket::DATA_WORLD: {
+		case Packet::TCP::DATA_WORLD: {
 			WorldChunk::EncodedChunkData chunkData;
 
 			*packet >> chunkData;
@@ -169,7 +169,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCPPacket::CHAT_MESSAGE: {
+		case Packet::TCP::CHAT_MESSAGE: {
 			std::string sender;
 			std::string message;
 			*packet >> sender;
@@ -181,7 +181,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 		//////////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCPPacket::RESPAWN_PLAYER: {
+		case Packet::TCP::RESPAWN_PLAYER: {
 			m_client.respawnPlayer();
 			m_playerSpawned = true;
 			break;
@@ -222,11 +222,11 @@ void NetworkManagerClient::receiveUDPPackets() {
 	       sf::Socket::Status::Done) {
 		UDPPacketsReceived++;
 		*packet >> packetCode;
-		Packet::UDPPacket packetType{Packet::toUDPType(packetCode)};
+		Packet::UDP packetType{Packet::toUDPType(packetCode)};
 
 		switch (packetType) {
 		//////////////////////////////////////////////////////////////////////////////
-		case Packet::UDPPacket::DATA_PLAYER: {
+		case Packet::UDP::DATA_PLAYER: {
 			ComponentsPlayer p;
 			*packet >> p;
 			//When we receive a packet containing player data, we're going to update or
@@ -263,7 +263,7 @@ void NetworkManagerClient::connect(const sf::IpAddress& _ip,
 
 	if (successfullyConnected) {
 		m_connectionActive = true;
-		sendPacket(Packet::TCPPacket::JUSTJOINED);
+		sendPacket(Packet::TCP::JUST_JOINED);
 	}
 }
 

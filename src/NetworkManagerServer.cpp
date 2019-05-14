@@ -28,7 +28,7 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	listen();
 }
 
-void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
+void NetworkManagerServer::sendPacket(Packet::TCP _type,
                                       sf::TcpSocket*    _recipient,
                                       bool              _exclude) {
 	int packetCode = Packet::toInt(_type);
@@ -40,7 +40,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::QUIT: {
+	case Packet::TCP::QUIT: {
 		*packet << m_lastRemovedPlayer;
 
 		for (const auto& recipient : recipients) {
@@ -52,7 +52,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::CONNECTIONLOST: {
+	case Packet::TCP::CONNECTIONLOST: {
 		for (const auto& recipient : recipients) {
 			PacketSender::get_instance().send(recipient, packet);
 		}
@@ -62,7 +62,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::DATA_WORLD: {
+	case Packet::TCP::DATA_WORLD: {
 		auto worldData = m_server.encodeWorldChunks();
 		/*
 		At the moment, a packet is generated and sent for each chunk
@@ -82,7 +82,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::CHAT_MESSAGE: {
+	case Packet::TCP::CHAT_MESSAGE: {
 		Message msg = m_messages.back();
 		*packet << msg.sender;
 		*packet << msg.content;
@@ -95,7 +95,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 	//////////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCPPacket::RESPAWN_PLAYER: {
+	case Packet::TCP::RESPAWN_PLAYER: {
 		for (const auto& recipient : recipients) {
 			PacketSender::get_instance().send(recipient, packet);
 		}
@@ -106,7 +106,7 @@ void NetworkManagerServer::sendPacket(Packet::TCPPacket _type,
 	}
 }
 
-void NetworkManagerServer::sendPacket(Packet::UDPPacket  _type,
+void NetworkManagerServer::sendPacket(Packet::UDP  _type,
                                       const std::string& _recipientName,
                                       bool               _exclude) {
 	int packetCode = Packet::toInt(_type);
@@ -118,7 +118,7 @@ void NetworkManagerServer::sendPacket(Packet::UDPPacket  _type,
 
 	switch (_type) {
 	//////////////////////////////////////////////////////////////////////////////
-	case Packet::UDPPacket::DATA_PLAYER: {
+	case Packet::UDP::DATA_PLAYER: {
 		for (const auto& recipient : recipients) {
 			auto view = m_server.m_registry->view<PlayerTag>();
 			for (auto& entity : view) {
@@ -159,11 +159,11 @@ void NetworkManagerServer::receiveTCPPackets() {
 	for (const auto& connection : m_clientConnections) {
 		if (connection->receive(*packet) == sf::Socket::Status::Done) {
 			*packet >> packetCode;
-			Packet::TCPPacket packetType{Packet::toTCPType(packetCode)};
+			Packet::TCP packetType{Packet::toTCPType(packetCode)};
 
 			switch (packetType) {
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCPPacket::JUSTJOINED: {
+			case Packet::TCP::JUST_JOINED: {
 				ComponentsPlayer data;
 				sf::Uint16       port;
 
@@ -174,8 +174,8 @@ void NetworkManagerServer::receiveTCPPackets() {
 				  {connection.get(),
 				   {data.compName.m_name, *connection.get(), port}});
 				m_server.updatePlayer(data);
-				sendPacket(Packet::TCPPacket::DATA_WORLD);
-				sendPacket(Packet::TCPPacket::RESPAWN_PLAYER, connection.get());
+				sendPacket(Packet::TCP::DATA_WORLD);
+				sendPacket(Packet::TCP::RESPAWN_PLAYER, connection.get());
 				sendMessage(
 				  {"Server", "Welcome, " + data.compName.m_name + "!"});
 				break;
@@ -183,28 +183,28 @@ void NetworkManagerServer::receiveTCPPackets() {
 			//////////////////////////////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCPPacket::QUIT: {
+			case Packet::TCP::QUIT: {
 				toRemove = connection.get();
 				break;
 			}
 			//////////////////////////////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCPPacket::REQUEST_WORLD: {
-				sendPacket(Packet::TCPPacket::DATA_WORLD, connection.get());
+			case Packet::TCP::REQUEST_WORLD: {
+				sendPacket(Packet::TCP::DATA_WORLD, connection.get());
 				break;
 			}
 			//////////////////////////////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCPPacket::CHAT_MESSAGE: {
+			case Packet::TCP::CHAT_MESSAGE: {
 				std::string message;
 				std::string sender;
 				*packet >> message;
 				*packet >> sender;
 				m_messages.push_back({message, sender});
 
-				sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
+				sendPacket(Packet::TCP::CHAT_MESSAGE);
 				break;
 			}
 				//////////////////////////////////////////////////////////////////////////////
@@ -227,16 +227,16 @@ void NetworkManagerServer::receiveUDPPackets() {
 		if (m_udpSocket.receive(*packet, client.second.ipAddress, port) ==
 		    sf::Socket::Status::Done) {
 			*packet >> packetCode;
-			Packet::UDPPacket packetType{Packet::toUDPType(packetCode)};
+			Packet::UDP packetType{Packet::toUDPType(packetCode)};
 
 			switch (packetType) {
 			//////////////////////////////////////////////////////////////////////////////
-			case Packet::UDPPacket::DATA_PLAYER: {
+			case Packet::UDP::DATA_PLAYER: {
 				ComponentsPlayer p;
 				*packet >> p;
 				m_server.updatePlayer(p);
 
-				sendPacket(Packet::UDPPacket::DATA_PLAYER,
+				sendPacket(Packet::UDP::DATA_PLAYER,
 				           client.second.playerName);
 				break;
 			}
@@ -252,7 +252,7 @@ void NetworkManagerServer::sendMessage(const Message& _msg) {
 	}
 
 	m_messages.push_back({_msg});
-	sendPacket(Packet::TCPPacket::CHAT_MESSAGE);
+	sendPacket(Packet::TCP::CHAT_MESSAGE);
 }
 
 void NetworkManagerServer::removePlayer(const sf::TcpSocket* _connection) {
@@ -265,7 +265,7 @@ void NetworkManagerServer::removePlayer(const sf::TcpSocket* _connection) {
 	m_server.removePlayer(name);
 	sendMessage({"Server", "Goodbye, " + name + "!"});
 	m_lastRemovedPlayer = name;
-	sendPacket(Packet::TCPPacket::QUIT);
+	sendPacket(Packet::TCP::QUIT);
 }
 
 void NetworkManagerServer::listen() {

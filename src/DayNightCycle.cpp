@@ -198,22 +198,6 @@ void DayNightCycle::updateSkyVertices() {
 	m_skyBackground[40].texCoords = centerRight;
 	m_skyBackground[41].position  = bottomRight;
 	m_skyBackground[41].texCoords = bottomRight;
-
-	/*
-	Simply create a quad with vertices at the corners of the screen
-
-	m_skyBackground[0].position = { -targetWidth / 2, targetHeight / 2 };
-	m_skyBackground[0].texCoords = { -targetWidth / 2, targetHeight / 2 };
-	//top right
-	m_skyBackground[1].position = { targetWidth / 2, targetHeight / 2 };
-	m_skyBackground[1].texCoords = { targetWidth / 2, targetHeight / 2 };
-	//bottom right
-	m_skyBackground[2].position = { targetWidth / 2, -targetHeight / 2 };
-	m_skyBackground[2].texCoords = { targetWidth / 2, -targetHeight / 2 };
-	//bottom left
-	m_skyBackground[3].position = { -targetWidth / 2, -targetHeight / 2 };
-	m_skyBackground[3].texCoords = { -targetWidth / 2, -targetHeight / 2 };
-	*/
 }
 
 void DayNightCycle::updateTimeText(const WorldTime& _time) {

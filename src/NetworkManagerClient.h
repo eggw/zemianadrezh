@@ -15,8 +15,8 @@ class NetworkManagerClient {
 
 	void update();
 
-	void sendPacket(Packet::TCPPacket _type);
-	void sendPacket(Packet::UDPPacket _type);
+	void sendPacket(Packet::TCP _type);
+	void sendPacket(Packet::UDP _type);
 	void receiveTCPPackets();
 	void receiveUDPPackets();
 
