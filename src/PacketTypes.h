@@ -30,7 +30,7 @@ namespace Packet {
 	{
 		//Used by the client to send its
 		//position to the server
-		DATA_PLAYER,
+		DATA_PLAYER
 	};
 
 	constexpr auto toInt(Packet::TCP _t) {

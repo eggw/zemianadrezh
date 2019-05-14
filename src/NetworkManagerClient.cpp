@@ -13,7 +13,8 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
             : m_client{_client},
               m_playerSpawned{false},
               m_connectionActive{false},
-              m_udpSocket{} {
+              m_udpSocket{},
+			  m_processor{} {
 	m_udpSocket.setBlocking(false);
 
 	if (m_udpSocket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
@@ -28,6 +29,23 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	}
 
 	m_serverConnection.setBlocking(false);
+
+	//Here, we use m_processor to specify which functions we want to be called
+	//when which packets are sent or received.
+	//------------------------------------------------------------------------------
+	using std::placeholders::_1;
+
+	m_processor.addSendingAction(Packet::TCP::JUST_JOINED, std::bind(&NetworkManagerClient::sendJustJoined, this, _1));
+	m_processor.addSendingAction(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::sendChatMessage, this, _1));
+	m_processor.addSendingAction(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::sendDataPlayer, this, _1));
+
+	m_processor.addReceivingAction(Packet::TCP::QUIT, std::bind(&NetworkManagerClient::receiveQuit, this, _1));
+	m_processor.addReceivingAction(Packet::TCP::CONNECTIONLOST, std::bind(&NetworkManagerClient::receiveConnectionLost, this, _1));
+	m_processor.addReceivingAction(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::receiveChatMessage, this, _1));
+	m_processor.addReceivingAction(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerClient::receiveDataWorld, this, _1));
+	m_processor.addReceivingAction(Packet::TCP::RESPAWN_PLAYER, std::bind(&NetworkManagerClient::receiveRespawnPlayer, this, _1));
+	m_processor.addReceivingAction(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::receiveDataPlayer, this, _1));
+	//------------------------------------------------------------------------------
 }
 
 void NetworkManagerClient::update() {
@@ -39,60 +57,20 @@ void NetworkManagerClient::sendPacket(Packet::TCP _type) {
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
 
-	switch (_type) {
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::JUST_JOINED: {
-		entt::entity e{m_client.m_player};
-		sf::Uint16   port{m_udpSocket.getLocalPort()};
+	//Note that not all packets will have a function associated
+	//with them. For example, sending a regular QUIT packet
+	//doesn't involve any additional information to be written
+	//to the packet. Also, some actions will never happen, such
+	//as the client sending DATA_WORLD to the client.
+	m_processor.performSendingAction(_type, packet.get());
 
-		const auto dir{m_client.m_registry->get<ComponentDirection>(e)};
-		const auto name{m_client.m_registry->get<ComponentName>(e)};
-		const auto vel{m_client.m_registry->get<ComponentPhysics>(e)};
-		const auto pos{m_client.m_registry->get<ComponentPosition>(e)};
-
-		ComponentsPlayer data{dir, name, vel, pos};
-
-		*packet << data;
-		*packet << port;
-
-		PacketSender::get_instance().send(&m_serverConnection, packet);
-		break;
-	}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::QUIT: {
-		PacketSender::get_instance().send(&m_serverConnection, packet);
-		break;
-	}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::REQUEST_WORLD: {
-		PacketSender::get_instance().send(&m_serverConnection, packet);
-		break;
-	}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::CHAT_MESSAGE: {
-		//At this stage, m_messageToSend should have been set (usually by
-		//UserInterface)
-		*packet << m_messageToSend.sender;
-		*packet << m_messageToSend.content;
-
-		PacketSender::get_instance().send(&m_serverConnection, packet);
-
-		break;
-	}
-		//////////////////////////////////////////////////////////////////////////////
-
-	default:
-		break;
-	}
+	PacketSender::get_instance().send(&m_serverConnection, packet);
 }
 
 void NetworkManagerClient::sendPacket(Packet::UDP _type) {
+	//m_playerSpawned is set to true once a RESPAWN::PLAYER packet
+	//has been received at least once. Until then, we're not going
+	//to want to send any UDP packets.
 	if (!m_playerSpawned) {
 		return;
 	}
@@ -102,25 +80,15 @@ void NetworkManagerClient::sendPacket(Packet::UDP _type) {
 	*packet << packetCode;
 	unsigned short port{Packet::Port_UDP_Server};
 
-	switch (_type) {
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::UDP::DATA_PLAYER: {
-		entt::entity e{m_client.m_player};
+	//Note that not all packets will have a function associated
+	//with them. For example, sending a regular QUIT packet
+	//doesn't involve any additional information to be written
+	//to the packet. Also, some actions will never happen, such
+	//as the client sending DATA_WORLD to the client.
+	m_processor.performSendingAction(_type, packet.get());
 
-		auto dir{m_client.m_registry->get<ComponentDirection>(e)};
-		auto name{m_client.m_registry->get<ComponentName>(e)};
-		auto vel{m_client.m_registry->get<ComponentPhysics>(e)};
-		auto pos{m_client.m_registry->get<ComponentPosition>(e)};
-
-		*packet << ComponentsPlayer{dir, name, vel, pos};
-
-		PacketSender::get_instance().send(
+	PacketSender::get_instance().send(
 		  &m_udpSocket, packet, m_serverConnection.getRemoteAddress(), port);
-
-		break;
-	}
-		//////////////////////////////////////////////////////////////////////////////
-	}
 }
 
 void NetworkManagerClient::receiveTCPPackets() {
@@ -131,66 +99,12 @@ void NetworkManagerClient::receiveTCPPackets() {
 		*packet >> packetCode;
 		Packet::TCP packetType{Packet::toTCPType(packetCode)};
 
-		switch (packetType) {
-		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCP::QUIT: {
-			std::string name{};
-			*packet >> name;
-			m_client.removePlayer(name);
-			break;
-		}
-		//////////////////////////////////////////////////////////////////////////////
-
-		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCP::CONNECTIONLOST: {
-			m_connectionActive = false;
-			break;
-		}
-		//////////////////////////////////////////////////////////////////////////////
-
-		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCP::DATA_WORLD: {
-			WorldChunk::EncodedChunkData chunkData;
-
-			*packet >> chunkData;
-
-			//We won't want to parse the world data
-			//if we're local, since the world will
-			//be a shared pointer anyway, and re-parsing
-			//will involve calling addChunks and mess up
-			//the world by un-randomizing it
-			if (!m_client.isLocal()) {
-				m_client.parseWorldChunk(chunkData);
-			}
-
-			m_client.renderUpdatedChunk(chunkData.id);
-			break;
-		}
-		//////////////////////////////////////////////////////////////////////////////
-
-		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCP::CHAT_MESSAGE: {
-			std::string sender;
-			std::string message;
-			*packet >> sender;
-			*packet >> message;
-
-			m_lastReceivedMessage = {sender, message};
-			break;
-		}
-		//////////////////////////////////////////////////////////////////////////////
-
-		//////////////////////////////////////////////////////////////////////////////
-		case Packet::TCP::RESPAWN_PLAYER: {
-			m_client.respawnPlayer();
-			m_playerSpawned = true;
-			break;
-		}
-			//////////////////////////////////////////////////////////////////////////////
-
-		default:
-			break;
-		}
+		//Note that not all packets will have a function associated
+		//with them. For example, sending a regular QUIT packet
+		//doesn't involve any additional information to be written
+		//to the packet. Also, some actions will never happen, such
+		//as the client sending DATA_WORLD to the client.
+		m_processor.performReceivingAction(packetType, packet.get());
 	}
 }
 
@@ -224,19 +138,12 @@ void NetworkManagerClient::receiveUDPPackets() {
 		*packet >> packetCode;
 		Packet::UDP packetType{Packet::toUDPType(packetCode)};
 
-		switch (packetType) {
-		//////////////////////////////////////////////////////////////////////////////
-		case Packet::UDP::DATA_PLAYER: {
-			ComponentsPlayer p;
-			*packet >> p;
-			//When we receive a packet containing player data, we're going to update or
-			//add the player to our registry. Note that under normal circumstances, the
-			//client's own player shouldn't have its data sent back to it.
-			m_client.updatePlayer(p);
-			break;
-		}
-			//////////////////////////////////////////////////////////////////////////////
-		}
+		//Note that not all packets will have a function associated
+		//with them. For example, sending a regular QUIT packet
+		//doesn't involve any additional information to be written
+		//to the packet. Also, some actions will never happen, such
+		//as the client sending DATA_WORLD to the client.
+		m_processor.performReceivingAction(packetType, packet.get());
 	}
 }
 
@@ -290,4 +197,88 @@ void NetworkManagerClient::clearLastReceivedMessage() {
 
 void NetworkManagerClient::setMessageToSend(Message _msg) {
 	m_messageToSend = _msg;
+}
+
+void NetworkManagerClient::sendJustJoined(sf::Packet* _p) {
+	entt::entity e{m_client.m_player};
+	sf::Uint16   port{m_udpSocket.getLocalPort()};
+
+	const auto dir{m_client.m_registry->get<ComponentDirection>(e)};
+	const auto name{m_client.m_registry->get<ComponentName>(e)};
+	const auto vel{m_client.m_registry->get<ComponentPhysics>(e)};
+	const auto pos{m_client.m_registry->get<ComponentPosition>(e)};
+
+	ComponentsPlayer data{dir, name, vel, pos};
+
+	*_p << data;
+	*_p << port;
+}
+
+
+void NetworkManagerClient::sendChatMessage(sf::Packet* _p) {
+	//At this stage, m_messageToSend should have been set (usually by
+	//UserInterface)
+	*_p << m_messageToSend.sender;
+	*_p << m_messageToSend.content;
+}
+
+
+void NetworkManagerClient::receiveQuit(sf::Packet* _p) {
+	std::string name{};
+	*_p >> name;
+	m_client.removePlayer(name);
+}
+void NetworkManagerClient::receiveConnectionLost(sf::Packet* _p) {
+	m_connectionActive = false;
+}
+
+void NetworkManagerClient::receiveChatMessage(sf::Packet* _p) {
+	std::string sender;
+	std::string message;
+	*_p >> sender;
+	*_p >> message;
+
+	m_lastReceivedMessage = {sender, message};
+}
+
+void NetworkManagerClient::receiveDataWorld(sf::Packet* _p) {
+	WorldChunk::EncodedChunkData chunkData;
+	*_p >> chunkData;
+
+	//We won't want to parse the world data
+	//if we're local, since the world will
+	//be a shared pointer anyway, and re-parsing
+	//will involve calling addChunks and mess up
+	//the world by un-randomizing it
+	if (!m_client.isLocal()) {
+		m_client.parseWorldChunk(chunkData);
+	}
+
+	m_client.renderUpdatedChunk(chunkData.id);
+}
+
+void NetworkManagerClient::receiveRespawnPlayer(sf::Packet* _p) {
+	m_client.respawnPlayer();
+	m_playerSpawned = true;
+}
+
+///////////////////////////////////////
+void NetworkManagerClient::sendDataPlayer(sf::Packet* _p) {
+	entt::entity e{m_client.m_player};
+
+	auto dir{m_client.m_registry->get<ComponentDirection>(e)};
+	auto name{m_client.m_registry->get<ComponentName>(e)};
+	auto vel{m_client.m_registry->get<ComponentPhysics>(e)};
+	auto pos{m_client.m_registry->get<ComponentPosition>(e)};
+
+	*_p << ComponentsPlayer{dir, name, vel, pos};
+}
+
+void NetworkManagerClient::receiveDataPlayer(sf::Packet* _p) {
+	ComponentsPlayer p;
+	*_p >> p;
+	//When we receive a packet containing player data, we're going to update or
+	//add the player to our registry. Note that under normal circumstances, the
+	//client's own player shouldn't have its data sent back to it.
+	m_client.updatePlayer(p);
 }

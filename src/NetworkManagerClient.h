@@ -1,6 +1,7 @@
 #ifndef NETWORKMANAGERCLIENT_H_INCLUDED
 #define NETWORKMANAGERCLIENT_H_INCLUDED
 
+#include "PacketProcessor.h"
 #include "SFML/Network.hpp"
 
 #include "PacketTypes.h"
@@ -17,6 +18,7 @@ class NetworkManagerClient {
 
 	void sendPacket(Packet::TCP _type);
 	void sendPacket(Packet::UDP _type);
+
 	void receiveTCPPackets();
 	void receiveUDPPackets();
 
@@ -35,6 +37,25 @@ class NetworkManagerClient {
 	void setMessageToSend(Message _msg);
 
   private:
+  	//Functions -----------------------------------
+
+  	//TCP-related ----------------
+  	void sendJustJoined(sf::Packet* _p);
+  	void sendChatMessage(sf::Packet* _p);
+
+  	void receiveQuit(sf::Packet* _p);
+  	void receiveConnectionLost(sf::Packet* _p);
+  	void receiveChatMessage(sf::Packet* _p);
+  	void receiveDataWorld(sf::Packet* _p);
+  	void receiveRespawnPlayer(sf::Packet* _p);
+	//----------------------------
+
+  	//UDP-related ----------------
+  	void sendDataPlayer(sf::Packet* _p);
+
+  	void receiveDataPlayer(sf::Packet* _p);
+  	//----------------------------
+
 	//Data members --------------------------------
 	Client& m_client;
 	//m_playerSpawned is set to true once a RESPAWN::PLAYER packet
@@ -53,6 +74,9 @@ class NetworkManagerClient {
 
 	Message m_lastReceivedMessage;
 	Message m_messageToSend;
+
+	//Allows us to map packet types to actual functions
+	PacketProcessor<sf::Packet*> m_processor;
 	//---------------------------------------------
 };
 
