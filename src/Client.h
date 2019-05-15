@@ -56,7 +56,8 @@ class Client
 	//the network manager indicates that chunk data has been received)
 	void renderUpdatedChunk(int _chunkID) const;
 
-	sf::Vector2f getPlayerPosition() const;
+	sf::Vector2f      getPlayerPosition() const;
+	const std::string getPlayerName() const;
 	//---------------------------------------------
 
 	//Data members --------------------------------

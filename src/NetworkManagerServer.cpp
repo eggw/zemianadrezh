@@ -24,6 +24,21 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 		  LoggerNetwork::LOG_MESSAGE::BIND_PORT_SUCCESS);
 	}
 
+	using std::placeholders::_1;
+	using std::placeholders::_2;
+
+	m_TCPSender.add(Packet::TCP::QUIT, std::bind(&NetworkManagerServer::sendQuit, this, _1));
+	m_TCPSender.add(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerServer::sendDataWorld, this, _1));
+	m_TCPSender.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerServer::sendChatMessage, this, _1));
+
+	m_TCPReceiver.add(Packet::TCP::JUST_JOINED, std::bind(&NetworkManagerServer::receiveJustJoined, this, _1, _2));
+	m_TCPReceiver.add(Packet::TCP::QUIT, std::bind(&NetworkManagerServer::receiveQuit, this, _1, _2));
+	m_TCPReceiver.add(Packet::TCP::REQUEST_WORLD, std::bind(&NetworkManagerServer::receiveRequestWorld, this, _1, _2));
+	m_TCPReceiver.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerServer::receiveChatMessage, this, _1, _2));
+
+	m_UDPSender.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerServer::sendDataPlayer, this, _1));
+	m_UDPReceiver.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerServer::receiveDataPlayer, this, _1, _2));
+
 	m_listener.setBlocking(false);
 	listen();
 }
@@ -31,217 +46,73 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 void NetworkManagerServer::sendPacket(Packet::TCP _type,
                                       sf::TcpSocket*    _recipient,
                                       bool              _exclude) {
-	int packetCode = Packet::toInt(_type);
+	int code = Packet::toInt(_type);
 
 	auto recipients{getTCPRecipients(_recipient, _exclude)};
 
-	PacketSharedPtr packet(new sf::Packet());
-	*packet << packetCode;
+	PacketSharedPtr p(new sf::Packet());
+	*p << code;
 
-	switch (_type) {
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::QUIT: {
-		*packet << m_lastRemovedPlayer;
+	std::vector<PacketSharedPtr> packets;
+	packets.push_back(std::move(p));
 
-		for (const auto& recipient : recipients) {
+	m_TCPSender.call(_type, packets);
+
+	for (const auto& recipient : recipients) {
+		for (auto& packet : packets) {
 			PacketSender::get_instance().send(recipient, packet);
 		}
-
-		break;
-	}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::CONNECTIONLOST: {
-		for (const auto& recipient : recipients) {
-			PacketSender::get_instance().send(recipient, packet);
-		}
-
-		break;
-	}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::DATA_WORLD: {
-		auto worldData = m_server.encodeWorldChunks();
-		/*
-		At the moment, a packet is generated and sent for each chunk
-		to each player. In the future, chunks will be sent on an ID basis.
-		*/
-		for (auto& chunk : worldData) {
-			PacketSharedPtr p(new sf::Packet());
-			*p << packetCode;
-			*p << chunk;
-			for (const auto& recipient : recipients) {
-				PacketSender::get_instance().send(recipient, p);
-			}
-		}
-
-		break;
-	}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::CHAT_MESSAGE: {
-		Message msg = m_messages.back();
-		*packet << msg.sender;
-		*packet << msg.content;
-
-		for (const auto& recipient : recipients) {
-			PacketSender::get_instance().send(recipient, packet);
-		}
-		break;
-	}
-	//////////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::TCP::RESPAWN_PLAYER: {
-		for (const auto& recipient : recipients) {
-			PacketSender::get_instance().send(recipient, packet);
-		}
-
-		break;
-	}
-		//////////////////////////////////////////////////////////////////////////////
 	}
 }
 
 void NetworkManagerServer::sendPacket(Packet::UDP  _type,
                                       const std::string& _recipientName,
                                       bool               _exclude) {
-	int packetCode = Packet::toInt(_type);
+	int code = Packet::toInt(_type);
 
 	auto recipients{getUDPRecipients(_recipientName, _exclude)};
 
-	PacketSharedPtr packet(new sf::Packet());
-	*packet << packetCode;
+	PacketSharedPtr p(new sf::Packet());
+	*p << code;
 
-	switch (_type) {
-	//////////////////////////////////////////////////////////////////////////////
-	case Packet::UDP::DATA_PLAYER: {
-		for (const auto& recipient : recipients) {
-			auto view = m_server.m_registry->view<PlayerTag>();
-			for (auto& entity : view) {
-				const auto name =
-				  m_server.m_registry->get<ComponentName>(entity);
-				//Perform a quick check to see if the playerdata generated
-				//belongs to the recipient's player; if it does, we'll cancel
-				//and not redundantly send it back to them
-				if (recipient.playerName == name.m_name) {
-					continue;
-				}
-				const auto dir =
-				  m_server.m_registry->get<ComponentDirection>(entity);
-				const auto vel =
-				  m_server.m_registry->get<ComponentPhysics>(entity);
-				const auto pos =
-				  m_server.m_registry->get<ComponentPosition>(entity);
+	std::vector<PacketSharedPtr> packets;
+	packets.push_back(std::move(p));
 
-				ComponentsPlayer data{dir, name, vel, pos};
-				*packet << data;
+	m_UDPSender.call(_type, packets);
 
-				PacketSender::get_instance().send(
-				  &m_udpSocket, packet, recipient.ipAddress, recipient.port);
-			}
+	for (const auto& recipient : recipients) {
+		for(auto& packet : packets) {
+			PacketSender::get_instance().send(&m_udpSocket, packet, recipient.ipAddress, recipient.port);
 		}
-
-		break;
-	}
-		//////////////////////////////////////////////////////////////////////////////
 	}
 }
 
 void NetworkManagerServer::receiveTCPPackets() {
-	int                  packetCode;
+	int                  code;
 	PacketUPtr           packet(new sf::Packet());
-	const sf::TcpSocket* toRemove{nullptr};
 
 	for (const auto& connection : m_clientConnections) {
 		if (connection->receive(*packet) == sf::Socket::Status::Done) {
-			*packet >> packetCode;
-			Packet::TCP packetType{Packet::toTCPType(packetCode)};
+			*packet >> code;
+			Packet::TCP packetType{Packet::toTCPType(code)};
 
-			switch (packetType) {
-			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCP::JUST_JOINED: {
-				ComponentsPlayer data;
-				sf::Uint16       port;
-
-				*packet >> data;
-				*packet >> port;
-
-				m_clientIPs.insert(
-				  {connection.get(),
-				   {data.compName.m_name, *connection.get(), port}});
-				m_server.updatePlayer(data);
-				sendPacket(Packet::TCP::DATA_WORLD);
-				sendPacket(Packet::TCP::RESPAWN_PLAYER, connection.get());
-				sendMessage(
-				  {"Server", "Welcome, " + data.compName.m_name + "!"});
-				break;
-			}
-			//////////////////////////////////////////////////////////////////////////////
-
-			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCP::QUIT: {
-				toRemove = connection.get();
-				break;
-			}
-			//////////////////////////////////////////////////////////////////////////////
-
-			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCP::REQUEST_WORLD: {
-				sendPacket(Packet::TCP::DATA_WORLD, connection.get());
-				break;
-			}
-			//////////////////////////////////////////////////////////////////////////////
-
-			//////////////////////////////////////////////////////////////////////////////
-			case Packet::TCP::CHAT_MESSAGE: {
-				std::string message;
-				std::string sender;
-				*packet >> message;
-				*packet >> sender;
-				m_messages.push_back({message, sender});
-
-				sendPacket(Packet::TCP::CHAT_MESSAGE);
-				break;
-			}
-				//////////////////////////////////////////////////////////////////////////////
-
-			default:
-				break;
-			}
+			m_TCPReceiver.call(packetType, packet.get(), connection.get());
 		}
 	}
-
-	removePlayer(toRemove);
 }
 
 void NetworkManagerServer::receiveUDPPackets() {
-	int            packetCode;
+	int            code;
 	PacketUPtr     packet(new sf::Packet());
 	unsigned short port{Packet::Port_UDP_Server};
 
 	for (auto& client : m_clientIPs) {
 		if (m_udpSocket.receive(*packet, client.second.ipAddress, port) ==
 		    sf::Socket::Status::Done) {
-			*packet >> packetCode;
-			Packet::UDP packetType{Packet::toUDPType(packetCode)};
+			*packet >> code;
+			Packet::UDP packetType{Packet::toUDPType(code)};
 
-			switch (packetType) {
-			//////////////////////////////////////////////////////////////////////////////
-			case Packet::UDP::DATA_PLAYER: {
-				ComponentsPlayer p;
-				*packet >> p;
-				m_server.updatePlayer(p);
-
-				sendPacket(Packet::UDP::DATA_PLAYER,
-				           client.second.playerName);
-				break;
-			}
-				//////////////////////////////////////////////////////////////////////////////
-			}
+			m_UDPReceiver.call(packetType, packet.get(), client.first);
 		}
 	}
 }
@@ -255,7 +126,7 @@ void NetworkManagerServer::sendMessage(const Message& _msg) {
 	sendPacket(Packet::TCP::CHAT_MESSAGE);
 }
 
-void NetworkManagerServer::removePlayer(const sf::TcpSocket* _connection) {
+void NetworkManagerServer::removePlayer(sf::TcpSocket* _connection) {
 	if (_connection == nullptr) {
 		return;
 	}
@@ -366,7 +237,7 @@ NetworkManagerServer::getUDPRecipients(const std::string& _recipientName,
 	return recipients;
 }
 
-void NetworkManagerServer::removeConnection(const sf::TcpSocket* _con) {
+void NetworkManagerServer::removeConnection(sf::TcpSocket* _con) {
 	m_clientConnections.erase(std::remove_if(m_clientConnections.begin(),
 	                                         m_clientConnections.end(),
 	                                         [&](const auto& con) {
@@ -384,4 +255,106 @@ void NetworkManagerServer::removeConnection(const sf::TcpSocket* _con) {
 			++it;
 		}
 	}
+}
+
+void NetworkManagerServer::sendQuit(std::vector<PacketSharedPtr>& _p) {
+	*_p[0] << m_lastRemovedPlayer;
+}
+
+void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p) {
+	auto worldData = m_server.encodeWorldChunks();
+
+	/*At the moment, a packet is generated and sent for each chunk
+	to each player. In the future, chunks will be sent on an ID basis.*/
+
+	int index{0};
+	for (auto& chunk : worldData) {
+		PacketSharedPtr p(new sf::Packet());
+		*p << Packet::toInt(Packet::TCP::DATA_WORLD);
+		*p << chunk;
+		_p.resize(index + 1);
+		_p[index] = std::move(p);
+		++index;
+	}
+}
+
+void NetworkManagerServer::sendChatMessage(std::vector<PacketSharedPtr>& _p) {
+	Message msg = m_messages.back();
+	*_p[0] << msg.sender;
+	*_p[0] << msg.content;
+}
+
+
+void NetworkManagerServer::receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _conn) {
+
+	ComponentsPlayer data;
+	sf::Uint16       port;
+
+	*_p >> data;
+	*_p >> port;
+
+	m_clientIPs.insert(
+	  {_conn,
+	   {data.compName.m_name, *_conn, port}});
+	m_server.updatePlayer(data);
+	sendPacket(Packet::TCP::DATA_WORLD);
+	sendPacket(Packet::TCP::RESPAWN_PLAYER, _conn);
+	sendMessage(
+	  {"Server", "Welcome, " + data.compName.m_name + "!"});
+
+}
+
+void NetworkManagerServer::receiveQuit(sf::Packet* _p, sf::TcpSocket* _conn) {
+	removePlayer(_conn);
+}
+
+void NetworkManagerServer::receiveRequestWorld(sf::Packet* _p, sf::TcpSocket* _conn) {
+	sendPacket(Packet::TCP::DATA_WORLD, _conn);
+}
+
+void NetworkManagerServer::receiveChatMessage(sf::Packet* _p, sf::TcpSocket* _conn) {
+	std::string message;
+	std::string sender;
+	*_p >> message;
+	*_p >> sender;
+	m_messages.push_back({message, sender});
+
+	sendPacket(Packet::TCP::CHAT_MESSAGE);
+}
+
+
+void NetworkManagerServer::sendDataPlayer(std::vector<PacketSharedPtr>& _p) {
+	int index{0};
+
+	auto view = m_server.m_registry->view<PlayerTag>();
+	for (auto& entity : view) {
+		const auto name =
+		  m_server.m_registry->get<ComponentName>(entity);
+
+		const auto dir =
+		  m_server.m_registry->get<ComponentDirection>(entity);
+		const auto vel =
+		  m_server.m_registry->get<ComponentPhysics>(entity);
+		const auto pos =
+		  m_server.m_registry->get<ComponentPosition>(entity);
+
+		ComponentsPlayer data{dir, name, vel, pos};
+
+		PacketSharedPtr p(new sf::Packet());
+		*p << Packet::toInt(Packet::UDP::DATA_PLAYER);
+		*p << data;
+		_p.resize(index + 1);
+		_p[index] = std::move(p);
+		++index;
+	}
+
+}
+
+void NetworkManagerServer::receiveDataPlayer(sf::Packet* _p, sf::TcpSocket* _conn) {
+	ComponentsPlayer p;
+	*_p >> p;
+	m_server.updatePlayer(p);
+
+	sendPacket(Packet::UDP::DATA_PLAYER,
+			   p.compName.m_name);
 }

@@ -131,6 +131,10 @@ sf::Vector2f Client::getPlayerPosition() const {
 	return m_registry->get<ComponentPosition>(m_player).m_position;
 }
 
+const std::string Client::getPlayerName() const {
+	return m_registry->get<ComponentName>(m_player).m_name;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------TESTS-------------------------------------//
 /////////////////////////////////////////////////////////////////////////////////////

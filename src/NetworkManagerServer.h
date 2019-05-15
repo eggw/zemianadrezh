@@ -6,6 +6,7 @@
 
 #include "SFML/Network.hpp"
 
+#include "FunctionBinder.h"
 #include "PacketTypes.h"
 #include "PacketSender.h"
 #include "Message.h"
@@ -38,7 +39,7 @@ class NetworkManagerServer {
 	//calling Server::removePlayer(), and sending a QUIT packet
 	//to all connected clients containing the name of the player
 	//who was removed
-	void removePlayer(const sf::TcpSocket* _connection = nullptr);
+	void removePlayer(sf::TcpSocket* _connection = nullptr);
 
 	void listen();
 	void accept();
@@ -61,6 +62,24 @@ class NetworkManagerServer {
 	};
 
 	//Functions -----------------------------------
+	//TCP-related
+	void sendQuit(std::vector<PacketSharedPtr>& _p);
+	void sendDataWorld(std::vector<PacketSharedPtr>& _p);
+	void sendChatMessage(std::vector<PacketSharedPtr>& _p);
+
+	void receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _conn);
+	void receiveQuit(sf::Packet* _p, sf::TcpSocket* _conn);
+	void receiveRequestWorld(sf::Packet* _, sf::TcpSocket* _conn);
+	void receiveChatMessage(sf::Packet* _p, sf::TcpSocket* _conn);
+
+	//
+
+	//UDP-related
+	void sendDataPlayer(std::vector<PacketSharedPtr>& _p);
+
+	void receiveDataPlayer(sf::Packet* _p, sf::TcpSocket* _conn);
+	//
+
 	//Generally, our recipients are either going to be:
 	//one specific recipient,
 	//all recipients,
@@ -96,7 +115,7 @@ class NetworkManagerServer {
 
 	//removeConnection() is used to remove the matching TcpSocket from
 	//m_clientConnections as well as the associated IPInfo in m_clientIPs
-	void removeConnection(const sf::TcpSocket* _con);
+	void removeConnection(sf::TcpSocket* _con);
 
 	//---------------------------------------------
 
@@ -115,9 +134,31 @@ class NetworkManagerServer {
 	sf::TcpListener                             m_listener;
 	sf::UdpSocket                               m_udpSocket;
 	std::vector<std::unique_ptr<sf::TcpSocket>> m_clientConnections;
-	std::map<const sf::TcpSocket*, IPInfo>      m_clientIPs;
+	std::map<sf::TcpSocket*, IPInfo>            m_clientIPs;
 	std::vector<Message>                        m_messages;
 	std::string                                 m_lastRemovedPlayer;
+
+	/*
+	Similar to the behaviour in NetworkManagerClient, we're going to have 4
+	FunctionBinder objects which we'll use to map packet types to callback
+	functions.
+
+	The receivers will take in a pointer to the packet to extract relevant
+	information from, and a pointer to the TcpSocket uniquely identifying
+	the client.
+
+	The senders will take in a reference to a vector of shared packet ptrs
+	instead. This is because some callbacks will require multiple packets
+	be sent (such as when sending the world, one chunk at a time). After
+	all the packets have been prepared, they will be sent in the
+	::sendPacket functions.
+	*/
+
+	FunctionBinder<Packet::TCP, void, std::vector<PacketSharedPtr>&> m_TCPSender;
+	FunctionBinder<Packet::TCP, void, sf::Packet*, sf::TcpSocket*> m_TCPReceiver;
+
+	FunctionBinder<Packet::UDP, void, std::vector<PacketSharedPtr>&> m_UDPSender;
+	FunctionBinder<Packet::UDP, void, sf::Packet*, sf::TcpSocket*> m_UDPReceiver;
 	//---------------------------------------------
 };
 
