@@ -1,7 +1,7 @@
 #ifndef NETWORKMANAGERCLIENT_H_INCLUDED
 #define NETWORKMANAGERCLIENT_H_INCLUDED
 
-#include "PacketProcessor.h"
+#include "FunctionBinder.h"
 #include "SFML/Network.hpp"
 
 #include "PacketTypes.h"
@@ -75,8 +75,23 @@ class NetworkManagerClient {
 	Message m_lastReceivedMessage;
 	Message m_messageToSend;
 
-	//Allows us to map packet types to actual functions
-	PacketProcessor<sf::Packet*> m_processor;
+	//These will basically serve as registries to which packet types
+	//(TCP and UDP) can be mapped to functions. The functions can be
+	//called when a packet is sent or received as appropriate, and
+	//can be given an argument (typical use case is sf::Packet*).
+	//
+	//For each protocol (TCP, UDP), and for both sending and receiving,
+	//we have a map with the packet type as its key and a function we'll
+	//call when that packet is sent or received.
+	//
+	//Note that not all packets will have defined behaviours. For example,
+	//the client will never send DATA_WORLD to the server, so attempting
+	//to do so will not cause anything to happen.
+	FunctionBinder<Packet::TCP, void, sf::Packet*> m_TCPSender;
+	FunctionBinder<Packet::TCP, void, sf::Packet*> m_TCPReceiver;
+
+	FunctionBinder<Packet::UDP, void, sf::Packet*> m_UDPSender;
+	FunctionBinder<Packet::UDP, void, sf::Packet*> m_UDPReceiver;
 	//---------------------------------------------
 };
 

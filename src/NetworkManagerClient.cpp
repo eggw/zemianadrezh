@@ -14,7 +14,10 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
               m_playerSpawned{false},
               m_connectionActive{false},
               m_udpSocket{},
-			  m_processor{} {
+			  m_TCPSender{},
+			  m_TCPReceiver{},
+			  m_UDPSender{},
+			  m_UDPReceiver{} {
 	m_udpSocket.setBlocking(false);
 
 	if (m_udpSocket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
@@ -35,16 +38,18 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	//------------------------------------------------------------------------------
 	using std::placeholders::_1;
 
-	m_processor.addSendingAction(Packet::TCP::JUST_JOINED, std::bind(&NetworkManagerClient::sendJustJoined, this, _1));
-	m_processor.addSendingAction(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::sendChatMessage, this, _1));
-	m_processor.addSendingAction(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::sendDataPlayer, this, _1));
+	m_TCPSender.add(Packet::TCP::JUST_JOINED, std::bind(&NetworkManagerClient::sendJustJoined, this, _1));
+	m_TCPSender.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::sendChatMessage, this, _1));
 
-	m_processor.addReceivingAction(Packet::TCP::QUIT, std::bind(&NetworkManagerClient::receiveQuit, this, _1));
-	m_processor.addReceivingAction(Packet::TCP::CONNECTIONLOST, std::bind(&NetworkManagerClient::receiveConnectionLost, this, _1));
-	m_processor.addReceivingAction(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::receiveChatMessage, this, _1));
-	m_processor.addReceivingAction(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerClient::receiveDataWorld, this, _1));
-	m_processor.addReceivingAction(Packet::TCP::RESPAWN_PLAYER, std::bind(&NetworkManagerClient::receiveRespawnPlayer, this, _1));
-	m_processor.addReceivingAction(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::receiveDataPlayer, this, _1));
+	m_UDPSender.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::sendDataPlayer, this, _1));
+
+	m_TCPReceiver.add(Packet::TCP::QUIT, std::bind(&NetworkManagerClient::receiveQuit, this, _1));
+	m_TCPReceiver.add(Packet::TCP::CONNECTIONLOST, std::bind(&NetworkManagerClient::receiveConnectionLost, this, _1));
+	m_TCPReceiver.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::receiveChatMessage, this, _1));
+	m_TCPReceiver.add(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerClient::receiveDataWorld, this, _1));
+	m_TCPReceiver.add(Packet::TCP::RESPAWN_PLAYER, std::bind(&NetworkManagerClient::receiveRespawnPlayer, this, _1));
+
+	m_UDPReceiver.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::receiveDataPlayer, this, _1));
 	//------------------------------------------------------------------------------
 }
 
@@ -57,12 +62,7 @@ void NetworkManagerClient::sendPacket(Packet::TCP _type) {
 	PacketSharedPtr packet(new sf::Packet());
 	*packet << packetCode;
 
-	//Note that not all packets will have a function associated
-	//with them. For example, sending a regular QUIT packet
-	//doesn't involve any additional information to be written
-	//to the packet. Also, some actions will never happen, such
-	//as the client sending DATA_WORLD to the client.
-	m_processor.performSendingAction(_type, packet.get());
+	m_TCPSender.call(_type, packet.get());
 
 	PacketSender::get_instance().send(&m_serverConnection, packet);
 }
@@ -80,12 +80,7 @@ void NetworkManagerClient::sendPacket(Packet::UDP _type) {
 	*packet << packetCode;
 	unsigned short port{Packet::Port_UDP_Server};
 
-	//Note that not all packets will have a function associated
-	//with them. For example, sending a regular QUIT packet
-	//doesn't involve any additional information to be written
-	//to the packet. Also, some actions will never happen, such
-	//as the client sending DATA_WORLD to the client.
-	m_processor.performSendingAction(_type, packet.get());
+	m_UDPSender.call(_type, packet.get());
 
 	PacketSender::get_instance().send(
 		  &m_udpSocket, packet, m_serverConnection.getRemoteAddress(), port);
@@ -99,12 +94,7 @@ void NetworkManagerClient::receiveTCPPackets() {
 		*packet >> packetCode;
 		Packet::TCP packetType{Packet::toTCPType(packetCode)};
 
-		//Note that not all packets will have a function associated
-		//with them. For example, sending a regular QUIT packet
-		//doesn't involve any additional information to be written
-		//to the packet. Also, some actions will never happen, such
-		//as the client sending DATA_WORLD to the client.
-		m_processor.performReceivingAction(packetType, packet.get());
+		m_TCPReceiver.call(packetType, packet.get());
 	}
 }
 
@@ -138,12 +128,7 @@ void NetworkManagerClient::receiveUDPPackets() {
 		*packet >> packetCode;
 		Packet::UDP packetType{Packet::toUDPType(packetCode)};
 
-		//Note that not all packets will have a function associated
-		//with them. For example, sending a regular QUIT packet
-		//doesn't involve any additional information to be written
-		//to the packet. Also, some actions will never happen, such
-		//as the client sending DATA_WORLD to the client.
-		m_processor.performReceivingAction(packetType, packet.get());
+		m_UDPReceiver.call(packetType, packet.get());
 	}
 }
 
