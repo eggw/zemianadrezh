@@ -268,7 +268,7 @@ void NetworkManagerClient::receiveDataPlayer(sf::Packet* _p) {
 	//belongs to the the client's player; if it does, we'll
 	//ignore it
 	if (p.compName.m_name == m_client.getPlayerName()) {
-		std::cout << "this shouldn't happen" << std::endl;
+		//std::cout << "this shouldn't happen" << std::endl;
 		return;
 	}
 	m_client.updatePlayer(p);
