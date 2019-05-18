@@ -262,14 +262,5 @@ void NetworkManagerClient::sendDataPlayer(sf::Packet* _p) {
 void NetworkManagerClient::receiveDataPlayer(sf::Packet* _p) {
 	ComponentsPlayer p;
 	*_p >> p;
-	//TODO get back to this
-	//This shouldn't be necessary if the check in NMS::sendDataPlayer() works
-	//Perform a quick check to see if the playerdata received
-	//belongs to the the client's player; if it does, we'll
-	//ignore it
-	if (p.compName.m_name == m_client.getPlayerName()) {
-		//std::cout << "this shouldn't happen" << std::endl;
-		return;
-	}
 	m_client.updatePlayer(p);
 }

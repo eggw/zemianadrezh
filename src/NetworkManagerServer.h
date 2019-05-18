@@ -33,18 +33,11 @@ class NetworkManagerServer {
 	                bool               _exclude = false);
 	//-----------------------------------
 
-	void sendChunkData(int _chunkID);
-
 	void receiveTCPPackets();
 	void receiveUDPPackets();
 
 	//Sends a message to all connected players
 	void sendMessage(const Message& _msg);
-	//Handles everything to do with removing a player, including
-	//removing it from m_clientIPs,calling Server::removePlayer(),
-	//and sending a QUIT packet containing the name of the player
-	//that was removed to all connected clients
-	void removePlayer(sf::TcpSocket* _conn = nullptr);
 
 	void listen();
 	void accept();
@@ -66,6 +59,7 @@ class NetworkManagerServer {
 		unsigned short port;
 	};
 
+	//A wrapper used by getRecipients()
 	struct ConnectionData {
 		ConnectionData(sf::TcpSocket* _t, IPInfo* _i) :
 			socket{_t},
@@ -81,9 +75,9 @@ class NetworkManagerServer {
 	//Functions -----------------------------------
 	//TCP-related
 	//--------------
-	void sendQuit(std::vector<PacketSharedPtr>& _p);
-	void sendDataWorld(std::vector<PacketSharedPtr>& _p);
-	void sendChatMessage(std::vector<PacketSharedPtr>& _p);
+	void sendQuit(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
+	void sendDataWorld(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
+	void sendChatMessage(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
 
 	void receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _conn);
 	void receiveQuit(sf::Packet* _p, sf::TcpSocket* _conn);
@@ -93,20 +87,22 @@ class NetworkManagerServer {
 
 	//UDP-related
 	//--------------
-	void sendDataPlayer(std::vector<PacketSharedPtr>& _p);
+	void sendDataPlayer(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
 
 	void receiveDataPlayer(sf::Packet* _p, sf::TcpSocket* _conn);
 	//--------------
+
+	//Handles everything to do with removing a player, including
+	//removing it from m_clientIPs,calling Server::removePlayer(),
+	//and sending a QUIT packet containing the name of the player
+	//that was removed to all connected clients
+	void removePlayer(sf::TcpSocket* _conn = nullptr);
 
 	std::vector<ConnectionData> getRecipients(
 	  sf::TcpSocket* _recipient = nullptr,
 	  bool           _exclude   = false);
 
 	IPInfo* getIPInfo(sf::TcpSocket* _conn) const;
-
-	//removeConnection() is used to remove the matching entry from
-	//m_clientIPs
-	void removeConnection(sf::TcpSocket* _conn);
 	//---------------------------------------------
 
 	//Data members --------------------------------
@@ -139,13 +135,15 @@ class NetworkManagerServer {
 	instead. This is because some callbacks will require multiple packets
 	be sent (such as when sending the world, one chunk at a time). After
 	all the packets have been prepared, they will be sent in the
-	::sendPacket functions.
+	::sendPacket functions. They will also take in a TcpSocket ptr speci-
+	fying the intended recipient, which needs to be known in certain cases
+	(such as to avoid sending a client's own player data back to them).
 	*/
 
-	FunctionBinder<Packet::TCP, void, std::vector<PacketSharedPtr>&> m_TCPSender;
+	FunctionBinder<Packet::TCP, void, std::vector<PacketSharedPtr>&, sf::TcpSocket*> m_TCPSender;
 	FunctionBinder<Packet::TCP, void, sf::Packet*, sf::TcpSocket*> m_TCPReceiver;
 
-	FunctionBinder<Packet::UDP, void, std::vector<PacketSharedPtr>&> m_UDPSender;
+	FunctionBinder<Packet::UDP, void, std::vector<PacketSharedPtr>&, sf::TcpSocket*> m_UDPSender;
 	FunctionBinder<Packet::UDP, void, sf::Packet*, sf::TcpSocket*> m_UDPReceiver;
 	//---------------------------------------------
 };

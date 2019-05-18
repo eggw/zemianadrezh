@@ -27,16 +27,16 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	using std::placeholders::_1;
 	using std::placeholders::_2;
 
-	m_TCPSender.add(Packet::TCP::QUIT, std::bind(&NetworkManagerServer::sendQuit, this, _1));
-	m_TCPSender.add(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerServer::sendDataWorld, this, _1));
-	m_TCPSender.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerServer::sendChatMessage, this, _1));
+	m_TCPSender.add(Packet::TCP::QUIT, std::bind(&NetworkManagerServer::sendQuit, this, _1, _2));
+	m_TCPSender.add(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerServer::sendDataWorld, this, _1, _2));
+	m_TCPSender.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerServer::sendChatMessage, this, _1, _2));
 
 	m_TCPReceiver.add(Packet::TCP::JUST_JOINED, std::bind(&NetworkManagerServer::receiveJustJoined, this, _1, _2));
 	m_TCPReceiver.add(Packet::TCP::QUIT, std::bind(&NetworkManagerServer::receiveQuit, this, _1, _2));
 	m_TCPReceiver.add(Packet::TCP::REQUEST_WORLD, std::bind(&NetworkManagerServer::receiveRequestWorld, this, _1, _2));
 	m_TCPReceiver.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerServer::receiveChatMessage, this, _1, _2));
 
-	m_UDPSender.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerServer::sendDataPlayer, this, _1));
+	m_UDPSender.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerServer::sendDataPlayer, this, _1, _2));
 	m_UDPReceiver.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerServer::receiveDataPlayer, this, _1, _2));
 
 	m_listener.setBlocking(false);
@@ -50,15 +50,14 @@ void NetworkManagerServer::sendPacket(Packet::TCP _type,
 
 	auto recipients{getRecipients(_recipient, _exclude)};
 
-	PacketSharedPtr p(new sf::Packet());
-	*p << code;
-
-	std::vector<PacketSharedPtr> packets;
-	packets.push_back(std::move(p));
-
-	m_TCPSender.call(_type, packets);
-
 	for (const auto& recipient : recipients) {
+		PacketSharedPtr p(new sf::Packet());
+		*p << code;
+		std::vector<PacketSharedPtr> packets;
+		packets.push_back(std::move(p));
+
+		m_TCPSender.call(_type, packets, recipient.socket);
+
 		for (auto& packet : packets) {
 			PacketSender::get_instance().send(recipient.socket, packet);
 		}
@@ -68,19 +67,17 @@ void NetworkManagerServer::sendPacket(Packet::TCP _type,
 void NetworkManagerServer::sendPacket(Packet::UDP  _type,
                                       sf::TcpSocket*    _recipient,
                                       bool               _exclude) {
-	int code = Packet::toInt(_type);
-
+	int code {Packet::toInt(_type)};
 	auto recipients{getRecipients(_recipient, _exclude)};
 
-	PacketSharedPtr p(new sf::Packet());
-	*p << code;
-
-	std::vector<PacketSharedPtr> packets;
-	packets.push_back(std::move(p));
-
-	m_UDPSender.call(_type, packets);
-
 	for (const auto& recipient : recipients) {
+		PacketSharedPtr p(new sf::Packet());
+		*p << code;
+		std::vector<PacketSharedPtr> packets;
+		packets.push_back(std::move(p));
+
+		m_UDPSender.call(_type, packets, recipient.socket);
+
 		for(auto& packet : packets) {
 			PacketSender::get_instance().send(&m_udpSocket, packet, recipient.ipInfo->ipAddress, recipient.ipInfo->port);
 		}
@@ -88,8 +85,8 @@ void NetworkManagerServer::sendPacket(Packet::UDP  _type,
 }
 
 void NetworkManagerServer::receiveTCPPackets() {
-	int                  code;
-	PacketUPtr           packet(new sf::Packet());
+	int        code;
+	PacketUPtr packet{new sf::Packet()};
 
 	for (const auto& connection : m_clientIPs) {
 		if (connection.first->receive(*packet) == sf::Socket::Status::Done) {
@@ -103,7 +100,7 @@ void NetworkManagerServer::receiveTCPPackets() {
 
 void NetworkManagerServer::receiveUDPPackets() {
 	int            code;
-	PacketUPtr     packet(new sf::Packet());
+	PacketUPtr     packet{new sf::Packet()};
 	unsigned short port{Packet::Port_UDP_Server};
 
 	for (auto& client : m_clientIPs) {
@@ -144,7 +141,11 @@ void NetworkManagerServer::removePlayer(sf::TcpSocket* _conn) {
 	sendMessage({"Server", "Goodbye, " + name + "!"});
 	m_lastRemovedPlayer = name;
 	sendPacket(Packet::TCP::QUIT);
-	removeConnection(_conn);
+
+	auto it{m_clientIPs.find(_conn)};
+	if(it != m_clientIPs.end()) {
+		m_clientIPs.erase(it);
+	}
 }
 
 void NetworkManagerServer::listen() {
@@ -239,18 +240,12 @@ NetworkManagerServer::IPInfo* NetworkManagerServer::getIPInfo(sf::TcpSocket* _co
 	return nullptr;
 }
 
-void NetworkManagerServer::removeConnection(sf::TcpSocket* _conn) {
-	auto it{m_clientIPs.find(_conn)};
-	if(it != m_clientIPs.end()) {
-		m_clientIPs.erase(it);
-	}
-}
-
-void NetworkManagerServer::sendQuit(std::vector<PacketSharedPtr>& _p) {
+void NetworkManagerServer::sendQuit(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
 	*_p[0] << m_lastRemovedPlayer;
 }
 
-void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p) {
+void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
+	_p.clear();
 	auto worldData = m_server.encodeWorldChunks();
 
 	/*At the moment, a packet is generated and sent for each chunk
@@ -267,7 +262,7 @@ void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p) {
 	}
 }
 
-void NetworkManagerServer::sendChatMessage(std::vector<PacketSharedPtr>& _p) {
+void NetworkManagerServer::sendChatMessage(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
 	Message msg = m_messages.back();
 	*_p[0] << msg.sender;
 	*_p[0] << msg.content;
@@ -314,13 +309,20 @@ void NetworkManagerServer::receiveChatMessage(sf::Packet* _p, sf::TcpSocket* _co
 }
 
 
-void NetworkManagerServer::sendDataPlayer(std::vector<PacketSharedPtr>& _p) {
+void NetworkManagerServer::sendDataPlayer(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
+	_p.clear();
 	int index{0};
+	auto recipientInfo {getIPInfo(_conn)};
 
 	auto view = m_server.m_registry->view<PlayerTag>();
 	for (auto& entity : view) {
 		const auto name =
 		  m_server.m_registry->get<ComponentName>(entity);
+
+		//Don't send a client's own player data back to it!
+		if(name.m_name == recipientInfo->playerName) {
+			continue;
+		}
 
 		const auto dir =
 		  m_server.m_registry->get<ComponentDirection>(entity);
