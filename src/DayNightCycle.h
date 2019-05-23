@@ -7,10 +7,7 @@
 This class handles everything to do with the VISUAL effects of the day-night cycle, including:
 
 -The sun/moon's position
--Shaders
-
-Just give it a world, and it will handle everything else. It inherits from sf::Drawable so as
-to decouple the aesthetic portions of the day-night cycle from everything else. Simply draw it.
+-Passing information to and managing shaders
 
 Saving this for future reference:
 https://csc.lsu.edu/~kooima/misc/cs594/final/part2.html
