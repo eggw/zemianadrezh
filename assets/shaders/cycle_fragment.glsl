@@ -3,8 +3,9 @@
 uniform sampler2D sky;
 uniform sampler2D glow;
 
-uniform vec3 planetPosition;
-uniform bool daytime;
+uniform vec3  planetPosition;
+uniform float planetHeight;
+uniform bool  daytime;
 
 //unused; keeping for future testing
 //uniform float lightIntensity;
@@ -15,8 +16,8 @@ in vec3 out_vertex;
 out vec4 fragColor;
 
 void main() {
-   	vec3 V = (out_vertex);
-    vec3 L = (planetPosition);
+   	vec3 V  = (out_vertex);
+	vec3 L = (planetPosition);
 
     //Since un-normalized coordinates in openGL start at the
     //top left, a lower y translates to a higher position.
@@ -39,16 +40,20 @@ void main() {
 		L.y -= 1;
 	}
 
+	vec3 _L = L;
+	_L.y -= planetHeight;
+
+	vec3 _I = L;
+	_I.y -= planetHeight * 2;
     //Compute the proximity of this fragment to the sun.
-    float vl = distance(V, L);
-
+    float vl = distance(V, _I);
+	
     //Look up the sky color and glow colors.
-
 	//Note: (L.y + 1) / 2 is to accomodate for sky.png having
 	//its right half dedicated to the daytime gradient and
 	//left half to the nighttdime gradient
-	vec4 Kc = texture2D(sky, 	vec2((L.y + 1) / 2, V.y));
-    vec4 Kg = texture2D	(glow,  vec2(L.y, vl));
+	vec4 Kc = texture2D(sky,  vec2((_L.y + 1) / 2, V.y));
+    vec4 Kg = texture2D(glow, vec2(_L.y, vl));
 	//fragColor = vec4(vl,vl,vl,255);
 
 	vec4 dither = vec4(texture2D(glow, V.xy / 8.0).r / 32.0 - (1.0 / 128.0));

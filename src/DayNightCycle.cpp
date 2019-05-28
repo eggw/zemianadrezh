@@ -41,6 +41,12 @@ DayNightCycle::DayNightCycle()
 }
 
 void DayNightCycle::update(const WorldTime& _time) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Comma)) {
+		_time.pause();
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Period)) {
+		_time.unpause();
+	}
 	//A draw call needs to be attempted at least once to set our target
 	//before updating can begin
 	if (m_target == nullptr) {
@@ -217,11 +223,11 @@ void DayNightCycle::updatePlanetTexture(const WorldTime& _time) {
 		  TextureManager::Type::MOON));
 	}
 	//We're going to set the origin to be at the rightmost point horizontally and the
-	//centermost point vertically. Later, when determining xPos, we add the width of the
+	//uppermost point vertically. Later, when determining xPos, we add the width of the
 	//sprite to our calculation. This is to ensure a seamless transition (at the exact
 	//moment the sun is out of our view, the moon starts to come in, and vice versa)
 	m_sunMoonSprite.setOrigin(m_sunMoonSprite.getGlobalBounds().width,
-	                          m_sunMoonSprite.getGlobalBounds().height / 2);
+	                          0);
 }
 
 void DayNightCycle::updatePlanetPosition(const WorldTime& _time) {
@@ -257,9 +263,7 @@ void DayNightCycle::updatePlanetPosition(const WorldTime& _time) {
 	  (1 - progressInPercent) *
 	  (m_target->getSize().x + m_sunMoonSprite.getGlobalBounds().width)};
 
-	double yPos{(1 - sin(progressInPercent * pi)) * m_target->getSize().y / 3};
-	//This adjustment was made with some experimenting to get it to look right.
-	yPos += m_target->getSize().y / 10;
+	double yPos{(1 - sin(progressInPercent * pi)) * m_target->getSize().y / 2};
 
 	m_sunMoonSprite.setPosition(xPos, yPos);
 }
@@ -270,8 +274,9 @@ void DayNightCycle::sendUniformsToShader(const WorldTime& _time) {
 	//We'll do a couple of things to account for this.
 	sf::Vector2f openGLCoordinates{m_sunMoonSprite.getPosition()};
 	//First, since the sprite's x origin is at its rightmost point, we'll
-	//subtract half its width from the x coordinate.
+	//subtract half its width from the x coordinate (same for y)
 	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
+	openGLCoordinates.y -= m_sunMoonSprite.getGlobalBounds().height / 2;
 	//Taking into account openGL's texture2D origin is at the top left,
 	//we'll get the appropriate coordinate position of the sun as a ratio.
 	//We'll divide y further in order to simulate the horizon being at the
@@ -279,9 +284,13 @@ void DayNightCycle::sendUniformsToShader(const WorldTime& _time) {
 	openGLCoordinates.x /= m_target->getSize().x;
 	openGLCoordinates.y /= m_target->getSize().y / 2;
 
+	float planetHeight{m_sunMoonSprite.getGlobalBounds().height};
+	planetHeight /= m_target->getSize().y;
+
 	m_shader.setUniform(
 	  "planetPosition",
 	  sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
+	m_shader.setUniform("planetHeight", planetHeight);
 	m_shader.setUniform("daytime", isDaytime(_time));
 }
 
