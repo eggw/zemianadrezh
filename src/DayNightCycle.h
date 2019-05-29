@@ -60,6 +60,12 @@ class DayNightCycle : public sf::Drawable {
 	mutable sf::RenderTarget* m_target;
 	mutable sf::Shader        m_shader;
 	mutable sf::Vector2f      m_lastTargetSize;
+
+	//This is a value with a range from 0 to 1 representing how high the sun/moon
+	//is in the sky, with 0 meaning on the horizon and 1 meaning it's at its highest.
+	//Since it will frequently be updated in updatePlanetPosition() and sent to the
+	//shader in sendUniformsToShader(), we'll cache it here.
+	float m_planetYProgress;
 	//---------------------------------------------
 };
 

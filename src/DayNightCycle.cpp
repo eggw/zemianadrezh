@@ -5,12 +5,17 @@
 #include "TextureManager.h"
 #include "FontManager.h"
 #include "WorldTime.h"
-
+#include <iostream>
 constexpr int DAY_BEGIN_HOUR{5};
 constexpr int DAY_END_HOUR{19};
 
 constexpr int NIGHT_BEGIN_HOUR{19};
 constexpr int NIGHT_END_HOUR{5};
+
+//This value controls the vertical position of the horizon.
+//For example, if set to 0.5, the horizon will start at the
+//vertical center of the screen.
+constexpr float HORIZON_AS_HEIGHT_RATIO{0.65};
 
 DayNightCycle::DayNightCycle()
             : m_sunMoonSprite{},
@@ -18,7 +23,8 @@ DayNightCycle::DayNightCycle()
               m_timeText{},
               m_target{nullptr},
               m_shader{},
-              m_lastTargetSize{} {
+              m_lastTargetSize{},
+              m_planetYProgress{0} {
 	m_timeText.setFont(
 	  FontManager::get_instance().getFont(FontManager::Type::ANDY));
 	m_timeText.setCharacterSize(30);
@@ -257,40 +263,62 @@ void DayNightCycle::updatePlanetPosition(const WorldTime& _time) {
 	//from the east to the west and not vice versa.
 	//Also, since the sprite's X origin is at its rightmost point, we'll add the sprite's width to
 	//the view size in our xPos calculation.
-	//We're also going to invert the sin result in yPos so the movement will be down->up->down, rather
-	//than up->down->up.
+
 	double xPos{
 	  (1 - progressInPercent) *
 	  (m_target->getSize().x + m_sunMoonSprite.getGlobalBounds().width)};
 
-	double yPos{(1 - sin(progressInPercent * pi)) * m_target->getSize().y / 2};
+	//We're also going to invert the sin result in yPos so the movement will be
+	//down->up->down, rather than up->down->up.
+
+	m_planetYProgress = sin(progressInPercent * pi);
+
+	double yPos{(1 - m_planetYProgress)
+				* m_target->getSize().y * HORIZON_AS_HEIGHT_RATIO};
 
 	m_sunMoonSprite.setPosition(xPos, yPos);
 }
 
 void DayNightCycle::sendUniformsToShader(const WorldTime& _time) {
-	//In SFML,	 the origin (0,0) is at the top left.
-	//In OpenGL, the origin (0,0) is in the middle.
-	//We'll do a couple of things to account for this.
+	//We're going to send the position of the sun/moon sprite
+	//as the center. Since the sprite's origins are (width, 0),
+	//we'll have to adjust the position values appropriately.
 	sf::Vector2f openGLCoordinates{m_sunMoonSprite.getPosition()};
-	//First, since the sprite's x origin is at its rightmost point, we'll
-	//subtract half its width from the x coordinate (same for y)
-	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
-	openGLCoordinates.y -= m_sunMoonSprite.getGlobalBounds().height / 2;
-	//Taking into account openGL's texture2D origin is at the top left,
-	//we'll get the appropriate coordinate position of the sun as a ratio.
-	//We'll divide y further in order to simulate the horizon being at the
-	//center of the screen, rather than the bottom.
-	openGLCoordinates.x /= m_target->getSize().x;
-	openGLCoordinates.y /= m_target->getSize().y / 2;
 
-	float planetHeight{m_sunMoonSprite.getGlobalBounds().height};
-	planetHeight /= m_target->getSize().y;
+	//First, since the sprite's x origin is at its rightmost point, we'll
+	//subtract half its width from the x coordinate.
+	//
+	//Also, since the sprite's y origin is at its uppermost point, we'll
+	//add half its height to the y coordinate.
+	openGLCoordinates.x -= m_sunMoonSprite.getGlobalBounds().width / 2;
+	openGLCoordinates.y += m_sunMoonSprite.getGlobalBounds().height / 2;
+
+	//We'll then get the positions as ratios of the current window size
+	openGLCoordinates.x /= m_target->getSize().x;
+	openGLCoordinates.y /= m_target->getSize().y;
+
+	//In SFML,   upperleft = (0, 0)  and lowerright = (1, 1)
+	//(center is 0.5, 0.5)
+	//
+	//In OpenGL, upperleft = (-1, 1) and lowerright = (1, -1)
+	//(center is 0, 0)
+	//
+	//We're going to convert both x and y positions from the
+	//(0, 1) range of SFML to the (-1, 1) range of OpenGL.
+	//
+	//We use the following simple formula to achieve this:
+	//
+	//OldRange = (OldMax - OldMin)
+	//NewRange = (NewMax - NewMin)
+	//NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin
+
+	openGLCoordinates.x = (openGLCoordinates.x * 2) - 1;
+	openGLCoordinates.y = (((openGLCoordinates.y - 1) * 2) / -1) - 1;
 
 	m_shader.setUniform(
 	  "planetPosition",
 	  sf::Vector3f{openGLCoordinates.x, openGLCoordinates.y, 0.f});
-	m_shader.setUniform("planetHeight", planetHeight);
+	m_shader.setUniform("planetYProgress", m_planetYProgress);
 	m_shader.setUniform("daytime", isDaytime(_time));
 }
 

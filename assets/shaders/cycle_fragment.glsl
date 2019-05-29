@@ -4,61 +4,41 @@ uniform sampler2D sky;
 uniform sampler2D glow;
 
 uniform vec3  planetPosition;
-uniform float planetHeight;
+uniform float planetYProgress;
 uniform bool  daytime;
 
-//unused; keeping for future testing
-//uniform float lightIntensity;
-//uniform float planetProgress;
-
-in vec3 out_vertex;
-
+in  vec3 out_vertex;
 out vec4 fragColor;
 
 void main() {
-   	vec3 V  = (out_vertex);
-	vec3 L = (planetPosition);
+   	vec3 V = out_vertex;
+	vec3 L = planetPosition;
 
-    //Since un-normalized coordinates in openGL start at the
-    //top left, a lower y translates to a higher position.
-    //
-    //Therefore, we'll invert the  sun/moon's y value to
-    //accurately reflect that the sun's y position actually
-    //increases as it goes up.
-    //
-    //Keep in mind that it never actually gets to the very top, more
-    //like 80% or 90%. Maybe fix this later [DayNightCycle.cpp]
-	L.y = 1 - L.y;
-
-	//Additionally, since 0 is the center in OpenGL, we're going to
-	//convert our planet's X position from the 0, 1 range (where 0.5
-	//is the center to the -1, 1 range (where 0 is the center)
-	L.x = (L.x * 2) - 1;
+	float progress = planetYProgress;
 
 	//Read from the lefthand side of the sky file if it's nighttime
 	if(!daytime) {
-		L.y -= 1;
+		progress -= 1;
 	}
 
-	vec3 _L = L;
-	_L.y -= planetHeight;
+	//Compute the proximity of this fragment to the sun.
+    float vl = distance(V, L);
 
-	vec3 _I = L;
-	_I.y -= planetHeight * 2;
-    //Compute the proximity of this fragment to the sun.
-    float vl = distance(V, _I);
-	
+	//The position given by L is the center (vertically and horizontally)
+	//of our planet. However, in order to calculate the texture coordinates,
+	//we're going to use planetYProgress. This is because the center of
+	//the sun will never hit the very top of the screen.
+
     //Look up the sky color and glow colors.
 	//Note: (L.y + 1) / 2 is to accomodate for sky.png having
 	//its right half dedicated to the daytime gradient and
-	//left half to the nighttdime gradient
-	vec4 Kc = texture2D(sky,  vec2((_L.y + 1) / 2, V.y));
-    vec4 Kg = texture2D(glow, vec2(_L.y, vl));
-	//fragColor = vec4(vl,vl,vl,255);
+	//left half to the nighttime gradient
+	vec4 Kc = texture2D(sky,  vec2((progress + 1) / 2, V.y));
+    vec4 Kg = texture2D(glow, vec2(progress, vl));
 
 	vec4 dither = vec4(texture2D(glow, V.xy / 8.0).r / 32.0 - (1.0 / 128.0));
 	Kg += dither;
 
     //Combine the sky and glow giving the pixel value.
-    fragColor = vec4(Kc.rgb + Kg.rgb * Kg.a / 2.0, Kc.a);
+    fragColor = vec4(Kc.rgb + Kg.rgb * (Kg.a * 0.9), Kc.a);
 }
