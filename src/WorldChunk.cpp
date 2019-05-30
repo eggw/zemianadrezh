@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include <SFML/Network.hpp>
+#include "Util/Coordinates.h"
 
 //Packet operator overloading
 //----------------------------------------------------------------------------------------------------------------
@@ -138,4 +139,12 @@ void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
 			currentNumber += c;
 		}
 	}
+}
+
+std::map<Direction, Block*> WorldChunk::getNeighboringBlocks(Block* _b) {
+	const auto position{_b->getPosition()};
+	sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
+
+
+	return {};
 }

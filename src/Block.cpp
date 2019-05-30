@@ -6,8 +6,8 @@
 // (*) Blocks
 //--------------------------------------------|
 #include "Block.h"
-
 #include "BlockDatabase.h"
+#include "Util/Coordinates.h"
 
 Block::Block(int _id, BlockData::Type _type, BlockData::BorderType _borderType)
             : m_id{_id}, m_type{_type}, m_borderType{_borderType}, m_damageLevel{0} {
@@ -55,13 +55,13 @@ sf::FloatRect Block::getTextureRect() const {
 	        float(BLOCK_DIMENSIONS_Y)};
 }
 
-sf::Vector2f Block::getPosition() const {
+sf::Vector2i Block::getPosition() const {
 	return m_position;
 }
 
 void Block::initialisePosition() {
-	m_position.x = m_id % CHUNK_DIMENSIONS_X;
-	m_position.y = m_id / CHUNK_DIMENSIONS_Y;
+	m_position = Utility::Coordinates::indexToCoordinates(m_id, {CHUNK_DIMENSIONS_X,
+															   CHUNK_DIMENSIONS_Y});
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

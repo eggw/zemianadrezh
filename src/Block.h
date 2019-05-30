@@ -28,7 +28,7 @@ class Block {
 	void             setBorderType(BlockData::BorderType _t);
 	const BlockData& getData() const;
 	sf::FloatRect    getTextureRect() const;
-	sf::Vector2f     getPosition() const;
+	sf::Vector2i     getPosition() const;
 
   private:
 	//Functions -----------------------------------
@@ -43,7 +43,7 @@ class Block {
 	BlockData::Type       m_type;
 	BlockData::BorderType m_borderType;
 	int                   m_damageLevel;
-	sf::Vector2f          m_position;
+	sf::Vector2i          m_position;
 	//---------------------------------------------
 };
 

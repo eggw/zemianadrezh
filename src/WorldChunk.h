@@ -2,8 +2,10 @@
 #define WORLDCHUNK_H_INCLUDED
 
 #include <vector>
+#include <map>
 
 #include "Block.h"
+#include "Direction.h"
 
 class WorldChunk {
   public:
@@ -24,6 +26,10 @@ class WorldChunk {
 	void                   parseData(const EncodedChunkData& _data);
 
   private:
+  	//Functions -----------------------------------
+  	std::map<Direction, Block*> getNeighboringBlocks(Block* _b);
+  	//---------------------------------------------
+
 	//Data members --------------------------------
 	int                m_id;
 	std::vector<Block> m_blocks{};
