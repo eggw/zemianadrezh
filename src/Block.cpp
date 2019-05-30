@@ -9,8 +9,8 @@
 
 #include "BlockDatabase.h"
 
-Block::Block(int _id, BlockData::Type _type)
-            : m_id{_id}, m_type{_type}, m_damageLevel{0} {
+Block::Block(int _id, BlockData::Type _type, BlockData::BorderType _borderType)
+            : m_id{_id}, m_type{_type}, m_borderType{_borderType}, m_damageLevel{0} {
 	initialisePosition();
 }
 
@@ -22,14 +22,21 @@ void Block::setType(BlockData::Type _t) {
 	m_type = _t;
 }
 
+void Block::setBorderType(BlockData::BorderType _t) {
+	m_borderType = _t;
+}
+
 const BlockData& Block::getData() const {
 	return BlockDatabase::get_instance().getData(m_type);
 }
 
 sf::FloatRect Block::getTextureRect() const {
-	//First, fetch the coordinates for the first (0 damage level) texture of this block.
+	//First, fetch the coordinates for the first column in the row containing this block's
+	//textures (the ALL BorderType)
 	sf::Vector2f textureCoordinates{
 	  BlockDatabase::get_instance().getData(m_type).getTextureIndeces()};
+	//We'll then set the appropriate column depending on the BorderType
+	textureCoordinates.x = m_borderType;
 	//We'll then make sure we multiply the indeces of the coordinates by the width and height
 	//of a block, and add one pixel if they're greater than 0
 	textureCoordinates.x *= BLOCK_DIMENSIONS_X;
@@ -42,19 +49,7 @@ sf::FloatRect Block::getTextureRect() const {
 		++textureCoordinates.y;
 	}
 
-	//Since we have 7 damage levels for each block, we can divide the current damage level by
-	//14 to get the X index for the texture we need.
-	//For example, at a damage level of 53
-	//53 / 14 = 3.78... (C++ floors int divisions) = 3
-
-	//So we'll get the 4th (0-based indexing) damage level texture's coordinates, simply by
-	//appending 3 * BLOCK_DIMENSIONS_X to textureCoordinates.x
-
-	int damageIndex = m_damageLevel / 14;
-
-	float newX{textureCoordinates.x + (damageIndex * BLOCK_DIMENSIONS_X)};
-
-	return {newX,
+	return {textureCoordinates.x,
 	        textureCoordinates.y,
 	        float(BLOCK_DIMENSIONS_X),
 	        float(BLOCK_DIMENSIONS_Y)};

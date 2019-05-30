@@ -21,10 +21,11 @@ Note that blocks aren't defined as entities.
 
 class Block {
   public:
-	Block(int _id, BlockData::Type _type);
+	Block(int _id, BlockData::Type _type, BlockData::BorderType _borderType = BlockData::BorderType::ALL);
 
 	BlockData::Type  getType() const;
 	void             setType(BlockData::Type _t);
+	void             setBorderType(BlockData::BorderType _t);
 	const BlockData& getData() const;
 	sf::FloatRect    getTextureRect() const;
 	sf::Vector2f     getPosition() const;
@@ -38,10 +39,11 @@ class Block {
 	//---------------------------------------------
 
 	//Data members --------------------------------
-	int             m_id;
-	BlockData::Type m_type;
-	int             m_damageLevel;
-	sf::Vector2f    m_position;
+	int                   m_id;
+	BlockData::Type       m_type;
+	BlockData::BorderType m_borderType;
+	int                   m_damageLevel;
+	sf::Vector2f          m_position;
 	//---------------------------------------------
 };
 

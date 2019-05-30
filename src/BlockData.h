@@ -15,18 +15,40 @@ BlockData contains all the information we need to know
 about a certain block type.
 
 assets/gfx/blocks.png is a texture atlas that contains all the
-block textures. Every row will contain 7 16x16 textures, one for
-each damage level of the block.
+block textures. Every row will contain 10 textures, one for
+each possible border, as follows:
 
-m_textureIndeces describes the coordinates for the first, or damage
-level 0, texture in the atlas. For example, our very first block would
-have an index of (0,0). If our second block was on the next row, its index
-would be (0,1). The indeces are automatically multiplied by the dimensions
-of the block.
+(the number represents the block in the order it should appear
+in its row, ~ represents the border)
+
+  ~
+~ 0 ~
+  ~
+
+  ~ ~ ~
+~ 1 2 3 ~
+~ 4 5 6 ~
+~ 7 8 9 ~
+  ~ ~ ~
+
 */
 
 class BlockData {
   public:
+  	enum BorderType
+  	{
+  		ALL           = 0,
+		TOP_LEFT      = 1,
+		TOP           = 2,
+		TOP_RIGHT     = 3,
+		LEFT          = 4,
+		NONE          = 5,
+		RIGHT         = 6,
+		BOTTOM_LEFT   = 7,
+		BOTTOM        = 8,
+		BOTTOM_RIGHT  = 9
+  	};
+
 	enum Type
 	{
 		AIR  = 0,
