@@ -6,8 +6,6 @@
 #include <SFML/Network.hpp>
 #include "Util/Coordinates.h"
 
-
-#include <iostream>
 //Packet operator overloading
 //----------------------------------------------------------------------------------------------------------------
 sf::Packet& operator<<(sf::Packet& _p, const WorldChunk::EncodedChunkData& _d) {
@@ -148,10 +146,10 @@ void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
 }
 
 std::map<Direction, Block*> WorldChunk::getNeighboringBlocks(Block* _b) {
+	static const sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
 	std::map<Direction, Block*> result{};
 
 	const auto position{_b->getPosition()};
-	const sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
 
 	sf::Vector2i northPosition{position.x, position.y - 1};
 	sf::Vector2i southPosition{position.x, position.y + 1};
@@ -194,9 +192,17 @@ std::map<Direction, Block*> WorldChunk::getNeighboringBlocks(Block* _b) {
 	return result;
 }
 
+//This function determines each block's border type.
+//It does so by ruling out, one by one, the border
+//types the block CANNOT have, depending on its
+//neighbors, until it is left with one final
+//result.
+
 void WorldChunk::adjustBorders() {
+	//The 16 types correspond to
+	//BlockData::BorderType
 	std::vector<int> possibleBorders;
-	for(int i{0}; i <= 11; i++) {
+	for(int i{0}; i <= 15; i++) {
 		possibleBorders.push_back(i);
 	}
 
@@ -213,7 +219,8 @@ void WorldChunk::adjustBorders() {
 			borders.begin(), borders.end(),
 			[](const int& x) {
 				return x == 10
-				|| (x >= 0 && x <= 3);
+				|| (x >= 0 && x <= 3)
+				|| (x >= 13 && x <= 15);
 			}), borders.end());
 		}
 		else {
@@ -221,6 +228,7 @@ void WorldChunk::adjustBorders() {
 			borders.begin(), borders.end(),
 			[](const int& x) {
 				return x == 11
+				|| x == 12
 				|| (x >= 4 && x <= 9);
 			}), borders.end());
 		}
@@ -230,6 +238,9 @@ void WorldChunk::adjustBorders() {
 			borders.begin(), borders.end(),
 			[](const int& x) {
 				return x == 0
+				|| x == 12
+				|| x == 14
+				|| x == 15
 				|| (x >= 7 && x <= 10);
 			}), borders.end());
 		}
@@ -238,6 +249,7 @@ void WorldChunk::adjustBorders() {
 			borders.begin(), borders.end(),
 			[](const int& x) {
 				return x == 11
+				|| x == 13
 				|| (x >= 1 && x <= 6);
 			}), borders.end());
 		}
@@ -250,7 +262,8 @@ void WorldChunk::adjustBorders() {
 				|| x == 3
 				|| x == 6
 				|| x == 9
-				|| x == 11;
+				|| x == 15
+				|| (x >= 11 && x <= 13);
 			}), borders.end());
 		}
 		else {
@@ -263,7 +276,8 @@ void WorldChunk::adjustBorders() {
 				|| x == 5
 				|| x == 7
 				|| x == 8
-				|| x == 10;
+				|| x == 10
+				|| x == 14;
 			}), borders.end());
 		}
 
@@ -275,7 +289,7 @@ void WorldChunk::adjustBorders() {
 				|| x == 1
 				|| x == 4
 				|| x == 7
-				|| x == 11;
+				|| (x >= 11 && x <= 14);
 			}), borders.end());
 		}
 		else {
@@ -286,18 +300,13 @@ void WorldChunk::adjustBorders() {
 				|| x == 3
 				|| x == 5
 				|| x == 6
-				|| x == 8
-				|| x == 9
-				|| x == 10;
+				|| x == 15
+				|| (x >= 8 && x <= 10);
 			}), borders.end());
 		}
 
-		if(borders.size() == 1) {
-			block.setBorderType(BlockData::BorderType(borders[0]));
-		}
-		else {
-			std::cout << borders.size() << " - block at " << block.getPosition().x << ", " << block.getPosition().y << std::endl;
-		}
-
+		//By now, all but 1 border types should have been removed
+		//from the borders vector.
+		block.setBorderType(BlockData::BorderType(borders[0]));
 	}
 }

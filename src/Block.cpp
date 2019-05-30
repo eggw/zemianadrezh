@@ -42,13 +42,6 @@ sf::FloatRect Block::getTextureRect() const {
 	textureCoordinates.x *= BLOCK_DIMENSIONS_X;
 	textureCoordinates.y *= BLOCK_DIMENSIONS_Y;
 
-	if (textureCoordinates.x > 0) {
-		++textureCoordinates.x;
-	}
-	if (textureCoordinates.y > 0) {
-		++textureCoordinates.y;
-	}
-
 	return {textureCoordinates.x,
 	        textureCoordinates.y,
 	        float(BLOCK_DIMENSIONS_X),
