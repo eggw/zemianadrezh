@@ -6,6 +6,8 @@
 #include <SFML/Network.hpp>
 #include "Util/Coordinates.h"
 
+
+#include <iostream>
 //Packet operator overloading
 //----------------------------------------------------------------------------------------------------------------
 sf::Packet& operator<<(sf::Packet& _p, const WorldChunk::EncodedChunkData& _d) {
@@ -60,6 +62,8 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id} {
 			m_blocks.push_back(block);
 		}
 	}
+
+	adjustBorders();
 }
 
 int WorldChunk::getID() const {
@@ -139,12 +143,161 @@ void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
 			currentNumber += c;
 		}
 	}
+
+	adjustBorders();
 }
 
 std::map<Direction, Block*> WorldChunk::getNeighboringBlocks(Block* _b) {
+	std::map<Direction, Block*> result{};
+
 	const auto position{_b->getPosition()};
-	sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
+	const sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
 
+	sf::Vector2i northPosition{position.x, position.y - 1};
+	sf::Vector2i southPosition{position.x, position.y + 1};
+	sf::Vector2i eastPosition{position.x + 1, position.y};
+	sf::Vector2i westPosition{position.x - 1, position.y};
 
-	return {};
+	result.insert({Direction::NORTH, nullptr});
+	result.insert({Direction::SOUTH, nullptr});
+	result.insert({Direction::EAST, nullptr});
+	result.insert({Direction::WEST, nullptr});
+
+	if(!Utility::Coordinates::coordinatesOutOfRange(northPosition, dim)) {
+		int i {Utility::Coordinates::coordinatesToIndex(northPosition, dim.x)};
+		if(m_blocks[i].getType() != BlockData::Type::AIR){
+			result[Direction::NORTH] = &m_blocks[i];
+		}
+	}
+
+	if(!Utility::Coordinates::coordinatesOutOfRange(southPosition, dim)) {
+		int i {Utility::Coordinates::coordinatesToIndex(southPosition, dim.x)};
+		if(m_blocks[i].getType() != BlockData::Type::AIR){
+			result[Direction::SOUTH] = &m_blocks[i];
+		}
+	}
+
+	if(!Utility::Coordinates::coordinatesOutOfRange(eastPosition, dim)) {
+		int i {Utility::Coordinates::coordinatesToIndex(eastPosition, dim.x)};
+		if(m_blocks[i].getType() != BlockData::Type::AIR){
+			result[Direction::EAST] = &m_blocks[i];
+		}
+	}
+
+	if(!Utility::Coordinates::coordinatesOutOfRange(westPosition, dim)) {
+		int i {Utility::Coordinates::coordinatesToIndex(westPosition, dim.x)};
+		if(m_blocks[i].getType() != BlockData::Type::AIR){
+			result[Direction::WEST] = &m_blocks[i];
+		}
+	}
+
+	return result;
+}
+
+void WorldChunk::adjustBorders() {
+	std::vector<int> possibleBorders;
+	for(int i{0}; i <= 11; i++) {
+		possibleBorders.push_back(i);
+	}
+
+	for(auto& block : m_blocks) {
+		if(block.getType() == BlockData::Type::AIR) {
+			continue;
+		}
+
+		auto neighbors{getNeighboringBlocks(&block)};
+		auto borders{possibleBorders};
+
+		if(neighbors[Direction::NORTH] != nullptr) {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 10
+				|| (x >= 0 && x <= 3);
+			}), borders.end());
+		}
+		else {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 11
+				|| (x >= 4 && x <= 9);
+			}), borders.end());
+		}
+
+		if(neighbors[Direction::SOUTH] != nullptr) {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 0
+				|| (x >= 7 && x <= 10);
+			}), borders.end());
+		}
+		else {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 11
+				|| (x >= 1 && x <= 6);
+			}), borders.end());
+		}
+
+		if(neighbors[Direction::EAST] != nullptr) {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 0
+				|| x == 3
+				|| x == 6
+				|| x == 9
+				|| x == 11;
+			}), borders.end());
+		}
+		else {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 1
+				|| x == 2
+				|| x == 4
+				|| x == 5
+				|| x == 7
+				|| x == 8
+				|| x == 10;
+			}), borders.end());
+		}
+
+		if(neighbors[Direction::WEST] != nullptr) {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 0
+				|| x == 1
+				|| x == 4
+				|| x == 7
+				|| x == 11;
+			}), borders.end());
+		}
+		else {
+			borders.erase(std::remove_if(
+			borders.begin(), borders.end(),
+			[](const int& x) {
+				return x == 2
+				|| x == 3
+				|| x == 5
+				|| x == 6
+				|| x == 8
+				|| x == 9
+				|| x == 10;
+			}), borders.end());
+		}
+
+		if(borders.size() == 1) {
+			block.setBorderType(BlockData::BorderType(borders[0]));
+		}
+		else {
+			std::cout << borders.size() << " - block at " << block.getPosition().x << ", " << block.getPosition().y << std::endl;
+		}
+
+	}
 }

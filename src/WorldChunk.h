@@ -28,6 +28,7 @@ class WorldChunk {
   private:
   	//Functions -----------------------------------
   	std::map<Direction, Block*> getNeighboringBlocks(Block* _b);
+  	void adjustBorders();
   	//---------------------------------------------
 
 	//Data members --------------------------------

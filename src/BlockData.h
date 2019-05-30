@@ -31,6 +31,12 @@ in its row, ~ represents the border)
 ~ 7 8 9 ~
   ~ ~ ~
 
+ ~
+ 10
+ ~
+
+~ 11 ~
+
 */
 
 class BlockData {
@@ -46,7 +52,9 @@ class BlockData {
 		RIGHT         = 6,
 		BOTTOM_LEFT   = 7,
 		BOTTOM        = 8,
-		BOTTOM_RIGHT  = 9
+		BOTTOM_RIGHT  = 9,
+		TOP_BOTTOM    = 10,
+		LEFT_RIGHT    = 11
   	};
 
 	enum Type
