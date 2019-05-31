@@ -85,17 +85,17 @@ class BlockData {
 	//m_opacity is set, that percentage is converted to the actual
 	//alpha value (0-255).
 
-	BlockData(std::string _name, int _opacity, sf::Vector2f _textureIndeces);
+	BlockData(std::string _name, int _opacity, int _textureColumn);
 
 	const std::string& getName() const;
 	int                getOpacityAlpha() const;
-	sf::Vector2f       getTextureIndeces() const;
+	int                getTextureColumn() const;
 
   private:
 	//Data members --------------------------------
 	std::string  m_name;
 	int          m_opacityAlpha;
-	sf::Vector2f m_textureIndeces;
+	int          m_textureColumn;
 	//---------------------------------------------
 };
 

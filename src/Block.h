@@ -2,6 +2,7 @@
 #define BLOCK_H_INCLUDED
 
 #include "BlockData.h"
+#include "Direction.h"
 
 /*
 Blocks are initialised by specifying a type from BlockData::Type.
@@ -21,29 +22,24 @@ Note that blocks aren't defined as entities.
 
 class Block {
   public:
+  	using NeighboringBlocks = std::map<Direction, Block*>;
+
 	Block(int _id, BlockData::Type _type, BlockData::BorderType _borderType = BlockData::BorderType::ALL);
 
 	BlockData::Type  getType() const;
 	void             setType(BlockData::Type _t);
-	void             setBorderType(BlockData::BorderType _t);
 	const BlockData& getData() const;
 	sf::FloatRect    getTextureRect() const;
 	sf::Vector2i     getPosition() const;
 
-  private:
-	//Functions -----------------------------------
-	//Based on the id, this function will set the
-	//appropriate position in a 2D coordinate
-	//system.
-	void initialisePosition();
-	//---------------------------------------------
+	void adjustBorders(NeighboringBlocks& _neighbors);
 
+  private:
 	//Data members --------------------------------
 	int                   m_id;
 	BlockData::Type       m_type;
 	BlockData::BorderType m_borderType;
 	int                   m_damageLevel;
-	sf::Vector2i          m_position;
 	//---------------------------------------------
 };
 

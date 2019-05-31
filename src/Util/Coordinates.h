@@ -6,11 +6,11 @@
 
 namespace Utility::Coordinates {
 
-	int          coordinatesToIndex(sf::Vector2i _c, int _rowLength);
-	sf::Vector2i indexToCoordinates(int _index, const sf::Vector2i _size);
+	int          getIndex(sf::Vector2i _coords, int _rowLength);
+	sf::Vector2i getCoords(int _index, const sf::Vector2i _size);
 
-	bool         coordinatesOutOfRange(sf::Vector2i _c, const sf::Vector2i _size);
-	bool         indexOutOfRange(int _index, const sf::Vector2i _size);
+	bool         outOfRange(sf::Vector2i _coords, const sf::Vector2i _size);
+	bool         outOfRange(int _index, const sf::Vector2i _size);
 
 }
 

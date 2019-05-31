@@ -9,6 +9,8 @@
 
 class WorldChunk {
   public:
+  	using NeighboringChunks = std::map<Direction, WorldChunk*>;
+
 	struct EncodedChunkData {
 		EncodedChunkData(){};
 		sf::Uint16  id;
@@ -25,10 +27,11 @@ class WorldChunk {
 	const EncodedChunkData encodeData() const;
 	void                   parseData(const EncodedChunkData& _data);
 
+	void adjustBorders();
+
   private:
   	//Functions -----------------------------------
-  	std::map<Direction, Block*> getNeighboringBlocks(Block* _b);
-  	void adjustBorders();
+  	Block::NeighboringBlocks getNeighboringBlocks(Block* _b);
   	//---------------------------------------------
 
 	//Data members --------------------------------

@@ -145,9 +145,9 @@ void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
 	adjustBorders();
 }
 
-std::map<Direction, Block*> WorldChunk::getNeighboringBlocks(Block* _b) {
+Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
 	static const sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
-	std::map<Direction, Block*> result{};
+	Block::NeighboringBlocks result{};
 
 	const auto position{_b->getPosition()};
 
@@ -161,29 +161,29 @@ std::map<Direction, Block*> WorldChunk::getNeighboringBlocks(Block* _b) {
 	result.insert({Direction::EAST, nullptr});
 	result.insert({Direction::WEST, nullptr});
 
-	if(!Utility::Coordinates::coordinatesOutOfRange(northPosition, dim)) {
-		int i {Utility::Coordinates::coordinatesToIndex(northPosition, dim.x)};
+	if(!Utility::Coordinates::outOfRange(northPosition, dim)) {
+		int i {Utility::Coordinates::getIndex(northPosition, dim.x)};
 		if(m_blocks[i].getType() != BlockData::Type::AIR){
 			result[Direction::NORTH] = &m_blocks[i];
 		}
 	}
 
-	if(!Utility::Coordinates::coordinatesOutOfRange(southPosition, dim)) {
-		int i {Utility::Coordinates::coordinatesToIndex(southPosition, dim.x)};
+	if(!Utility::Coordinates::outOfRange(southPosition, dim)) {
+		int i {Utility::Coordinates::getIndex(southPosition, dim.x)};
 		if(m_blocks[i].getType() != BlockData::Type::AIR){
 			result[Direction::SOUTH] = &m_blocks[i];
 		}
 	}
 
-	if(!Utility::Coordinates::coordinatesOutOfRange(eastPosition, dim)) {
-		int i {Utility::Coordinates::coordinatesToIndex(eastPosition, dim.x)};
+	if(!Utility::Coordinates::outOfRange(eastPosition, dim)) {
+		int i {Utility::Coordinates::getIndex(eastPosition, dim.x)};
 		if(m_blocks[i].getType() != BlockData::Type::AIR){
 			result[Direction::EAST] = &m_blocks[i];
 		}
 	}
 
-	if(!Utility::Coordinates::coordinatesOutOfRange(westPosition, dim)) {
-		int i {Utility::Coordinates::coordinatesToIndex(westPosition, dim.x)};
+	if(!Utility::Coordinates::outOfRange(westPosition, dim)) {
+		int i {Utility::Coordinates::getIndex(westPosition, dim.x)};
 		if(m_blocks[i].getType() != BlockData::Type::AIR){
 			result[Direction::WEST] = &m_blocks[i];
 		}
@@ -192,121 +192,12 @@ std::map<Direction, Block*> WorldChunk::getNeighboringBlocks(Block* _b) {
 	return result;
 }
 
-//This function determines each block's border type.
-//It does so by ruling out, one by one, the border
-//types the block CANNOT have, depending on its
-//neighbors, until it is left with one final
-//result.
-
 void WorldChunk::adjustBorders() {
-	//The 16 types correspond to
-	//BlockData::BorderType
-	std::vector<int> possibleBorders;
-	for(int i{0}; i <= 15; i++) {
-		possibleBorders.push_back(i);
-	}
-
-	for(auto& block : m_blocks) {
+	for (auto& block : m_blocks) {
 		if(block.getType() == BlockData::Type::AIR) {
 			continue;
 		}
-
 		auto neighbors{getNeighboringBlocks(&block)};
-		auto borders{possibleBorders};
-
-		if(neighbors[Direction::NORTH] != nullptr) {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 10
-				|| (x >= 0 && x <= 3)
-				|| (x >= 13 && x <= 15);
-			}), borders.end());
-		}
-		else {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 11
-				|| x == 12
-				|| (x >= 4 && x <= 9);
-			}), borders.end());
-		}
-
-		if(neighbors[Direction::SOUTH] != nullptr) {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 0
-				|| x == 12
-				|| x == 14
-				|| x == 15
-				|| (x >= 7 && x <= 10);
-			}), borders.end());
-		}
-		else {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 11
-				|| x == 13
-				|| (x >= 1 && x <= 6);
-			}), borders.end());
-		}
-
-		if(neighbors[Direction::EAST] != nullptr) {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 0
-				|| x == 3
-				|| x == 6
-				|| x == 9
-				|| x == 15
-				|| (x >= 11 && x <= 13);
-			}), borders.end());
-		}
-		else {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 1
-				|| x == 2
-				|| x == 4
-				|| x == 5
-				|| x == 7
-				|| x == 8
-				|| x == 10
-				|| x == 14;
-			}), borders.end());
-		}
-
-		if(neighbors[Direction::WEST] != nullptr) {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 0
-				|| x == 1
-				|| x == 4
-				|| x == 7
-				|| (x >= 11 && x <= 14);
-			}), borders.end());
-		}
-		else {
-			borders.erase(std::remove_if(
-			borders.begin(), borders.end(),
-			[](const int& x) {
-				return x == 2
-				|| x == 3
-				|| x == 5
-				|| x == 6
-				|| x == 15
-				|| (x >= 8 && x <= 10);
-			}), borders.end());
-		}
-
-		//By now, all but 1 border types should have been removed
-		//from the borders vector.
-		block.setBorderType(BlockData::BorderType(borders[0]));
+		block.adjustBorders(neighbors);
 	}
 }
