@@ -53,25 +53,25 @@ in its row, ~ represents the border)
 
 class BlockData {
   public:
-  	enum BorderType
-  	{
-  		ALL           = 0,
-		TOP_LEFT      = 1,
-		TOP           = 2,
-		TOP_RIGHT     = 3,
-		LEFT          = 4,
-		NONE          = 5,
-		RIGHT         = 6,
-		BOTTOM_LEFT   = 7,
-		BOTTOM        = 8,
-		BOTTOM_RIGHT  = 9,
-		TOP_BOTTOM    = 10,
-		LEFT_RIGHT    = 11,
-		NO_TOP        = 12,
-		NO_BOTTOM     = 13,
-		NO_RIGHT      = 14,
-		NO_LEFT       = 15
-  	};
+	enum BorderType
+	{
+		ALL          = 0,
+		TOP_LEFT     = 1,
+		TOP          = 2,
+		TOP_RIGHT    = 3,
+		LEFT         = 4,
+		NONE         = 5,
+		RIGHT        = 6,
+		BOTTOM_LEFT  = 7,
+		BOTTOM       = 8,
+		BOTTOM_RIGHT = 9,
+		TOP_BOTTOM   = 10,
+		LEFT_RIGHT   = 11,
+		NO_TOP       = 12,
+		NO_BOTTOM    = 13,
+		NO_RIGHT     = 14,
+		NO_LEFT      = 15
+	};
 
 	enum Type
 	{
@@ -93,9 +93,9 @@ class BlockData {
 
   private:
 	//Data members --------------------------------
-	std::string  m_name;
-	int          m_opacityAlpha;
-	int          m_textureColumn;
+	std::string m_name;
+	int         m_opacityAlpha;
+	int         m_textureColumn;
 	//---------------------------------------------
 };
 

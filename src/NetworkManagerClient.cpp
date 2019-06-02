@@ -14,10 +14,10 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
               m_playerSpawned{false},
               m_connectionActive{false},
               m_udpSocket{},
-			  m_TCPSender{},
-			  m_TCPReceiver{},
-			  m_UDPSender{},
-			  m_UDPReceiver{} {
+              m_TCPSender{},
+              m_TCPReceiver{},
+              m_UDPSender{},
+              m_UDPReceiver{} {
 	m_udpSocket.setBlocking(false);
 
 	if (m_udpSocket.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
@@ -38,18 +38,33 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	//------------------------------------------------------------------------------
 	using std::placeholders::_1;
 
-	m_TCPSender.add(Packet::TCP::JUST_JOINED, std::bind(&NetworkManagerClient::sendJustJoined, this, _1));
-	m_TCPSender.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::sendChatMessage, this, _1));
+	m_TCPSender.add(Packet::TCP::JUST_JOINED,
+	                std::bind(&NetworkManagerClient::sendJustJoined, this, _1));
+	m_TCPSender.add(
+	  Packet::TCP::CHAT_MESSAGE,
+	  std::bind(&NetworkManagerClient::sendChatMessage, this, _1));
 
-	m_UDPSender.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::sendDataPlayer, this, _1));
+	m_UDPSender.add(Packet::UDP::DATA_PLAYER,
+	                std::bind(&NetworkManagerClient::sendDataPlayer, this, _1));
 
-	m_TCPReceiver.add(Packet::TCP::QUIT, std::bind(&NetworkManagerClient::receiveQuit, this, _1));
-	m_TCPReceiver.add(Packet::TCP::CONNECTIONLOST, std::bind(&NetworkManagerClient::receiveConnectionLost, this, _1));
-	m_TCPReceiver.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerClient::receiveChatMessage, this, _1));
-	m_TCPReceiver.add(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerClient::receiveDataWorld, this, _1));
-	m_TCPReceiver.add(Packet::TCP::RESPAWN_PLAYER, std::bind(&NetworkManagerClient::receiveRespawnPlayer, this, _1));
+	m_TCPReceiver.add(Packet::TCP::QUIT,
+	                  std::bind(&NetworkManagerClient::receiveQuit, this, _1));
+	m_TCPReceiver.add(
+	  Packet::TCP::CONNECTIONLOST,
+	  std::bind(&NetworkManagerClient::receiveConnectionLost, this, _1));
+	m_TCPReceiver.add(
+	  Packet::TCP::CHAT_MESSAGE,
+	  std::bind(&NetworkManagerClient::receiveChatMessage, this, _1));
+	m_TCPReceiver.add(
+	  Packet::TCP::DATA_WORLD,
+	  std::bind(&NetworkManagerClient::receiveDataWorld, this, _1));
+	m_TCPReceiver.add(
+	  Packet::TCP::RESPAWN_PLAYER,
+	  std::bind(&NetworkManagerClient::receiveRespawnPlayer, this, _1));
 
-	m_UDPReceiver.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerClient::receiveDataPlayer, this, _1));
+	m_UDPReceiver.add(
+	  Packet::UDP::DATA_PLAYER,
+	  std::bind(&NetworkManagerClient::receiveDataPlayer, this, _1));
 	//------------------------------------------------------------------------------
 }
 
@@ -83,7 +98,7 @@ void NetworkManagerClient::sendPacket(Packet::UDP _type) {
 	m_UDPSender.call(_type, packet.get());
 
 	PacketSender::get_instance().send(
-		  &m_udpSocket, packet, m_serverConnection.getRemoteAddress(), port);
+	  &m_udpSocket, packet, m_serverConnection.getRemoteAddress(), port);
 }
 
 void NetworkManagerClient::receiveTCPPackets() {
@@ -199,14 +214,12 @@ void NetworkManagerClient::sendJustJoined(sf::Packet* _p) {
 	*_p << port;
 }
 
-
 void NetworkManagerClient::sendChatMessage(sf::Packet* _p) {
 	//At this stage, m_messageToSend should have been set (usually by
 	//UserInterface)
 	*_p << m_messageToSend.sender;
 	*_p << m_messageToSend.content;
 }
-
 
 void NetworkManagerClient::receiveQuit(sf::Packet* _p) {
 	std::string name{};

@@ -24,13 +24,13 @@ class NetworkManagerServer {
 	//EXCEPT _recipient (if true), or only to _recipient
 	//(if false)
 	//-----------------------------------
-	void sendPacket(Packet::TCP _type,
-	                sf::TcpSocket*    _recipient = nullptr,
-	                bool              _exclude   = false);
+	void sendPacket(Packet::TCP    _type,
+	                sf::TcpSocket* _recipient = nullptr,
+	                bool           _exclude   = false);
 
-	void sendPacket(Packet::UDP  _type,
-	                sf::TcpSocket*    _recipient = nullptr,
-	                bool               _exclude = false);
+	void sendPacket(Packet::UDP    _type,
+	                sf::TcpSocket* _recipient = nullptr,
+	                bool           _exclude   = false);
 	//-----------------------------------
 
 	void receiveTCPPackets();
@@ -61,23 +61,23 @@ class NetworkManagerServer {
 
 	//A wrapper used by getRecipients()
 	struct ConnectionData {
-		ConnectionData(sf::TcpSocket* _t, IPInfo* _i) :
-			socket{_t},
-			ipInfo{_i} {};
+		ConnectionData(sf::TcpSocket* _t, IPInfo* _i)
+		            : socket{_t}, ipInfo{_i} {};
 
 		sf::TcpSocket* socket{nullptr};
 		IPInfo*        ipInfo{nullptr};
 	};
 
 	using SocketUPtr = std::unique_ptr<sf::TcpSocket>;
-  	using IPInfoUPtr = std::unique_ptr<IPInfo>;
+	using IPInfoUPtr = std::unique_ptr<IPInfo>;
 
 	//Functions -----------------------------------
 	//TCP-related
 	//--------------
 	void sendQuit(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
 	void sendDataWorld(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
-	void sendChatMessage(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
+	void sendChatMessage(std::vector<PacketSharedPtr>& _p,
+	                     sf::TcpSocket*                _conn);
 
 	void receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _conn);
 	void receiveQuit(sf::Packet* _p, sf::TcpSocket* _conn);
@@ -140,11 +140,21 @@ class NetworkManagerServer {
 	(such as to avoid sending a client's own player data back to them).
 	*/
 
-	FunctionBinder<Packet::TCP, void, std::vector<PacketSharedPtr>&, sf::TcpSocket*> m_TCPSender;
-	FunctionBinder<Packet::TCP, void, sf::Packet*, sf::TcpSocket*> m_TCPReceiver;
+	FunctionBinder<Packet::TCP,
+	               void,
+	               std::vector<PacketSharedPtr>&,
+	               sf::TcpSocket*>
+	  m_TCPSender;
+	FunctionBinder<Packet::TCP, void, sf::Packet*, sf::TcpSocket*>
+	  m_TCPReceiver;
 
-	FunctionBinder<Packet::UDP, void, std::vector<PacketSharedPtr>&, sf::TcpSocket*> m_UDPSender;
-	FunctionBinder<Packet::UDP, void, sf::Packet*, sf::TcpSocket*> m_UDPReceiver;
+	FunctionBinder<Packet::UDP,
+	               void,
+	               std::vector<PacketSharedPtr>&,
+	               sf::TcpSocket*>
+	  m_UDPSender;
+	FunctionBinder<Packet::UDP, void, sf::Packet*, sf::TcpSocket*>
+	  m_UDPReceiver;
 	//---------------------------------------------
 };
 

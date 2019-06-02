@@ -37,24 +37,24 @@ class NetworkManagerClient {
 	void setMessageToSend(Message _msg);
 
   private:
-  	//Functions -----------------------------------
+	//Functions -----------------------------------
 
-  	//TCP-related ----------------
-  	void sendJustJoined(sf::Packet* _p);
-  	void sendChatMessage(sf::Packet* _p);
+	//TCP-related ----------------
+	void sendJustJoined(sf::Packet* _p);
+	void sendChatMessage(sf::Packet* _p);
 
-  	void receiveQuit(sf::Packet* _p);
-  	void receiveConnectionLost(sf::Packet* _p);
-  	void receiveChatMessage(sf::Packet* _p);
-  	void receiveDataWorld(sf::Packet* _p);
-  	void receiveRespawnPlayer(sf::Packet* _p);
+	void receiveQuit(sf::Packet* _p);
+	void receiveConnectionLost(sf::Packet* _p);
+	void receiveChatMessage(sf::Packet* _p);
+	void receiveDataWorld(sf::Packet* _p);
+	void receiveRespawnPlayer(sf::Packet* _p);
 	//----------------------------
 
-  	//UDP-related ----------------
-  	void sendDataPlayer(sf::Packet* _p);
+	//UDP-related ----------------
+	void sendDataPlayer(sf::Packet* _p);
 
-  	void receiveDataPlayer(sf::Packet* _p);
-  	//----------------------------
+	void receiveDataPlayer(sf::Packet* _p);
+	//----------------------------
 
 	//Data members --------------------------------
 	Client& m_client;

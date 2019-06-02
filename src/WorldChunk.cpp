@@ -147,7 +147,7 @@ void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
 
 Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
 	static const sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
-	Block::NeighboringBlocks result{};
+	Block::NeighboringBlocks  result{};
 
 	const auto position{_b->getPosition()};
 
@@ -161,30 +161,30 @@ Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
 	result.insert({Direction::EAST, nullptr});
 	result.insert({Direction::WEST, nullptr});
 
-	if(!Utility::Coordinates::outOfRange(northPosition, dim)) {
-		int i {Utility::Coordinates::getIndex(northPosition, dim.x)};
-		if(m_blocks[i].getType() != BlockData::Type::AIR){
+	if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(northPosition, dim.x)};
+		if (m_blocks[i].getType() != BlockData::Type::AIR) {
 			result[Direction::NORTH] = &m_blocks[i];
 		}
 	}
 
-	if(!Utility::Coordinates::outOfRange(southPosition, dim)) {
-		int i {Utility::Coordinates::getIndex(southPosition, dim.x)};
-		if(m_blocks[i].getType() != BlockData::Type::AIR){
+	if (!Utility::Coordinates::outOfRange(southPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(southPosition, dim.x)};
+		if (m_blocks[i].getType() != BlockData::Type::AIR) {
 			result[Direction::SOUTH] = &m_blocks[i];
 		}
 	}
 
-	if(!Utility::Coordinates::outOfRange(eastPosition, dim)) {
-		int i {Utility::Coordinates::getIndex(eastPosition, dim.x)};
-		if(m_blocks[i].getType() != BlockData::Type::AIR){
+	if (!Utility::Coordinates::outOfRange(eastPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(eastPosition, dim.x)};
+		if (m_blocks[i].getType() != BlockData::Type::AIR) {
 			result[Direction::EAST] = &m_blocks[i];
 		}
 	}
 
-	if(!Utility::Coordinates::outOfRange(westPosition, dim)) {
-		int i {Utility::Coordinates::getIndex(westPosition, dim.x)};
-		if(m_blocks[i].getType() != BlockData::Type::AIR){
+	if (!Utility::Coordinates::outOfRange(westPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(westPosition, dim.x)};
+		if (m_blocks[i].getType() != BlockData::Type::AIR) {
 			result[Direction::WEST] = &m_blocks[i];
 		}
 	}
@@ -194,7 +194,7 @@ Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
 
 void WorldChunk::adjustBorders() {
 	for (auto& block : m_blocks) {
-		if(block.getType() == BlockData::Type::AIR) {
+		if (block.getType() == BlockData::Type::AIR) {
 			continue;
 		}
 		auto neighbors{getNeighboringBlocks(&block)};

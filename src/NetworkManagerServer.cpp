@@ -27,25 +27,42 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	using std::placeholders::_1;
 	using std::placeholders::_2;
 
-	m_TCPSender.add(Packet::TCP::QUIT, std::bind(&NetworkManagerServer::sendQuit, this, _1, _2));
-	m_TCPSender.add(Packet::TCP::DATA_WORLD, std::bind(&NetworkManagerServer::sendDataWorld, this, _1, _2));
-	m_TCPSender.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerServer::sendChatMessage, this, _1, _2));
+	m_TCPSender.add(Packet::TCP::QUIT,
+	                std::bind(&NetworkManagerServer::sendQuit, this, _1, _2));
+	m_TCPSender.add(
+	  Packet::TCP::DATA_WORLD,
+	  std::bind(&NetworkManagerServer::sendDataWorld, this, _1, _2));
+	m_TCPSender.add(
+	  Packet::TCP::CHAT_MESSAGE,
+	  std::bind(&NetworkManagerServer::sendChatMessage, this, _1, _2));
 
-	m_TCPReceiver.add(Packet::TCP::JUST_JOINED, std::bind(&NetworkManagerServer::receiveJustJoined, this, _1, _2));
-	m_TCPReceiver.add(Packet::TCP::QUIT, std::bind(&NetworkManagerServer::receiveQuit, this, _1, _2));
-	m_TCPReceiver.add(Packet::TCP::REQUEST_WORLD, std::bind(&NetworkManagerServer::receiveRequestWorld, this, _1, _2));
-	m_TCPReceiver.add(Packet::TCP::CHAT_MESSAGE, std::bind(&NetworkManagerServer::receiveChatMessage, this, _1, _2));
+	m_TCPReceiver.add(
+	  Packet::TCP::JUST_JOINED,
+	  std::bind(&NetworkManagerServer::receiveJustJoined, this, _1, _2));
+	m_TCPReceiver.add(
+	  Packet::TCP::QUIT,
+	  std::bind(&NetworkManagerServer::receiveQuit, this, _1, _2));
+	m_TCPReceiver.add(
+	  Packet::TCP::REQUEST_WORLD,
+	  std::bind(&NetworkManagerServer::receiveRequestWorld, this, _1, _2));
+	m_TCPReceiver.add(
+	  Packet::TCP::CHAT_MESSAGE,
+	  std::bind(&NetworkManagerServer::receiveChatMessage, this, _1, _2));
 
-	m_UDPSender.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerServer::sendDataPlayer, this, _1, _2));
-	m_UDPReceiver.add(Packet::UDP::DATA_PLAYER, std::bind(&NetworkManagerServer::receiveDataPlayer, this, _1, _2));
+	m_UDPSender.add(
+	  Packet::UDP::DATA_PLAYER,
+	  std::bind(&NetworkManagerServer::sendDataPlayer, this, _1, _2));
+	m_UDPReceiver.add(
+	  Packet::UDP::DATA_PLAYER,
+	  std::bind(&NetworkManagerServer::receiveDataPlayer, this, _1, _2));
 
 	m_listener.setBlocking(false);
 	listen();
 }
 
-void NetworkManagerServer::sendPacket(Packet::TCP _type,
-                                      sf::TcpSocket*    _recipient,
-                                      bool              _exclude) {
+void NetworkManagerServer::sendPacket(Packet::TCP    _type,
+                                      sf::TcpSocket* _recipient,
+                                      bool           _exclude) {
 	int code = Packet::toInt(_type);
 
 	auto recipients{getRecipients(_recipient, _exclude)};
@@ -64,10 +81,10 @@ void NetworkManagerServer::sendPacket(Packet::TCP _type,
 	}
 }
 
-void NetworkManagerServer::sendPacket(Packet::UDP  _type,
-                                      sf::TcpSocket*    _recipient,
-                                      bool               _exclude) {
-	int code {Packet::toInt(_type)};
+void NetworkManagerServer::sendPacket(Packet::UDP    _type,
+                                      sf::TcpSocket* _recipient,
+                                      bool           _exclude) {
+	int  code{Packet::toInt(_type)};
 	auto recipients{getRecipients(_recipient, _exclude)};
 
 	for (const auto& recipient : recipients) {
@@ -78,8 +95,11 @@ void NetworkManagerServer::sendPacket(Packet::UDP  _type,
 
 		m_UDPSender.call(_type, packets, recipient.socket);
 
-		for(auto& packet : packets) {
-			PacketSender::get_instance().send(&m_udpSocket, packet, recipient.ipInfo->ipAddress, recipient.ipInfo->port);
+		for (auto& packet : packets) {
+			PacketSender::get_instance().send(&m_udpSocket,
+			                                  packet,
+			                                  recipient.ipInfo->ipAddress,
+			                                  recipient.ipInfo->port);
 		}
 	}
 }
@@ -93,7 +113,8 @@ void NetworkManagerServer::receiveTCPPackets() {
 			*packet >> code;
 			Packet::TCP packetType{Packet::toTCPType(code)};
 
-			m_TCPReceiver.call(packetType, packet.get(), connection.first.get());
+			m_TCPReceiver.call(
+			  packetType, packet.get(), connection.first.get());
 		}
 	}
 }
@@ -106,7 +127,7 @@ void NetworkManagerServer::receiveUDPPackets() {
 	for (auto& client : m_clientIPs) {
 		//don't receive UDP packets from connections with uninitialised IPInfos
 		//(IPInfos are initialised upon receiving a JUSTJOINED packet)
-		if(client.second == nullptr) {
+		if (client.second == nullptr) {
 			continue;
 		}
 
@@ -130,9 +151,9 @@ void NetworkManagerServer::sendMessage(const Message& _msg) {
 }
 
 void NetworkManagerServer::removePlayer(sf::TcpSocket* _conn) {
-	auto info {getIPInfo(_conn)};
+	auto info{getIPInfo(_conn)};
 
-	if(info == nullptr) {
+	if (info == nullptr) {
 		return;
 	}
 
@@ -143,7 +164,7 @@ void NetworkManagerServer::removePlayer(sf::TcpSocket* _conn) {
 	sendPacket(Packet::TCP::QUIT);
 
 	auto it{m_clientIPs.find(_conn)};
-	if(it != m_clientIPs.end()) {
+	if (it != m_clientIPs.end()) {
 		m_clientIPs.erase(it);
 	}
 }
@@ -190,10 +211,8 @@ size_t NetworkManagerServer::connectedPlayers() const {
 	return m_clientIPs.size();
 }
 
-std::vector<NetworkManagerServer::ConnectionData> NetworkManagerServer::getRecipients(
-  sf::TcpSocket* _recipient,
-  bool           _exclude) {
-
+std::vector<NetworkManagerServer::ConnectionData>
+NetworkManagerServer::getRecipients(sf::TcpSocket* _recipient, bool _exclude) {
 	std::vector<ConnectionData> recipients{};
 
 	//A null recipient means we should send this to all connected players.
@@ -201,26 +220,23 @@ std::vector<NetworkManagerServer::ConnectionData> NetworkManagerServer::getRecip
 		for (const auto& client : m_clientIPs) {
 			//We don't want to send anything to clients that
 			//haven't had their IPInfo initialised yet
-			if(client.second != nullptr) {
+			if (client.second != nullptr) {
 				recipients.push_back({client.first.get(), client.second.get()});
 			}
 		}
 
 		return recipients;
 	}
-
 
 	if (!_exclude) {
 		for (const auto& client : m_clientIPs) {
-			if(client.first.get() == _recipient && client.second != nullptr)  {
+			if (client.first.get() == _recipient && client.second != nullptr) {
 				recipients.push_back({client.first.get(), client.second.get()});
 			}
 		}
 
 		return recipients;
-
 	}
-
 
 	for (const auto& client : m_clientIPs) {
 		if (client.first.get() != _recipient && client.second != nullptr) {
@@ -228,23 +244,25 @@ std::vector<NetworkManagerServer::ConnectionData> NetworkManagerServer::getRecip
 		}
 	}
 
-
 	return recipients;
 }
 
-NetworkManagerServer::IPInfo* NetworkManagerServer::getIPInfo(sf::TcpSocket* _conn) const {
+NetworkManagerServer::IPInfo* NetworkManagerServer::getIPInfo(
+  sf::TcpSocket* _conn) const {
 	auto it{m_clientIPs.find(_conn)};
-	if(it != m_clientIPs.end()) {
+	if (it != m_clientIPs.end()) {
 		return it->second.get();
 	}
 	return nullptr;
 }
 
-void NetworkManagerServer::sendQuit(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
+void NetworkManagerServer::sendQuit(std::vector<PacketSharedPtr>& _p,
+                                    sf::TcpSocket*                _conn) {
 	*_p[0] << m_lastRemovedPlayer;
 }
 
-void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
+void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p,
+                                         sf::TcpSocket*                _conn) {
 	_p.clear();
 	auto worldData = m_server.encodeWorldChunks();
 
@@ -262,15 +280,15 @@ void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p, sf::T
 	}
 }
 
-void NetworkManagerServer::sendChatMessage(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
+void NetworkManagerServer::sendChatMessage(std::vector<PacketSharedPtr>& _p,
+                                           sf::TcpSocket* _conn) {
 	Message msg = m_messages.back();
 	*_p[0] << msg.sender;
 	*_p[0] << msg.content;
 }
 
-
-void NetworkManagerServer::receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _conn) {
-
+void NetworkManagerServer::receiveJustJoined(sf::Packet*    _p,
+                                             sf::TcpSocket* _conn) {
 	ComponentsPlayer data;
 	sf::Uint16       port;
 
@@ -278,27 +296,28 @@ void NetworkManagerServer::receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _con
 	*_p >> port;
 
 	auto it{m_clientIPs.find(_conn)};
-	if(it != m_clientIPs.end()) {
-		it->second= std::make_unique<IPInfo>(data.compName.m_name, *_conn, port);
+	if (it != m_clientIPs.end()) {
+		it->second =
+		  std::make_unique<IPInfo>(data.compName.m_name, *_conn, port);
 	}
 
 	m_server.updatePlayer(data);
 	sendPacket(Packet::TCP::DATA_WORLD);
 	sendPacket(Packet::TCP::RESPAWN_PLAYER, _conn);
-	sendMessage(
-	  {"Server", "Welcome, " + data.compName.m_name + "!"});
-
+	sendMessage({"Server", "Welcome, " + data.compName.m_name + "!"});
 }
 
 void NetworkManagerServer::receiveQuit(sf::Packet* _p, sf::TcpSocket* _conn) {
 	removePlayer(_conn);
 }
 
-void NetworkManagerServer::receiveRequestWorld(sf::Packet* _p, sf::TcpSocket* _conn) {
+void NetworkManagerServer::receiveRequestWorld(sf::Packet*    _p,
+                                               sf::TcpSocket* _conn) {
 	sendPacket(Packet::TCP::DATA_WORLD, _conn);
 }
 
-void NetworkManagerServer::receiveChatMessage(sf::Packet* _p, sf::TcpSocket* _conn) {
+void NetworkManagerServer::receiveChatMessage(sf::Packet*    _p,
+                                              sf::TcpSocket* _conn) {
 	std::string message;
 	std::string sender;
 	*_p >> message;
@@ -308,28 +327,24 @@ void NetworkManagerServer::receiveChatMessage(sf::Packet* _p, sf::TcpSocket* _co
 	sendPacket(Packet::TCP::CHAT_MESSAGE);
 }
 
-
-void NetworkManagerServer::sendDataPlayer(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn) {
+void NetworkManagerServer::sendDataPlayer(std::vector<PacketSharedPtr>& _p,
+                                          sf::TcpSocket*                _conn) {
 	_p.clear();
-	int index{0};
-	auto recipientInfo {getIPInfo(_conn)};
+	int  index{0};
+	auto recipientInfo{getIPInfo(_conn)};
 
 	auto view = m_server.m_registry->view<PlayerTag>();
 	for (auto& entity : view) {
-		const auto name =
-		  m_server.m_registry->get<ComponentName>(entity);
+		const auto name = m_server.m_registry->get<ComponentName>(entity);
 
 		//Don't send a client's own player data back to it!
-		if(name.m_name == recipientInfo->playerName) {
+		if (name.m_name == recipientInfo->playerName) {
 			continue;
 		}
 
-		const auto dir =
-		  m_server.m_registry->get<ComponentDirection>(entity);
-		const auto vel =
-		  m_server.m_registry->get<ComponentPhysics>(entity);
-		const auto pos =
-		  m_server.m_registry->get<ComponentPosition>(entity);
+		const auto dir = m_server.m_registry->get<ComponentDirection>(entity);
+		const auto vel = m_server.m_registry->get<ComponentPhysics>(entity);
+		const auto pos = m_server.m_registry->get<ComponentPosition>(entity);
 
 		ComponentsPlayer data{dir, name, vel, pos};
 
@@ -340,14 +355,13 @@ void NetworkManagerServer::sendDataPlayer(std::vector<PacketSharedPtr>& _p, sf::
 		_p[index] = std::move(p);
 		++index;
 	}
-
 }
 
-void NetworkManagerServer::receiveDataPlayer(sf::Packet* _p, sf::TcpSocket* _conn) {
+void NetworkManagerServer::receiveDataPlayer(sf::Packet*    _p,
+                                             sf::TcpSocket* _conn) {
 	ComponentsPlayer p;
 	*_p >> p;
 	m_server.updatePlayer(p);
 
-	sendPacket(Packet::UDP::DATA_PLAYER,
-			   _conn);
+	sendPacket(Packet::UDP::DATA_PLAYER, _conn);
 }

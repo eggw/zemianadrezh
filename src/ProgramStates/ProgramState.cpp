@@ -1,7 +1,7 @@
 #include "ProgramState.h"
 
-constexpr float MIN_WIDTH  {800};
-constexpr float MIN_HEIGHT {600};
+constexpr float MIN_WIDTH{800};
+constexpr float MIN_HEIGHT{600};
 
 ProgramState::ProgramState(Program& _p, bool _visibleOverPreviousState)
             : m_program{_p},
@@ -23,7 +23,7 @@ void ProgramState::getInput(sf::Event& _event) {
 		}
 		onResize(newSize);
 		break;
-		}
+	}
 	}
 }
 

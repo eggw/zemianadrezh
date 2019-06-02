@@ -22,9 +22,11 @@ Note that blocks aren't defined as entities.
 
 class Block {
   public:
-  	using NeighboringBlocks = std::map<Direction, Block*>;
+	using NeighboringBlocks = std::map<Direction, Block*>;
 
-	Block(int _id, BlockData::Type _type, BlockData::BorderType _borderType = BlockData::BorderType::ALL);
+	Block(int                   _id,
+	      BlockData::Type       _type,
+	      BlockData::BorderType _borderType = BlockData::BorderType::ALL);
 
 	BlockData::Type  getType() const;
 	void             setType(BlockData::Type _t);

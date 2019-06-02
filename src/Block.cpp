@@ -10,7 +10,10 @@
 #include "Util/Coordinates.h"
 
 Block::Block(int _id, BlockData::Type _type, BlockData::BorderType _borderType)
-            : m_id{_id}, m_type{_type}, m_borderType{_borderType}, m_damageLevel{0} {
+            : m_id{_id},
+              m_type{_type},
+              m_borderType{_borderType},
+              m_damageLevel{0} {
 }
 
 BlockData::Type Block::getType() const {
@@ -33,7 +36,8 @@ sf::FloatRect Block::getTextureRect() const {
 
 	sf::Vector2f textureCoordinates{
 	  float(m_borderType * BLOCK_DIMENSIONS_X),
-	  float(BlockDatabase::get_instance().getData(m_type).getTextureColumn() * BLOCK_DIMENSIONS_Y)};
+	  float(BlockDatabase::get_instance().getData(m_type).getTextureColumn() *
+	        BLOCK_DIMENSIONS_Y)};
 
 	return {textureCoordinates.x,
 	        textureCoordinates.y,
@@ -42,8 +46,8 @@ sf::FloatRect Block::getTextureRect() const {
 }
 
 sf::Vector2i Block::getPosition() const {
-	return {Utility::Coordinates::getCoords(m_id, {CHUNK_DIMENSIONS_X,
-												   CHUNK_DIMENSIONS_Y})};
+	return {Utility::Coordinates::getCoords(
+	  m_id, {CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y})};
 }
 
 //This function determines each block's border type.
@@ -56,100 +60,87 @@ void Block::adjustBorders(NeighboringBlocks& _neighbors) {
 	//The 16 types correspond to
 	//BlockData::BorderType
 	static std::vector<int> possibleBorders{
-		0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
-	};
+	  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 	auto borders{possibleBorders};
 
-	if(_neighbors[Direction::NORTH] != nullptr) {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 10
-			|| (x >= 0 && x <= 3)
-			|| (x >= 13 && x <= 15);
-		}), borders.end());
+	if (_neighbors[Direction::NORTH] != nullptr) {
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 10 || (x >= 0 && x <= 3) ||
+			                                    (x >= 13 && x <= 15);
+		                             }),
+		              borders.end());
 	}
 	else {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 11
-			|| x == 12
-			|| (x >= 4 && x <= 9);
-		}), borders.end());
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 11 || x == 12 ||
+			                                    (x >= 4 && x <= 9);
+		                             }),
+		              borders.end());
 	}
 
-	if(_neighbors[Direction::SOUTH] != nullptr) {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 0
-			|| x == 12
-			|| x == 14
-			|| x == 15
-			|| (x >= 7 && x <= 10);
-		}), borders.end());
+	if (_neighbors[Direction::SOUTH] != nullptr) {
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 0 || x == 12 || x == 14 ||
+			                                    x == 15 || (x >= 7 && x <= 10);
+		                             }),
+		              borders.end());
 	}
 	else {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 11
-			|| x == 13
-			|| (x >= 1 && x <= 6);
-		}), borders.end());
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 11 || x == 13 ||
+			                                    (x >= 1 && x <= 6);
+		                             }),
+		              borders.end());
 	}
 
-	if(_neighbors[Direction::EAST] != nullptr) {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 0
-			|| x == 3
-			|| x == 6
-			|| x == 9
-			|| x == 15
-			|| (x >= 11 && x <= 13);
-		}), borders.end());
+	if (_neighbors[Direction::EAST] != nullptr) {
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 0 || x == 3 || x == 6 ||
+			                                    x == 9 || x == 15 ||
+			                                    (x >= 11 && x <= 13);
+		                             }),
+		              borders.end());
 	}
 	else {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 1
-			|| x == 2
-			|| x == 4
-			|| x == 5
-			|| x == 7
-			|| x == 8
-			|| x == 10
-			|| x == 14;
-		}), borders.end());
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 1 || x == 2 || x == 4 ||
+			                                    x == 5 || x == 7 || x == 8 ||
+			                                    x == 10 || x == 14;
+		                             }),
+		              borders.end());
 	}
 
-	if(_neighbors[Direction::WEST] != nullptr) {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 0
-			|| x == 1
-			|| x == 4
-			|| x == 7
-			|| (x >= 11 && x <= 14);
-		}), borders.end());
+	if (_neighbors[Direction::WEST] != nullptr) {
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 0 || x == 1 || x == 4 ||
+			                                    x == 7 || (x >= 11 && x <= 14);
+		                             }),
+		              borders.end());
 	}
 	else {
-		borders.erase(std::remove_if(
-		borders.begin(), borders.end(),
-		[](const int& x) {
-			return x == 2
-			|| x == 3
-			|| x == 5
-			|| x == 6
-			|| x == 15
-			|| (x >= 8 && x <= 10);
-		}), borders.end());
+		borders.erase(std::remove_if(borders.begin(),
+		                             borders.end(),
+		                             [](const int& x) {
+			                             return x == 2 || x == 3 || x == 5 ||
+			                                    x == 6 || x == 15 ||
+			                                    (x >= 8 && x <= 10);
+		                             }),
+		              borders.end());
 	}
 
 	//By now, all but 1 border types should have been removed

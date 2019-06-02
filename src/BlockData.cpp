@@ -2,9 +2,7 @@
 
 #include <math.h>
 
-BlockData::BlockData(std::string  _name,
-                     int          _opacity,
-                     int          _textureColumn)
+BlockData::BlockData(std::string _name, int _opacity, int _textureColumn)
             : m_name{_name},
               m_opacityAlpha{int(ceil(2.55 * _opacity))},
               m_textureColumn{_textureColumn} {

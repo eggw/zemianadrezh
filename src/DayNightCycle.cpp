@@ -232,8 +232,7 @@ void DayNightCycle::updatePlanetTexture(const WorldTime& _time) {
 	//uppermost point vertically. Later, when determining xPos, we add the width of the
 	//sprite to our calculation. This is to ensure a seamless transition (at the exact
 	//moment the sun is out of our view, the moon starts to come in, and vice versa)
-	m_sunMoonSprite.setOrigin(m_sunMoonSprite.getGlobalBounds().width,
-	                          0);
+	m_sunMoonSprite.setOrigin(m_sunMoonSprite.getGlobalBounds().width, 0);
 }
 
 void DayNightCycle::updatePlanetPosition(const WorldTime& _time) {
@@ -273,8 +272,8 @@ void DayNightCycle::updatePlanetPosition(const WorldTime& _time) {
 
 	m_planetYProgress = sin(progressInPercent * pi);
 
-	double yPos{(1 - m_planetYProgress)
-				* m_target->getSize().y * HORIZON_AS_HEIGHT_RATIO};
+	double yPos{(1 - m_planetYProgress) * m_target->getSize().y *
+	            HORIZON_AS_HEIGHT_RATIO};
 
 	m_sunMoonSprite.setPosition(xPos, yPos);
 }
