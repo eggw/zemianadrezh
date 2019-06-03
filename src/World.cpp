@@ -12,7 +12,6 @@
 #include "TextureManager.h"
 #include "Util/Coordinates.h"
 
-#include <iostream>
 World::World()
             : m_chunks{},
               m_rendererChunk{std::make_unique<RendererChunk>(*this)},
@@ -28,7 +27,6 @@ void World::initialise() {
 	for(int i{0}; i < WORLD_DIMENSIONS_X * WORLD_DIMENSIONS_Y; i++) {
 		addChunk({i, false});
 	}
-	assignNeighbors();
 }
 
 const sf::Vector2f World::getCenter() const {
@@ -68,7 +66,7 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 	for (auto& chunk : m_chunks) {
 		if (chunk.getID() == _data.id) {
 			chunk.parseData(_data);
-			assignNeighbors();
+			updateChunkNeighbors(&chunk);
 			return;
 		}
 	}
@@ -79,7 +77,6 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 	newChunk.parseData(_data);
 
 	addChunk(newChunk);
-	assignNeighbors();
 }
 
 void World::update(int _timeslice) {
@@ -103,46 +100,64 @@ void World::renderUpdatedChunk(int _chunkID) const {
 
 void World::addChunk(WorldChunk _chunk) {
 	m_chunks.push_back(_chunk);
+	updateChunkNeighbors(&m_chunks.back());
 }
 
-void World::assignNeighbors() {
-	for(auto& chunk : m_chunks) {
-		static const sf::Vector2i dim{WORLD_DIMENSIONS_X, WORLD_DIMENSIONS_Y};
-		const auto position{chunk.getPosition()};
+void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
+	static const sf::Vector2i dim{WORLD_DIMENSIONS_X, WORLD_DIMENSIONS_Y};
+	const auto position{_chunk->getPosition()};
 
-		WorldChunk::NeighboringChunks neighbors;
-		neighbors.insert({Direction::NORTH, nullptr});
-		neighbors.insert({Direction::SOUTH, nullptr});
-		neighbors.insert({Direction::EAST, nullptr});
-		neighbors.insert({Direction::WEST, nullptr});
+	WorldChunk::NeighboringChunks neighbors;
+	neighbors.insert({Direction::NORTH, nullptr});
+	neighbors.insert({Direction::SOUTH, nullptr});
+	neighbors.insert({Direction::EAST, nullptr});
+	neighbors.insert({Direction::WEST, nullptr});
 
-		auto northPosition{Utility::Coordinates::northOf(position)};
-		auto southPosition{Utility::Coordinates::southOf(position)};
-		auto eastPosition{Utility::Coordinates::eastOf(position)};
-		auto westPosition{Utility::Coordinates::westOf(position)};
+	auto northPosition{Utility::Coordinates::northOf(position)};
+	auto southPosition{Utility::Coordinates::southOf(position)};
+	auto eastPosition{Utility::Coordinates::eastOf(position)};
+	auto westPosition{Utility::Coordinates::westOf(position)};
 
-		if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
-			int i{Utility::Coordinates::getIndex(northPosition, dim.x)};
+	std::vector<WorldChunk*> toRecurseOver{};
+
+	if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(northPosition, dim.x)};
+		if(i < m_chunks.size()) {
 			neighbors[Direction::NORTH] = &m_chunks[i];
+			toRecurseOver.push_back(&m_chunks[i]);
 		}
+	}
 
-		if (!Utility::Coordinates::outOfRange(southPosition, dim)) {
-			int i{Utility::Coordinates::getIndex(southPosition, dim.x)};
+	if (!Utility::Coordinates::outOfRange(southPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(southPosition, dim.x)};
+		if(i < m_chunks.size()) {
 			neighbors[Direction::SOUTH] = &m_chunks[i];
+			toRecurseOver.push_back(&m_chunks[i]);
 		}
+	}
 
-		if (!Utility::Coordinates::outOfRange(eastPosition, dim)) {
-			int i{Utility::Coordinates::getIndex(eastPosition, dim.x)};
+	if (!Utility::Coordinates::outOfRange(eastPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(eastPosition, dim.x)};
+		if(i < m_chunks.size()) {
 			neighbors[Direction::EAST] = &m_chunks[i];
-
+			toRecurseOver.push_back(&m_chunks[i]);
 		}
+	}
 
-		if (!Utility::Coordinates::outOfRange(westPosition, dim)) {
-			int i{Utility::Coordinates::getIndex(westPosition, dim.x)};
+	if (!Utility::Coordinates::outOfRange(westPosition, dim)) {
+		int i{Utility::Coordinates::getIndex(westPosition, dim.x)};
+		if(i < m_chunks.size()) {
 			neighbors[Direction::WEST] = &m_chunks[i];
+			toRecurseOver.push_back(&m_chunks[i]);
 		}
+	}
 
-		chunk.assignNeighbors(neighbors);
+	_chunk->assignNeighbors(neighbors);
+
+	if(_recurse) {
+		for(auto& chunk : toRecurseOver) {
+			updateChunkNeighbors(chunk, false);
+		}
 	}
 }
 

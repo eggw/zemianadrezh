@@ -33,9 +33,11 @@ class World {
   private:
   	//Functions -----------------------------------
   	void addChunk(WorldChunk _chunk);
-  	//assignNeighbors() iterates over all our chunks
-  	//and appropriately sets their NESW neighbors.
-  	void assignNeighbors();
+  	//Appropriately sets the given chunk's NESW
+  	//neighbors. Additionally, it calls itself
+  	//again for all the given chunk's neighbors,
+  	//with recursive = false.
+  	void updateChunkNeighbors(WorldChunk* _chunk, bool _recurse = true);
   	//---------------------------------------------
 
 	//Data members --------------------------------
