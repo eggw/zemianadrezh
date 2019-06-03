@@ -32,7 +32,13 @@ class Block {
 	void             setType(BlockData::Type _t);
 	const BlockData& getData() const;
 	sf::FloatRect    getTextureRect() const;
-	sf::Vector2i     getPosition() const;
+
+	//returns the block's coordinates in the chunk
+	//(0,0) to (CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y)
+	sf::Vector2i getPosition() const;
+	//returns the top-left corner of the block in the chunk
+	//(equivalent to getPosition() * BLOCK_DIMENSIONS)
+	sf::Vector2f getPixelPosition() const;
 
 	void adjustBorders(NeighboringBlocks& _neighbors);
 

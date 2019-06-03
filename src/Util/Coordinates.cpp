@@ -5,8 +5,21 @@ namespace Utility::Coordinates {
 		return {(_coords.y * _rowLength) + _coords.x};
 	}
 
-	sf::Vector2i getCoords(int _index, const sf::Vector2i _size) {
-		return {_index % _size.x, _index / _size.y};
+	sf::Vector2i getCoords(int _index, int _rowLength) {
+		return {_index % _rowLength, _index / _rowLength};
+	}
+
+	sf::Vector2i northOf(sf::Vector2i _coords) {
+		return {_coords.x, _coords.y - 1};
+	}
+	sf::Vector2i southOf(sf::Vector2i _coords) {
+		return {_coords.x, _coords.y + 1};
+	}
+	sf::Vector2i eastOf(sf::Vector2i _coords) {
+		return {_coords.x + 1, _coords.y};
+	}
+	sf::Vector2i westOf(sf::Vector2i _coords) {
+		return {_coords.x - 1, _coords.y};
 	}
 
 	bool outOfRange(sf::Vector2i _coords, const sf::Vector2i _size) {

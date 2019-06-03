@@ -57,12 +57,10 @@ class RendererChunk : public RendererBase<WorldChunk> {
 
 		int vertexIndex{0};
 
-		int xOffset = CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * _chunk->getID();
-
 		for (auto& block : blocks) {
 			sf::Vector2f topLeft{
-			  float(block.getPosition().x) * BLOCK_DIMENSIONS_X + xOffset,
-			  float(block.getPosition().y) * BLOCK_DIMENSIONS_Y};
+			  block.getPixelPosition().x + _chunk->getPixelPosition().x,
+			  block.getPixelPosition().y + _chunk->getPixelPosition().y};
 
 			sf::Vector2f topRight{topLeft.x + BLOCK_DIMENSIONS_X, topLeft.y};
 

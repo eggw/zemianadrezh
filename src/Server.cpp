@@ -5,7 +5,7 @@ Server::Server(bool _allowConnections)
               m_networkManager(*this),
               m_allowConnections(_allowConnections) {
 	initialise();
-	m_world->addChunk(0, 2, false);
+	m_world->initialise();
 }
 
 //Automatically send out a packet indicating the server has been closed

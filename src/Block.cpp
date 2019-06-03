@@ -47,7 +47,12 @@ sf::FloatRect Block::getTextureRect() const {
 
 sf::Vector2i Block::getPosition() const {
 	return {Utility::Coordinates::getCoords(
-	  m_id, {CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y})};
+	  m_id, CHUNK_DIMENSIONS_X)};
+}
+
+sf::Vector2f Block::getPixelPosition() const {
+	return{float(getPosition().x * BLOCK_DIMENSIONS_X),
+	       float(getPosition().y * BLOCK_DIMENSIONS_Y)};
 }
 
 //This function determines each block's border type.

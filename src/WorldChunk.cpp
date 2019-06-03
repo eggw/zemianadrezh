@@ -17,7 +17,11 @@ sf::Packet& operator>>(sf::Packet& _p, WorldChunk::EncodedChunkData& _d) {
 }
 //----------------------------------------------------------------------------------------------------------------
 
-WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id} {
+WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id}, m_blocks{}, m_neighbors{} {
+	m_neighbors.insert({Direction::NORTH, nullptr});
+	m_neighbors.insert({Direction::SOUTH, nullptr});
+	m_neighbors.insert({Direction::EAST, nullptr});
+	m_neighbors.insert({Direction::WEST, nullptr});
 	//index represents a block's position in the chunk.
 	//First, the x axis is filled out, then the y, so
 	//it looks like this:
@@ -60,12 +64,19 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id} {
 			m_blocks.push_back(block);
 		}
 	}
-
-	adjustBorders();
 }
 
 int WorldChunk::getID() const {
 	return m_id;
+}
+
+sf::Vector2i WorldChunk::getPosition() const {
+	return {Utility::Coordinates::getCoords(m_id, WORLD_DIMENSIONS_X)};
+}
+
+sf::Vector2f WorldChunk::getPixelPosition() const {
+	return {float(getPosition().x * CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X),
+	        float(getPosition().y * CHUNK_DIMENSIONS_Y * BLOCK_DIMENSIONS_Y)};
 }
 
 const std::vector<Block>& WorldChunk::getBlocks() const {
@@ -141,51 +152,86 @@ void WorldChunk::parseData(const WorldChunk::EncodedChunkData& _data) {
 			currentNumber += c;
 		}
 	}
+}
 
+void WorldChunk::assignNeighbors(NeighboringChunks& _neighbors) {
+	m_neighbors = _neighbors;
 	adjustBorders();
 }
 
+//This function returns pointers to a block's neighbors (N,E,S,W).
+//
+//The first and last rows and columns also take into account the
+//neighboring chunks.
+
 Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
 	static const sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
+
 	Block::NeighboringBlocks  result{};
-
-	const auto position{_b->getPosition()};
-
-	sf::Vector2i northPosition{position.x, position.y - 1};
-	sf::Vector2i southPosition{position.x, position.y + 1};
-	sf::Vector2i eastPosition{position.x + 1, position.y};
-	sf::Vector2i westPosition{position.x - 1, position.y};
-
 	result.insert({Direction::NORTH, nullptr});
 	result.insert({Direction::SOUTH, nullptr});
 	result.insert({Direction::EAST, nullptr});
 	result.insert({Direction::WEST, nullptr});
 
+	auto position{_b->getPosition()};
+
+	auto         northPosition{Utility::Coordinates::northOf(position)};
+	WorldChunk*  northChunk{this};
+
+	auto         southPosition{Utility::Coordinates::southOf(position)};
+	WorldChunk*  southChunk{this};
+
+	auto         eastPosition{Utility::Coordinates::eastOf(position)};
+	WorldChunk*  eastChunk{this};
+
+	auto         westPosition{Utility::Coordinates::westOf(position)};
+	WorldChunk*  westChunk{this};
+
+	if(position.y == 0 && m_neighbors[Direction::NORTH] != nullptr) {
+		northChunk = m_neighbors[Direction::NORTH];
+		northPosition.y = CHUNK_DIMENSIONS_Y - 1;
+	}
+
+	else if(position.y == CHUNK_DIMENSIONS_Y - 1 && m_neighbors[Direction::SOUTH] != nullptr) {
+		southChunk = m_neighbors[Direction::SOUTH];
+		southPosition.y = 0;
+	}
+
+	if(position.x == 0 && m_neighbors[Direction::WEST] != nullptr) {
+		westChunk = m_neighbors[Direction::WEST];
+		westPosition.x = CHUNK_DIMENSIONS_X - 1;
+	}
+
+	else if(position.x == CHUNK_DIMENSIONS_X - 1 && m_neighbors[Direction::EAST] != nullptr) {
+		eastChunk = m_neighbors[Direction::EAST];
+		eastPosition.x = 0;
+	}
+
 	if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(northPosition, dim.x)};
-		if (m_blocks[i].getType() != BlockData::Type::AIR) {
-			result[Direction::NORTH] = &m_blocks[i];
+		if (northChunk->m_blocks[i].getType() != BlockData::Type::AIR) {
+			result[Direction::NORTH] = &northChunk->m_blocks[i];
 		}
 	}
 
 	if (!Utility::Coordinates::outOfRange(southPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(southPosition, dim.x)};
-		if (m_blocks[i].getType() != BlockData::Type::AIR) {
-			result[Direction::SOUTH] = &m_blocks[i];
+		if (southChunk->m_blocks[i].getType() != BlockData::Type::AIR) {
+			result[Direction::SOUTH] = &southChunk->m_blocks[i];
 		}
 	}
 
 	if (!Utility::Coordinates::outOfRange(eastPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(eastPosition, dim.x)};
-		if (m_blocks[i].getType() != BlockData::Type::AIR) {
-			result[Direction::EAST] = &m_blocks[i];
+		if (eastChunk->m_blocks[i].getType() != BlockData::Type::AIR) {
+			result[Direction::EAST] = &eastChunk->m_blocks[i];
 		}
 	}
 
 	if (!Utility::Coordinates::outOfRange(westPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(westPosition, dim.x)};
-		if (m_blocks[i].getType() != BlockData::Type::AIR) {
-			result[Direction::WEST] = &m_blocks[i];
+		if (westChunk->m_blocks[i].getType() != BlockData::Type::AIR) {
+			result[Direction::WEST] = &westChunk->m_blocks[i];
 		}
 	}
 

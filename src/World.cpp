@@ -10,7 +10,9 @@
 
 #include "RendererChunk.h"
 #include "TextureManager.h"
+#include "Util/Coordinates.h"
 
+#include <iostream>
 World::World()
             : m_chunks{},
               m_rendererChunk{std::make_unique<RendererChunk>(*this)},
@@ -19,6 +21,14 @@ World::World()
 }
 
 World::~World() {
+}
+
+
+void World::initialise() {
+	for(int i{0}; i < WORLD_DIMENSIONS_X * WORLD_DIMENSIONS_Y; i++) {
+		addChunk({i, false});
+	}
+	assignNeighbors();
 }
 
 const sf::Vector2f World::getCenter() const {
@@ -44,14 +54,6 @@ const sf::Vector2f World::getCenter() const {
 	return {xPos, yPos};
 }
 
-void World::addChunk(int _beginID, int _num, bool _empty) {
-	for (int i{0}; i < _num; i++) {
-		WorldChunk w{_beginID, _empty};
-		m_chunks.push_back(w);
-		++_beginID;
-	}
-}
-
 const EncodedChunks World::encodeChunks() const {
 	EncodedChunks data;
 
@@ -66,6 +68,7 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 	for (auto& chunk : m_chunks) {
 		if (chunk.getID() == _data.id) {
 			chunk.parseData(_data);
+			assignNeighbors();
 			return;
 		}
 	}
@@ -74,7 +77,9 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 	//create it:
 	WorldChunk newChunk{_data.id, true};
 	newChunk.parseData(_data);
-	m_chunks.emplace_back(newChunk);
+
+	addChunk(newChunk);
+	assignNeighbors();
 }
 
 void World::update(int _timeslice) {
@@ -96,13 +101,58 @@ void World::renderUpdatedChunk(int _chunkID) const {
 	m_rendererChunk->update(_chunkID);
 }
 
+void World::addChunk(WorldChunk _chunk) {
+	m_chunks.push_back(_chunk);
+}
+
+void World::assignNeighbors() {
+	for(auto& chunk : m_chunks) {
+		static const sf::Vector2i dim{WORLD_DIMENSIONS_X, WORLD_DIMENSIONS_Y};
+		const auto position{chunk.getPosition()};
+
+		WorldChunk::NeighboringChunks neighbors;
+		neighbors.insert({Direction::NORTH, nullptr});
+		neighbors.insert({Direction::SOUTH, nullptr});
+		neighbors.insert({Direction::EAST, nullptr});
+		neighbors.insert({Direction::WEST, nullptr});
+
+		auto northPosition{Utility::Coordinates::northOf(position)};
+		auto southPosition{Utility::Coordinates::southOf(position)};
+		auto eastPosition{Utility::Coordinates::eastOf(position)};
+		auto westPosition{Utility::Coordinates::westOf(position)};
+
+		if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
+			int i{Utility::Coordinates::getIndex(northPosition, dim.x)};
+			neighbors[Direction::NORTH] = &m_chunks[i];
+		}
+
+		if (!Utility::Coordinates::outOfRange(southPosition, dim)) {
+			int i{Utility::Coordinates::getIndex(southPosition, dim.x)};
+			neighbors[Direction::SOUTH] = &m_chunks[i];
+		}
+
+		if (!Utility::Coordinates::outOfRange(eastPosition, dim)) {
+			int i{Utility::Coordinates::getIndex(eastPosition, dim.x)};
+			neighbors[Direction::EAST] = &m_chunks[i];
+
+		}
+
+		if (!Utility::Coordinates::outOfRange(westPosition, dim)) {
+			int i{Utility::Coordinates::getIndex(westPosition, dim.x)};
+			neighbors[Direction::WEST] = &m_chunks[i];
+		}
+
+		chunk.assignNeighbors(neighbors);
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------TESTS-------------------------------------//
 /////////////////////////////////////////////////////////////////////////////////////
 
 TEST_CASE("Testing world unparsing/reparsing") {
 	World world{};
-	world.addChunk(0, 1, false);
+	world.initialise();
 	auto       encodedData{world.encodeChunks().back()};
 	const auto toDecode{encodedData};
 	world.parseChunk(toDecode);

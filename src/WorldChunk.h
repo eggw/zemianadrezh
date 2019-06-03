@@ -7,6 +7,9 @@
 #include "Block.h"
 #include "Direction.h"
 
+constexpr int WORLD_DIMENSIONS_X{2};
+constexpr int WORLD_DIMENSIONS_Y{1};
+
 class WorldChunk {
   public:
   	using NeighboringChunks = std::map<Direction, WorldChunk*>;
@@ -19,7 +22,14 @@ class WorldChunk {
 
 	WorldChunk(int _id, bool _empty);
 
-	int getID() const;
+	int          getID() const;
+
+	//returns the chunk's coordinates in the world
+	//(0,0) to (WORLD_DIMENSIONS_X, WORLD_DIMENSIONS_Y)
+	sf::Vector2i getPosition() const;
+	//returns the top-left corner of the chunk in the world
+	//(equivalent to getPosition() * CHUNK_DIMENSIONS * BLOCK_DIMENSIONS)
+	sf::Vector2f getPixelPosition() const;
 
 	const std::vector<Block>& getBlocks() const;
 	void                      setBlockType(int _id, BlockData::Type _t);
@@ -27,16 +37,20 @@ class WorldChunk {
 	const EncodedChunkData encodeData() const;
 	void                   parseData(const EncodedChunkData& _data);
 
-	void adjustBorders();
+	//Once this function is called and the chunk knows its
+	//neighbors, adjustBorders() is called
+	void assignNeighbors(NeighboringChunks& _neighbors);
 
   private:
   	//Functions -----------------------------------
+  	void adjustBorders();
   	Block::NeighboringBlocks getNeighboringBlocks(Block* _b);
   	//---------------------------------------------
 
 	//Data members --------------------------------
 	int                m_id;
-	std::vector<Block> m_blocks{};
+	std::vector<Block> m_blocks;
+	NeighboringChunks  m_neighbors;
 	//---------------------------------------------
 };
 

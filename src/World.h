@@ -17,8 +17,8 @@ class World {
 	World();
 	~World();
 
+	void initialise();
 	const sf::Vector2f getCenter() const;
-	void               addChunk(int _beginID, int _num, bool _empty);
 
 	const EncodedChunks encodeChunks() const;
 	void                parseChunk(const WorldChunk::EncodedChunkData& _data);
@@ -31,6 +31,13 @@ class World {
 	void renderUpdatedChunk(int _chunkID) const;
 
   private:
+  	//Functions -----------------------------------
+  	void addChunk(WorldChunk _chunk);
+  	//assignNeighbors() iterates over all our chunks
+  	//and appropriately sets their NESW neighbors.
+  	void assignNeighbors();
+  	//---------------------------------------------
+
 	//Data members --------------------------------
 	std::vector<WorldChunk>        m_chunks;
 	std::unique_ptr<RendererChunk> m_rendererChunk;
