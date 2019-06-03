@@ -51,10 +51,6 @@ class Client
 	//the world (x-axis), on the surface (y-axis 0)
 	void respawnPlayer();
 	void adjustViews(sf::RenderTarget& _target) const;
-	//This function is responsible for calling RendererChunk's update
-	//function on chunks that have just had their data updated (when
-	//the network manager indicates that chunk data has been received)
-	void renderUpdatedChunk(int _chunkID) const;
 
 	sf::Vector2f      getPlayerPosition() const;
 	const std::string getPlayerName() const;

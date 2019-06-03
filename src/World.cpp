@@ -75,7 +75,6 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 	//create it:
 	WorldChunk newChunk{_data.id, true};
 	newChunk.parseData(_data);
-
 	addChunk(newChunk);
 }
 
@@ -92,10 +91,6 @@ void World::drawBackground(sf::RenderTarget& target,
 void World::drawChunks(sf::RenderTarget& target,
                        sf::RenderStates  states) const {
 	m_rendererChunk->draw(target, states);
-}
-
-void World::renderUpdatedChunk(int _chunkID) const {
-	m_rendererChunk->update(_chunkID);
 }
 
 void World::addChunk(WorldChunk _chunk) {
@@ -153,6 +148,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 	}
 
 	_chunk->assignNeighbors(neighbors);
+	m_rendererChunk->update(_chunk->getID());
 
 	if(_recurse) {
 		for(auto& chunk : toRecurseOver) {

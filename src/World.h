@@ -28,15 +28,13 @@ class World {
 	                    sf::RenderStates  states) const;
 	void drawChunks(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	void renderUpdatedChunk(int _chunkID) const;
-
   private:
   	//Functions -----------------------------------
   	void addChunk(WorldChunk _chunk);
   	//Appropriately sets the given chunk's NESW
   	//neighbors. Additionally, it calls itself
   	//again for all the given chunk's neighbors,
-  	//with recursive = false.
+  	//with _recurse = false.
   	void updateChunkNeighbors(WorldChunk* _chunk, bool _recurse = true);
   	//---------------------------------------------
 

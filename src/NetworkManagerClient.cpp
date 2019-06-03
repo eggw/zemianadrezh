@@ -251,8 +251,6 @@ void NetworkManagerClient::receiveDataWorld(sf::Packet* _p) {
 	if (!m_client.isLocal()) {
 		m_client.parseWorldChunk(chunkData);
 	}
-
-	m_client.renderUpdatedChunk(chunkData.id);
 }
 
 void NetworkManagerClient::receiveRespawnPlayer(sf::Packet* _p) {

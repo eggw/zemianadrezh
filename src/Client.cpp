@@ -123,10 +123,6 @@ void Client::adjustViews(sf::RenderTarget& _target) const {
 	  {float(_target.getSize().x / 2), float(_target.getSize().y / 2)});
 }
 
-void Client::renderUpdatedChunk(int _chunkID) const {
-	m_world->renderUpdatedChunk(_chunkID);
-}
-
 sf::Vector2f Client::getPlayerPosition() const {
 	return m_registry->get<ComponentPosition>(m_player).m_position;
 }
