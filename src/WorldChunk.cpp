@@ -30,13 +30,9 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id}, m_blocks{}, m_neighbor
 
 	for (int y{0}; y < CHUNK_DIMENSIONS_Y; y++) {
 		for (int x{0}; x < CHUNK_DIMENSIONS_X; x++) {
-			bool air{false};
+			BlockData::Type t{BlockData::Type::AIR};
 
-			if (_empty) {
-				air = true;
-			}
-
-			else {
+			if(!_empty) {
 				auto seed = std::chrono::high_resolution_clock::now()
 				              .time_since_epoch()
 				              .count();
@@ -44,24 +40,19 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id}, m_blocks{}, m_neighbor
 				std::uniform_int_distribution<int> uniform_dist(1, 20);
 				int                                mean = uniform_dist(mt_rand);
 
-				if (mean == 1) {
-					air = true;
+				if (mean != 1) {
+					if(y > 0) {
+						t = BlockData::Type::DIRT;
+					}
+					else {
+						t = BlockData::Type::GRASS;
+					}
 				}
 			}
 
-			BlockData::Type t;
-			if (!air) {
-				t = BlockData::Type::DIRT;
-			}
-			else {
-				t = BlockData::Type::AIR;
-			}
-
 			Block block{index, t};
-
-			++index;
-
 			m_blocks.push_back(block);
+			++index;
 		}
 	}
 }

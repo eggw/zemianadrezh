@@ -76,7 +76,8 @@ class BlockData {
 	enum Type
 	{
 		AIR  = 0,
-		DIRT = 1
+		DIRT = 1,
+		GRASS = 2
 	};
 
 	//Note:

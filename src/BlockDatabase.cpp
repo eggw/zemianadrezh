@@ -9,6 +9,7 @@ BlockDatabase::BlockDatabase() : m_database{} {
 	//doesn't matter.
 	m_database.insert({BlockData::Type::AIR, {"air", 0, 0}});
 	m_database.insert({BlockData::Type::DIRT, {"dirt", 100, 0}});
+	m_database.insert({BlockData::Type::GRASS, {"grass", 100, 1}});
 }
 
 const BlockData& BlockDatabase::getData(BlockData::Type _t) {
