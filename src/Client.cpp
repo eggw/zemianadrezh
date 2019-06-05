@@ -16,6 +16,16 @@
 #include "Components/ComponentAnimation.h"
 #include "Components/ComponentsPlayer.h"
 
+static constexpr int LEFTMOST{0};
+static constexpr int RIGHTMOST{CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * WORLD_DIMENSIONS_X};
+
+static constexpr int VIEW_LEFTMOST{(CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X) -
+                                (7 * BLOCK_DIMENSIONS_X)};
+
+static constexpr int VIEW_RIGHTMOST{CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X *
+                                   (WORLD_DIMENSIONS_X - 1) +
+                                 (7 * BLOCK_DIMENSIONS_X)};
+
 Client::Client(sf::IpAddress _serverIP, Server* _localServer)
             : GameInstance(_localServer),
               m_networkManager(*this),
@@ -30,7 +40,7 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
                                                     "LocalPlayer"),
               m_systemAnimation{},
               m_systemDrawing{},
-              m_systemPhysics{},
+              m_systemPhysics{LEFTMOST, RIGHTMOST},
               m_systemPlayerMovement{},
               m_view{},
               m_skyView{} {
@@ -118,7 +128,17 @@ void Client::adjustViews(sf::RenderTarget& _target) const {
 	m_skyView.reset(
 	  {0, 0, float(_target.getSize().x), float(_target.getSize().y)});
 
-	m_view.setCenter(getPlayerPosition());
+	auto viewCenter{getPlayerPosition()};
+
+	if (viewCenter.x < VIEW_LEFTMOST) {
+		viewCenter.x = VIEW_LEFTMOST;
+	}
+	else if (viewCenter.x > VIEW_RIGHTMOST) {
+		viewCenter.x = VIEW_RIGHTMOST;
+	}
+
+	m_view.setCenter(viewCenter);
+
 	m_skyView.setCenter(
 	  {float(_target.getSize().x / 2), float(_target.getSize().y / 2)});
 }
