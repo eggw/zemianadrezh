@@ -5,7 +5,7 @@
 #include "TextureManager.h"
 #include "FontManager.h"
 #include "WorldTime.h"
-#include <iostream>
+
 constexpr int DAY_BEGIN_HOUR{5};
 constexpr int DAY_END_HOUR{19};
 
@@ -35,7 +35,6 @@ DayNightCycle::DayNightCycle()
 	if (!m_shader.loadFromFile("assets/shaders/cycle_vertex.glsl",
 	                           "assets/shaders/cycle_fragment.glsl")) {
 		//TODO: error handling?
-		//std::cout << "ERROR!" << std::endl;
 	}
 
 	m_shader.setUniform("sky",

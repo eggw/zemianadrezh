@@ -7,9 +7,6 @@
 #include "Block.h"
 #include "Direction.h"
 
-constexpr int WORLD_DIMENSIONS_X{2};
-constexpr int WORLD_DIMENSIONS_Y{1};
-
 class WorldChunk {
   public:
   	using NeighboringChunks = std::map<Direction, WorldChunk*>;
@@ -25,7 +22,7 @@ class WorldChunk {
 	int          getID() const;
 
 	//returns the chunk's coordinates in the world
-	//(0,0) to (WORLD_DIMENSIONS_X, WORLD_DIMENSIONS_Y)
+	//(0,0) to (World::X, World::Y)
 	sf::Vector2i getPosition() const;
 	//returns the top-left corner of the chunk in the world
 	//(equivalent to getPosition() * CHUNK_DIMENSIONS * BLOCK_DIMENSIONS)

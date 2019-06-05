@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include "Constants.h"
+
 #include "RendererBase.h"
 #include "World.h"
 #include "TextureManager.h"
@@ -51,7 +53,8 @@ class RendererChunk : public RendererBase<WorldChunk> {
 	void update(const WorldChunk* _chunk) const {
 		sf::VertexArray vertexArray;
 		vertexArray.setPrimitiveType(sf::PrimitiveType::Triangles);
-		vertexArray.resize((CHUNK_DIMENSIONS_X * CHUNK_DIMENSIONS_Y) * 6);
+		vertexArray.resize(
+		  (Dimensions::Chunk::X * Dimensions::Chunk::Y) * 6);
 
 		auto blocks = _chunk->getBlocks();
 
@@ -62,12 +65,14 @@ class RendererChunk : public RendererBase<WorldChunk> {
 			  block.getPixelPosition().x + _chunk->getPixelPosition().x,
 			  block.getPixelPosition().y + _chunk->getPixelPosition().y};
 
-			sf::Vector2f topRight{topLeft.x + BLOCK_DIMENSIONS_X, topLeft.y};
+			sf::Vector2f topRight{topLeft.x + Dimensions::Block::X,
+			                      topLeft.y};
 
-			sf::Vector2f bottomRight{topLeft.x + BLOCK_DIMENSIONS_X,
-			                         topLeft.y + BLOCK_DIMENSIONS_Y};
+			sf::Vector2f bottomRight{topLeft.x + Dimensions::Block::X,
+			                         topLeft.y + Dimensions::Block::Y};
 
-			sf::Vector2f bottomLeft{topLeft.x, topLeft.y + BLOCK_DIMENSIONS_Y};
+			sf::Vector2f bottomLeft{topLeft.x,
+			                        topLeft.y + Dimensions::Block::Y};
 
 			//-----------------------------------------------------
 			sf::FloatRect textureRect{block.getTextureRect()};

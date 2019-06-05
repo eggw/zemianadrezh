@@ -5,6 +5,7 @@
 //--------------------------------------------|
 // (*) Client - Server connection
 //--------------------------------------------|
+#include "Constants.h"
 
 #include "Client.h"
 #include "Server.h"
@@ -17,14 +18,19 @@
 #include "Components/ComponentsPlayer.h"
 
 static constexpr int LEFTMOST{0};
-static constexpr int RIGHTMOST{CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X * WORLD_DIMENSIONS_X};
+static constexpr int RIGHTMOST{Dimensions::Chunk::X *
+                               Dimensions::Block::X *
+                               Dimensions::World::X};
 
-static constexpr int VIEW_LEFTMOST{(CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X) -
-                                (7 * BLOCK_DIMENSIONS_X)};
+static constexpr int VIEW_LEFTMOST{
+  (Dimensions::Chunk::X * Dimensions::Block::X) -
+  (7 * Dimensions::Block::X)};
 
-static constexpr int VIEW_RIGHTMOST{CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X *
-                                   (WORLD_DIMENSIONS_X - 1) +
-                                 (7 * BLOCK_DIMENSIONS_X)};
+static constexpr int VIEW_RIGHTMOST{
+									Dimensions::Chunk::X *
+									Dimensions::Block::X *
+									(Dimensions::World::X - 1) +
+									(7 * Dimensions::Block::X)};
 
 Client::Client(sf::IpAddress _serverIP, Server* _localServer)
             : GameInstance(_localServer),

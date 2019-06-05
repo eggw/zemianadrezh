@@ -5,6 +5,8 @@
 //--------------------------------------------|
 // (*) Blocks
 //--------------------------------------------|
+#include "Constants.h"
+
 #include "Block.h"
 #include "BlockDatabase.h"
 #include "Util/Coordinates.h"
@@ -35,24 +37,23 @@ sf::FloatRect Block::getTextureRect() const {
 	//dimensions of a block.
 
 	sf::Vector2f textureCoordinates{
-	  float(m_borderType * BLOCK_DIMENSIONS_X),
+	  float(m_borderType * Dimensions::Block::X),
 	  float(BlockDatabase::get_instance().getData(m_type).getTextureColumn() *
-	        BLOCK_DIMENSIONS_Y)};
+	        Dimensions::Block::Y)};
 
 	return {textureCoordinates.x,
 	        textureCoordinates.y,
-	        float(BLOCK_DIMENSIONS_X),
-	        float(BLOCK_DIMENSIONS_Y)};
+	        float(Dimensions::Block::X),
+	        float(Dimensions::Block::Y)};
 }
 
 sf::Vector2i Block::getPosition() const {
-	return {Utility::Coordinates::getCoords(
-	  m_id, CHUNK_DIMENSIONS_X)};
+	return {Utility::Coordinates::getCoords(m_id, Dimensions::Chunk::X)};
 }
 
 sf::Vector2f Block::getPixelPosition() const {
-	return{float(getPosition().x * BLOCK_DIMENSIONS_X),
-	       float(getPosition().y * BLOCK_DIMENSIONS_Y)};
+	return {float(getPosition().x * Dimensions::Block::X),
+	        float(getPosition().y * Dimensions::Block::Y)};
 }
 
 //This function determines each block's border type.

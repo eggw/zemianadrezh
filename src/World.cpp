@@ -5,6 +5,7 @@
 //--------------------------------------------|
 // (*) World parsing/unparsing
 //--------------------------------------------|
+#include "Constants.h"
 
 #include "World.h"
 
@@ -24,7 +25,9 @@ World::~World() {
 
 
 void World::initialise() {
-	for(int i{0}; i < WORLD_DIMENSIONS_X * WORLD_DIMENSIONS_Y; i++) {
+	for (int i{0};
+	     i < Dimensions::World::X * Dimensions::World::Y;
+	     i++) {
 		addChunk({i, false});
 	}
 }
@@ -39,13 +42,16 @@ const sf::Vector2f World::getCenter() const {
 	}
 	else if (m_chunks.size() % 2 == 0) {
 		index = m_chunks.size() / 2;
-		xPos  = index * BLOCK_DIMENSIONS_X * CHUNK_DIMENSIONS_X;
+		xPos =
+		  index * Dimensions::Block::X * Dimensions::Chunk::X;
 		yPos  = 300;
 	}
 	else {
 		index = m_chunks.size() / 2;
-		xPos  = index * BLOCK_DIMENSIONS_X * CHUNK_DIMENSIONS_X;
-		xPos += (CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X) / 2;
+		xPos =
+		  index * Dimensions::Block::X * Dimensions::Chunk::X;
+		xPos +=
+		  (Dimensions::Chunk::X * Dimensions::Block::X) / 2;
 		yPos = 300;
 	}
 
@@ -99,7 +105,8 @@ void World::addChunk(WorldChunk _chunk) {
 }
 
 void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
-	static const sf::Vector2i dim{WORLD_DIMENSIONS_X, WORLD_DIMENSIONS_Y};
+	static const sf::Vector2i dim{Dimensions::World::X,
+	                              Dimensions::World::Y};
 	const auto position{_chunk->getPosition()};
 
 	WorldChunk::NeighboringChunks neighbors;

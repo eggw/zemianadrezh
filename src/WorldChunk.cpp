@@ -3,6 +3,8 @@
 #include <random>
 #include <chrono>
 
+#include "Constants.h"
+
 #include <SFML/Network.hpp>
 #include "Util/Coordinates.h"
 
@@ -28,8 +30,8 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id}, m_blocks{}, m_neighbor
 
 	int index{0};
 
-	for (int y{0}; y < CHUNK_DIMENSIONS_Y; y++) {
-		for (int x{0}; x < CHUNK_DIMENSIONS_X; x++) {
+	for (int y{0}; y < Dimensions::Chunk::Y; y++) {
+		for (int x{0}; x < Dimensions::Chunk::X; x++) {
 			BlockData::Type t{BlockData::Type::AIR};
 
 			if(!_empty) {
@@ -62,12 +64,15 @@ int WorldChunk::getID() const {
 }
 
 sf::Vector2i WorldChunk::getPosition() const {
-	return {Utility::Coordinates::getCoords(m_id, WORLD_DIMENSIONS_X)};
+	return {
+	  Utility::Coordinates::getCoords(m_id, Dimensions::World::X)};
 }
 
 sf::Vector2f WorldChunk::getPixelPosition() const {
-	return {float(getPosition().x * CHUNK_DIMENSIONS_X * BLOCK_DIMENSIONS_X),
-	        float(getPosition().y * CHUNK_DIMENSIONS_Y * BLOCK_DIMENSIONS_Y)};
+	return {float(getPosition().x * Dimensions::Chunk::X *
+	              Dimensions::Block::X),
+	        float(getPosition().y * Dimensions::Chunk::Y *
+	              Dimensions::Block::Y)};
 }
 
 const std::vector<Block>& WorldChunk::getBlocks() const {
@@ -156,7 +161,8 @@ void WorldChunk::assignNeighbors(NeighboringChunks& _neighbors) {
 //neighboring chunks.
 
 Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
-	static const sf::Vector2i dim{CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y};
+	static const sf::Vector2i dim{Dimensions::Chunk::X,
+	                              Dimensions::Chunk::Y};
 
 	Block::NeighboringBlocks  result{};
 	result.insert({Direction::NORTH, nullptr});
@@ -180,20 +186,22 @@ Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
 
 	if(position.y == 0 && m_neighbors[Direction::NORTH] != nullptr) {
 		northChunk = m_neighbors[Direction::NORTH];
-		northPosition.y = CHUNK_DIMENSIONS_Y - 1;
+		northPosition.y = Dimensions::Chunk::Y - 1;
 	}
 
-	else if(position.y == CHUNK_DIMENSIONS_Y - 1 && m_neighbors[Direction::SOUTH] != nullptr) {
+	else if (position.y == Dimensions::Chunk::Y - 1 &&
+	         m_neighbors[Direction::SOUTH] != nullptr) {
 		southChunk = m_neighbors[Direction::SOUTH];
 		southPosition.y = 0;
 	}
 
 	if(position.x == 0 && m_neighbors[Direction::WEST] != nullptr) {
 		westChunk = m_neighbors[Direction::WEST];
-		westPosition.x = CHUNK_DIMENSIONS_X - 1;
+		westPosition.x = Dimensions::Chunk::X - 1;
 	}
 
-	else if(position.x == CHUNK_DIMENSIONS_X - 1 && m_neighbors[Direction::EAST] != nullptr) {
+	else if (position.x == Dimensions::Chunk::X - 1 &&
+	         m_neighbors[Direction::EAST] != nullptr) {
 		eastChunk = m_neighbors[Direction::EAST];
 		eastPosition.x = 0;
 	}
