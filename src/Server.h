@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "NetworkManagerServer.h"
-
 #include "GameInstance.h"
 
 class Server : public GameInstance {

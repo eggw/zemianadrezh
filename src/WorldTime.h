@@ -2,12 +2,7 @@
 
 #include <string>
 
-struct HHMM {
-	HHMM(int _h, int _m) : hours{_h}, minutes{_m} {};
-	HHMM(const HHMM& _t) : hours{_t.hours}, minutes{_t.minutes} {};
-	int hours;
-	int minutes;
-};
+#include "Util/HHMM.h"
 
 class WorldTime {
   public:
