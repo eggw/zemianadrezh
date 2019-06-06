@@ -53,8 +53,7 @@ class RendererChunk : public RendererBase<WorldChunk> {
 	void update(const WorldChunk* _chunk) const {
 		sf::VertexArray vertexArray;
 		vertexArray.setPrimitiveType(sf::PrimitiveType::Triangles);
-		vertexArray.resize(
-		  (Dimensions::Chunk::X * Dimensions::Chunk::Y) * 6);
+		vertexArray.resize((Dimensions::Chunk::X * Dimensions::Chunk::Y) * 6);
 
 		auto blocks = _chunk->getBlocks();
 
@@ -65,8 +64,7 @@ class RendererChunk : public RendererBase<WorldChunk> {
 			  block.getPixelPosition().x + _chunk->getPixelPosition().x,
 			  block.getPixelPosition().y + _chunk->getPixelPosition().y};
 
-			sf::Vector2f topRight{topLeft.x + Dimensions::Block::X,
-			                      topLeft.y};
+			sf::Vector2f topRight{topLeft.x + Dimensions::Block::X, topLeft.y};
 
 			sf::Vector2f bottomRight{topLeft.x + Dimensions::Block::X,
 			                         topLeft.y + Dimensions::Block::Y};

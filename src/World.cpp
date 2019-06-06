@@ -23,11 +23,8 @@ World::World()
 World::~World() {
 }
 
-
 void World::initialise() {
-	for (int i{0};
-	     i < Dimensions::World::X * Dimensions::World::Y;
-	     i++) {
+	for (int i{0}; i < Dimensions::World::X * Dimensions::World::Y; i++) {
 		addChunk({i, false});
 	}
 }
@@ -42,16 +39,13 @@ const sf::Vector2f World::getCenter() const {
 	}
 	else if (m_chunks.size() % 2 == 0) {
 		index = m_chunks.size() / 2;
-		xPos =
-		  index * Dimensions::Block::X * Dimensions::Chunk::X;
+		xPos  = index * Dimensions::Block::X * Dimensions::Chunk::X;
 		yPos  = 300;
 	}
 	else {
 		index = m_chunks.size() / 2;
-		xPos =
-		  index * Dimensions::Block::X * Dimensions::Chunk::X;
-		xPos +=
-		  (Dimensions::Chunk::X * Dimensions::Block::X) / 2;
+		xPos  = index * Dimensions::Block::X * Dimensions::Chunk::X;
+		xPos += (Dimensions::Chunk::X * Dimensions::Block::X) / 2;
 		yPos = 300;
 	}
 
@@ -116,9 +110,8 @@ void World::addChunk(WorldChunk _chunk) {
 }
 
 void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
-	static const sf::Vector2i dim{Dimensions::World::X,
-	                              Dimensions::World::Y};
-	const auto position{_chunk->getPosition()};
+	static const sf::Vector2i dim{Dimensions::World::X, Dimensions::World::Y};
+	const auto                position{_chunk->getPosition()};
 
 	WorldChunk::NeighboringChunks neighbors;
 	neighbors.insert({Direction::NORTH, nullptr});
@@ -135,7 +128,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(northPosition, dim.x)};
-		if(i < m_chunks.size()) {
+		if (i < m_chunks.size()) {
 			neighbors[Direction::NORTH] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}
@@ -143,7 +136,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	if (!Utility::Coordinates::outOfRange(southPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(southPosition, dim.x)};
-		if(i < m_chunks.size()) {
+		if (i < m_chunks.size()) {
 			neighbors[Direction::SOUTH] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}
@@ -151,7 +144,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	if (!Utility::Coordinates::outOfRange(eastPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(eastPosition, dim.x)};
-		if(i < m_chunks.size()) {
+		if (i < m_chunks.size()) {
 			neighbors[Direction::EAST] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}
@@ -159,7 +152,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	if (!Utility::Coordinates::outOfRange(westPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(westPosition, dim.x)};
-		if(i < m_chunks.size()) {
+		if (i < m_chunks.size()) {
 			neighbors[Direction::WEST] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}
@@ -168,8 +161,8 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 	_chunk->assignNeighbors(neighbors);
 	m_rendererChunk->update(_chunk->getID());
 
-	if(_recurse) {
-		for(auto& chunk : toRecurseOver) {
+	if (_recurse) {
+		for (auto& chunk : toRecurseOver) {
 			updateChunkNeighbors(chunk, false);
 		}
 	}

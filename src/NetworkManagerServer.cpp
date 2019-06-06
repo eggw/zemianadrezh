@@ -161,7 +161,7 @@ void NetworkManagerServer::sendMessage(const Message& _msg) {
 
 void NetworkManagerServer::sendWorldTime() {
 	auto currentTime{m_server.m_world->getTime()};
-	if(m_lastTime == currentTime) {
+	if (m_lastTime == currentTime) {
 		return;
 	}
 	sendPacket(Packet::UDP::DATA_WORLDTIME);
@@ -174,7 +174,7 @@ void NetworkManagerServer::markClientForRemoval(sf::TcpSocket* _conn) {
 	if (info == nullptr) {
 		return;
 	}
-	
+
 	m_lastRemovedPlayer = info->playerName;
 	m_server.removePlayer(m_lastRemovedPlayer);
 	sendMessage({"Server", "Goodbye, " + info->playerName + "!"});
@@ -297,7 +297,7 @@ NetworkManagerServer::IPInfo* NetworkManagerServer::getIPInfo(
 }
 
 void NetworkManagerServer::sendQuit(PacketSharedPtrs& _p,
-                                    sf::TcpSocket*   _conn) {
+                                    sf::TcpSocket*    _conn) {
 	*_p[0] << m_lastRemovedPlayer;
 }
 
@@ -398,7 +398,7 @@ void NetworkManagerServer::sendDataPlayer(PacketSharedPtrs& _p,
 }
 
 void NetworkManagerServer::sendDataWorldTime(PacketSharedPtrs& _p,
-											 sf::TcpSocket*    _conn) {
+                                             sf::TcpSocket*    _conn) {
 	*_p[0] << m_server.m_world->getTime();
 }
 

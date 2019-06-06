@@ -82,8 +82,7 @@ class NetworkManagerServer {
 	//--------------
 	void sendQuit(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
 	void sendDataWorld(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
-	void sendChatMessage(PacketSharedPtrs& _p,
-	                     sf::TcpSocket*                _conn);
+	void sendChatMessage(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
 
 	void receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _conn);
 	void receiveQuit(sf::Packet* _p, sf::TcpSocket* _conn);
@@ -100,9 +99,9 @@ class NetworkManagerServer {
 	//--------------
 
 	//Handles everything to do with removing a player, including
-	//calling Server::removePlayer() and sending a QUIT packet 
-	//containing the name of the player that was removed to all 
-	//connected clients. 
+	//calling Server::removePlayer() and sending a QUIT packet
+	//containing the name of the player that was removed to all
+	//connected clients.
 	//
 	//Actual removal from m_clientIPs happens when removeClients()
 	//is called.
@@ -156,18 +155,12 @@ class NetworkManagerServer {
 	(such as to avoid sending a client's own player data back to them).
 	*/
 
-	FunctionBinder<Packet::TCP,
-	               void,
-	               PacketSharedPtrs&,
-	               sf::TcpSocket*>
+	FunctionBinder<Packet::TCP, void, PacketSharedPtrs&, sf::TcpSocket*>
 	  m_TCPSender;
 	FunctionBinder<Packet::TCP, void, sf::Packet*, sf::TcpSocket*>
 	  m_TCPReceiver;
 
-	FunctionBinder<Packet::UDP,
-	               void,
-	               PacketSharedPtrs&,
-	               sf::TcpSocket*>
+	FunctionBinder<Packet::UDP, void, PacketSharedPtrs&, sf::TcpSocket*>
 	  m_UDPSender;
 	FunctionBinder<Packet::UDP, void, sf::Packet*, sf::TcpSocket*>
 	  m_UDPReceiver;

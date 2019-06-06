@@ -18,19 +18,15 @@
 #include "Components/ComponentsPlayer.h"
 
 static constexpr int LEFTMOST{0};
-static constexpr int RIGHTMOST{Dimensions::Chunk::X *
-                               Dimensions::Block::X *
+static constexpr int RIGHTMOST{Dimensions::Chunk::X * Dimensions::Block::X *
                                Dimensions::World::X};
 
 static constexpr int VIEW_LEFTMOST{
-  (Dimensions::Chunk::X * Dimensions::Block::X) -
-  (7 * Dimensions::Block::X)};
+  (Dimensions::Chunk::X * Dimensions::Block::X) - (7 * Dimensions::Block::X)};
 
 static constexpr int VIEW_RIGHTMOST{
-									Dimensions::Chunk::X *
-									Dimensions::Block::X *
-									(Dimensions::World::X - 1) +
-									(7 * Dimensions::Block::X)};
+  Dimensions::Chunk::X * Dimensions::Block::X * (Dimensions::World::X - 1) +
+  (7 * Dimensions::Block::X)};
 
 Client::Client(sf::IpAddress _serverIP, Server* _localServer)
             : GameInstance(_localServer),

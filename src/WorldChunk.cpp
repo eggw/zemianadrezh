@@ -19,7 +19,8 @@ sf::Packet& operator>>(sf::Packet& _p, WorldChunk::EncodedChunkData& _d) {
 }
 //----------------------------------------------------------------------------------------------------------------
 
-WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id}, m_blocks{}, m_neighbors{} {
+WorldChunk::WorldChunk(int _id, bool _empty)
+            : m_id{_id}, m_blocks{}, m_neighbors{} {
 	m_neighbors.insert({Direction::NORTH, nullptr});
 	m_neighbors.insert({Direction::SOUTH, nullptr});
 	m_neighbors.insert({Direction::EAST, nullptr});
@@ -34,7 +35,7 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id}, m_blocks{}, m_neighbor
 		for (int x{0}; x < Dimensions::Chunk::X; x++) {
 			BlockData::Type t{BlockData::Type::AIR};
 
-			if(!_empty) {
+			if (!_empty) {
 				auto seed = std::chrono::high_resolution_clock::now()
 				              .time_since_epoch()
 				              .count();
@@ -43,7 +44,7 @@ WorldChunk::WorldChunk(int _id, bool _empty) : m_id{_id}, m_blocks{}, m_neighbor
 				int                                mean = uniform_dist(mt_rand);
 
 				if (mean != 1) {
-					if(y > 0) {
+					if (y > 0) {
 						t = BlockData::Type::DIRT;
 					}
 					else {
@@ -64,15 +65,13 @@ int WorldChunk::getID() const {
 }
 
 sf::Vector2i WorldChunk::getPosition() const {
-	return {
-	  Utility::Coordinates::getCoords(m_id, Dimensions::World::X)};
+	return {Utility::Coordinates::getCoords(m_id, Dimensions::World::X)};
 }
 
 sf::Vector2f WorldChunk::getPixelPosition() const {
-	return {float(getPosition().x * Dimensions::Chunk::X *
-	              Dimensions::Block::X),
-	        float(getPosition().y * Dimensions::Chunk::Y *
-	              Dimensions::Block::Y)};
+	return {
+	  float(getPosition().x * Dimensions::Chunk::X * Dimensions::Block::X),
+	  float(getPosition().y * Dimensions::Chunk::Y * Dimensions::Block::Y)};
 }
 
 const std::vector<Block>& WorldChunk::getBlocks() const {
@@ -161,10 +160,9 @@ void WorldChunk::assignNeighbors(NeighboringChunks& _neighbors) {
 //neighboring chunks.
 
 Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
-	static const sf::Vector2i dim{Dimensions::Chunk::X,
-	                              Dimensions::Chunk::Y};
+	static const sf::Vector2i dim{Dimensions::Chunk::X, Dimensions::Chunk::Y};
 
-	Block::NeighboringBlocks  result{};
+	Block::NeighboringBlocks result{};
 	result.insert({Direction::NORTH, nullptr});
 	result.insert({Direction::SOUTH, nullptr});
 	result.insert({Direction::EAST, nullptr});
@@ -172,37 +170,37 @@ Block::NeighboringBlocks WorldChunk::getNeighboringBlocks(Block* _b) {
 
 	auto position{_b->getPosition()};
 
-	auto         northPosition{Utility::Coordinates::northOf(position)};
-	WorldChunk*  northChunk{this};
+	auto        northPosition{Utility::Coordinates::northOf(position)};
+	WorldChunk* northChunk{this};
 
-	auto         southPosition{Utility::Coordinates::southOf(position)};
-	WorldChunk*  southChunk{this};
+	auto        southPosition{Utility::Coordinates::southOf(position)};
+	WorldChunk* southChunk{this};
 
-	auto         eastPosition{Utility::Coordinates::eastOf(position)};
-	WorldChunk*  eastChunk{this};
+	auto        eastPosition{Utility::Coordinates::eastOf(position)};
+	WorldChunk* eastChunk{this};
 
-	auto         westPosition{Utility::Coordinates::westOf(position)};
-	WorldChunk*  westChunk{this};
+	auto        westPosition{Utility::Coordinates::westOf(position)};
+	WorldChunk* westChunk{this};
 
-	if(position.y == 0 && m_neighbors[Direction::NORTH] != nullptr) {
-		northChunk = m_neighbors[Direction::NORTH];
+	if (position.y == 0 && m_neighbors[Direction::NORTH] != nullptr) {
+		northChunk      = m_neighbors[Direction::NORTH];
 		northPosition.y = Dimensions::Chunk::Y - 1;
 	}
 
 	else if (position.y == Dimensions::Chunk::Y - 1 &&
 	         m_neighbors[Direction::SOUTH] != nullptr) {
-		southChunk = m_neighbors[Direction::SOUTH];
+		southChunk      = m_neighbors[Direction::SOUTH];
 		southPosition.y = 0;
 	}
 
-	if(position.x == 0 && m_neighbors[Direction::WEST] != nullptr) {
-		westChunk = m_neighbors[Direction::WEST];
+	if (position.x == 0 && m_neighbors[Direction::WEST] != nullptr) {
+		westChunk      = m_neighbors[Direction::WEST];
 		westPosition.x = Dimensions::Chunk::X - 1;
 	}
 
 	else if (position.x == Dimensions::Chunk::X - 1 &&
 	         m_neighbors[Direction::EAST] != nullptr) {
-		eastChunk = m_neighbors[Direction::EAST];
+		eastChunk      = m_neighbors[Direction::EAST];
 		eastPosition.x = 0;
 	}
 

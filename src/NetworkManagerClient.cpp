@@ -286,7 +286,7 @@ void NetworkManagerClient::receiveDataWorldTime(sf::Packet* _p) {
 		return;
 	}
 
-	HHMM time{0,0};
+	HHMM time{0, 0};
 	*_p >> time;
 	m_client.m_world->setTime(time);
 }
