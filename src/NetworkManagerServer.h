@@ -71,12 +71,14 @@ class NetworkManagerServer {
 	using SocketUPtr = std::unique_ptr<sf::TcpSocket>;
 	using IPInfoUPtr = std::unique_ptr<IPInfo>;
 
+	using PacketSharedPtrs = std::vector<PacketSharedPtr>;
+
 	//Functions -----------------------------------
 	//TCP-related
 	//--------------
-	void sendQuit(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
-	void sendDataWorld(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
-	void sendChatMessage(std::vector<PacketSharedPtr>& _p,
+	void sendQuit(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
+	void sendDataWorld(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
+	void sendChatMessage(PacketSharedPtrs& _p,
 	                     sf::TcpSocket*                _conn);
 
 	void receiveJustJoined(sf::Packet* _p, sf::TcpSocket* _conn);
@@ -87,7 +89,7 @@ class NetworkManagerServer {
 
 	//UDP-related
 	//--------------
-	void sendDataPlayer(std::vector<PacketSharedPtr>& _p, sf::TcpSocket* _conn);
+	void sendDataPlayer(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
 
 	void receiveDataPlayer(sf::Packet* _p, sf::TcpSocket* _conn);
 	//--------------
@@ -142,7 +144,7 @@ class NetworkManagerServer {
 
 	FunctionBinder<Packet::TCP,
 	               void,
-	               std::vector<PacketSharedPtr>&,
+	               PacketSharedPtrs&,
 	               sf::TcpSocket*>
 	  m_TCPSender;
 	FunctionBinder<Packet::TCP, void, sf::Packet*, sf::TcpSocket*>
@@ -150,7 +152,7 @@ class NetworkManagerServer {
 
 	FunctionBinder<Packet::UDP,
 	               void,
-	               std::vector<PacketSharedPtr>&,
+	               PacketSharedPtrs&,
 	               sf::TcpSocket*>
 	  m_UDPSender;
 	FunctionBinder<Packet::UDP, void, sf::Packet*, sf::TcpSocket*>

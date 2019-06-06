@@ -70,7 +70,7 @@ void NetworkManagerServer::sendPacket(Packet::TCP    _type,
 	for (const auto& recipient : recipients) {
 		PacketSharedPtr p(new sf::Packet());
 		*p << code;
-		std::vector<PacketSharedPtr> packets;
+		PacketSharedPtrs packets;
 		packets.push_back(std::move(p));
 
 		m_TCPSender.call(_type, packets, recipient.socket);
@@ -90,7 +90,7 @@ void NetworkManagerServer::sendPacket(Packet::UDP    _type,
 	for (const auto& recipient : recipients) {
 		PacketSharedPtr p(new sf::Packet());
 		*p << code;
-		std::vector<PacketSharedPtr> packets;
+		PacketSharedPtrs packets;
 		packets.push_back(std::move(p));
 
 		m_UDPSender.call(_type, packets, recipient.socket);
@@ -256,13 +256,13 @@ NetworkManagerServer::IPInfo* NetworkManagerServer::getIPInfo(
 	return nullptr;
 }
 
-void NetworkManagerServer::sendQuit(std::vector<PacketSharedPtr>& _p,
-                                    sf::TcpSocket*                _conn) {
+void NetworkManagerServer::sendQuit(PacketSharedPtrs& _p,
+                                    sf::TcpSocket*   _conn) {
 	*_p[0] << m_lastRemovedPlayer;
 }
 
-void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p,
-                                         sf::TcpSocket*                _conn) {
+void NetworkManagerServer::sendDataWorld(PacketSharedPtrs& _p,
+                                         sf::TcpSocket*    _conn) {
 	_p.clear();
 	auto worldData = m_server.encodeWorldChunks();
 
@@ -280,8 +280,8 @@ void NetworkManagerServer::sendDataWorld(std::vector<PacketSharedPtr>& _p,
 	}
 }
 
-void NetworkManagerServer::sendChatMessage(std::vector<PacketSharedPtr>& _p,
-                                           sf::TcpSocket* _conn) {
+void NetworkManagerServer::sendChatMessage(PacketSharedPtrs& _p,
+                                           sf::TcpSocket*    _conn) {
 	Message msg = m_messages.back();
 	*_p[0] << msg.sender;
 	*_p[0] << msg.content;
@@ -327,8 +327,8 @@ void NetworkManagerServer::receiveChatMessage(sf::Packet*    _p,
 	sendPacket(Packet::TCP::CHAT_MESSAGE);
 }
 
-void NetworkManagerServer::sendDataPlayer(std::vector<PacketSharedPtr>& _p,
-                                          sf::TcpSocket*                _conn) {
+void NetworkManagerServer::sendDataPlayer(PacketSharedPtrs& _p,
+                                          sf::TcpSocket*    _conn) {
 	_p.clear();
 	int  index{0};
 	auto recipientInfo{getIPInfo(_conn)};
