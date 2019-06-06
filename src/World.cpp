@@ -84,8 +84,11 @@ void World::parseChunk(const WorldChunk::EncodedChunkData& _data) {
 	addChunk(newChunk);
 }
 
-void World::update(int _timeslice) {
+void World::tickTime(int _timeslice) {
 	m_time.tick();
+}
+
+void World::update(int _timeslice) {
 	m_dayNightCycle.update(m_time);
 }
 
@@ -97,6 +100,14 @@ void World::drawBackground(sf::RenderTarget& target,
 void World::drawChunks(sf::RenderTarget& target,
                        sf::RenderStates  states) const {
 	m_rendererChunk->draw(target, states);
+}
+
+HHMM World::getTime() const {
+	return m_time.get();
+}
+
+void World::setTime(HHMM _t) {
+	m_time.set(_t);
 }
 
 void World::addChunk(WorldChunk _chunk) {

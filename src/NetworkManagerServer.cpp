@@ -52,6 +52,9 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
 	m_UDPSender.add(
 	  Packet::UDP::DATA_PLAYER,
 	  std::bind(&NetworkManagerServer::sendDataPlayer, this, _1, _2));
+	m_UDPSender.add(
+	  Packet::UDP::DATA_WORLDTIME,
+	  std::bind(&NetworkManagerServer::sendDataWorldTime, this, _1, _2));
 	m_UDPReceiver.add(
 	  Packet::UDP::DATA_PLAYER,
 	  std::bind(&NetworkManagerServer::receiveDataPlayer, this, _1, _2));
@@ -357,6 +360,11 @@ void NetworkManagerServer::sendDataPlayer(PacketSharedPtrs& _p,
 	}
 }
 
+void NetworkManagerServer::sendDataWorldTime(PacketSharedPtrs& _p,
+											 sf::TcpSocket*    _conn) {
+	*_p[0] << m_server.m_world->getTime();
+}
+
 void NetworkManagerServer::receiveDataPlayer(sf::Packet*    _p,
                                              sf::TcpSocket* _conn) {
 	ComponentsPlayer p;
@@ -364,4 +372,5 @@ void NetworkManagerServer::receiveDataPlayer(sf::Packet*    _p,
 	m_server.updatePlayer(p);
 
 	sendPacket(Packet::UDP::DATA_PLAYER, _conn);
+	sendPacket(Packet::UDP::DATA_WORLDTIME, _conn);
 }

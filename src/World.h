@@ -23,10 +23,15 @@ class World {
 	const EncodedChunks encodeChunks() const;
 	void                parseChunk(const WorldChunk::EncodedChunkData& _data);
 
+	void tickTime(int _timeslice);
 	void update(int _timeslice);
+
 	void drawBackground(sf::RenderTarget& target,
 	                    sf::RenderStates  states) const;
 	void drawChunks(sf::RenderTarget& target, sf::RenderStates states) const;
+
+	HHMM getTime() const;
+	void setTime(HHMM _t);
 
   private:
   	//Functions -----------------------------------

@@ -90,6 +90,7 @@ class NetworkManagerServer {
 	//UDP-related
 	//--------------
 	void sendDataPlayer(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
+	void sendDataWorldTime(PacketSharedPtrs& _p, sf::TcpSocket* _conn);
 
 	void receiveDataPlayer(sf::Packet* _p, sf::TcpSocket* _conn);
 	//--------------

@@ -11,14 +11,12 @@
 #include <SFML/Network.hpp>
 //Packet operator overloading
 //----------------------------------------------------------------------------------------------------------------
-sf::Packet& operator<<(sf::Packet& _p, const WorldTime& _t) {
-	auto time {_t.get()};
-	return _p << time.hours << time.minutes;
+sf::Packet& operator<<(sf::Packet& _p, const HHMM& _t) {
+	return _p << _t.hours << _t.minutes;
 }
 
-sf::Packet& operator>>(sf::Packet& _p, WorldTime& _t) {
-	auto time {_t.get()};
-	return _p >> time.hours >> time.minutes;
+sf::Packet& operator>>(sf::Packet& _p, HHMM& _t) {
+	return _p >> _t.hours >> _t.minutes;
 }
 //----------------------------------------------------------------------------------------------------------------
 

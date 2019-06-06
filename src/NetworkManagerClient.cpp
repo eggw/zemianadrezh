@@ -65,6 +65,9 @@ NetworkManagerClient::NetworkManagerClient(Client& _client)
 	m_UDPReceiver.add(
 	  Packet::UDP::DATA_PLAYER,
 	  std::bind(&NetworkManagerClient::receiveDataPlayer, this, _1));
+	m_UDPReceiver.add(
+	  Packet::UDP::DATA_WORLDTIME,
+	  std::bind(&NetworkManagerClient::receiveDataWorldTime, this, _1));
 	//------------------------------------------------------------------------------
 }
 
@@ -274,4 +277,16 @@ void NetworkManagerClient::receiveDataPlayer(sf::Packet* _p) {
 	ComponentsPlayer p;
 	*_p >> p;
 	m_client.updatePlayer(p);
+}
+
+void NetworkManagerClient::receiveDataWorldTime(sf::Packet* _p) {
+	//No need to do anything if the world is local and resource
+	//shared.
+	if (m_client.isLocal()) {
+		return;
+	}
+
+	HHMM time{0,0};
+	*_p >> time;
+	m_client.m_world->setTime(time);
 }

@@ -54,6 +54,7 @@ class NetworkManagerClient {
 	void sendDataPlayer(sf::Packet* _p);
 
 	void receiveDataPlayer(sf::Packet* _p);
+	void receiveDataWorldTime(sf::Packet* _p);
 	//----------------------------
 
 	//Data members --------------------------------

@@ -34,5 +34,5 @@ class WorldTime {
 namespace sf {
 	class Packet;
 }
-sf::Packet& operator<<(sf::Packet& _p, const WorldTime& _t);
-sf::Packet& operator>>(sf::Packet& _p, WorldTime& _t);
+sf::Packet& operator<<(sf::Packet& _p, const HHMM& _t);
+sf::Packet& operator>>(sf::Packet& _p, HHMM& _t);
