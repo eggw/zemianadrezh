@@ -11,7 +11,8 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
               m_listener(),
               m_udpSocket(),
               m_lastRemovedPlayer{},
-              m_lastTime{m_server.m_world->getTime()} {
+              m_lastTime{m_server.m_world->getTime()},
+              m_connectionsToRemove{} {
 	m_udpSocket.setBlocking(false);
 
 	if (m_udpSocket.bind(Packet::Port_UDP_Server) != sf::Socket::Done) {
@@ -121,6 +122,10 @@ void NetworkManagerServer::receiveTCPPackets() {
 			  packetType, packet.get(), connection.first.get());
 		}
 	}
+
+	//Removes from m_clientIPs any clients that may have been
+	//marked for removal through receiving a QUIT packet
+	removeClients();
 }
 
 void NetworkManagerServer::receiveUDPPackets() {
@@ -163,23 +168,44 @@ void NetworkManagerServer::sendWorldTime() {
 	m_lastTime = currentTime;
 }
 
-void NetworkManagerServer::removePlayer(sf::TcpSocket* _conn) {
+void NetworkManagerServer::markClientForRemoval(sf::TcpSocket* _conn) {
 	auto info{getIPInfo(_conn)};
 
 	if (info == nullptr) {
 		return;
 	}
+	
+	m_lastRemovedPlayer = info->playerName;
+	m_server.removePlayer(m_lastRemovedPlayer);
+	sendMessage({"Server", "Goodbye, " + info->playerName + "!"});
+	sendPacket(Packet::TCP::QUIT, _conn, true);
 
-	std::string name{info->playerName};
-	m_server.removePlayer(name);
-	sendMessage({"Server", "Goodbye, " + name + "!"});
-	m_lastRemovedPlayer = name;
-	sendPacket(Packet::TCP::QUIT);
+	m_connectionsToRemove.push_back(_conn);
+}
 
-	auto it{m_clientIPs.find(_conn)};
-	if (it != m_clientIPs.end()) {
-		m_clientIPs.erase(it);
+//Remove all connections that were marked for removal by
+//removePlayer(). called after we receive TCP packets to
+//not interfere with our iteration
+void NetworkManagerServer::removeClients() {
+	if (m_connectionsToRemove.empty()) {
+		return;
 	}
+
+	auto it{std::begin(m_clientIPs)};
+
+	while (it != std::end(m_clientIPs)) {
+		auto result{std::find(std::begin(m_connectionsToRemove),
+		                      std::end(m_connectionsToRemove),
+		                      it->first.get())};
+		if (result != std::end(m_connectionsToRemove)) {
+			it = m_clientIPs.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	m_connectionsToRemove.clear();
 }
 
 void NetworkManagerServer::listen() {
@@ -322,7 +348,7 @@ void NetworkManagerServer::receiveJustJoined(sf::Packet*    _p,
 }
 
 void NetworkManagerServer::receiveQuit(sf::Packet* _p, sf::TcpSocket* _conn) {
-	removePlayer(_conn);
+	markClientForRemoval(_conn);
 }
 
 void NetworkManagerServer::receiveRequestWorld(sf::Packet*    _p,

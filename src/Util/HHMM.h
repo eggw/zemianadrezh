@@ -11,7 +11,7 @@ struct HHMM {
 	}
 
 	int hours;
-	int minutes;
+	int minutes; 
 };
 
 #endif // HHMM_H_INCLUDED

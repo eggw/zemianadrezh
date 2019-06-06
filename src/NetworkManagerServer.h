@@ -100,10 +100,16 @@ class NetworkManagerServer {
 	//--------------
 
 	//Handles everything to do with removing a player, including
-	//removing it from m_clientIPs,calling Server::removePlayer(),
-	//and sending a QUIT packet containing the name of the player
-	//that was removed to all connected clients
-	void removePlayer(sf::TcpSocket* _conn = nullptr);
+	//calling Server::removePlayer() and sending a QUIT packet 
+	//containing the name of the player that was removed to all 
+	//connected clients. 
+	//
+	//Actual removal from m_clientIPs happens when removeClients()
+	//is called.
+	void markClientForRemoval(sf::TcpSocket* _conn = nullptr);
+	//Removes from m_clientIPs any clients that may have been
+	//marked for removal, such as when receiving a QUIT packet
+	void removeClients();
 
 	std::vector<ConnectionData> getRecipients(
 	  sf::TcpSocket* _recipient = nullptr,
@@ -129,6 +135,8 @@ class NetworkManagerServer {
 	std::vector<Message> m_messages;
 	std::string          m_lastRemovedPlayer;
 	HHMM                 m_lastTime;
+
+	std::vector<sf::TcpSocket*> m_connectionsToRemove;
 
 	/*
 	Similar to the behaviour in NetworkManagerClient, we're going to have 4
