@@ -10,7 +10,8 @@ NetworkManagerServer::NetworkManagerServer(Server& _server)
             : m_server(_server),
               m_listener(),
               m_udpSocket(),
-              m_lastRemovedPlayer{} {
+              m_lastRemovedPlayer{},
+              m_lastTime{m_server.m_world->getTime()} {
 	m_udpSocket.setBlocking(false);
 
 	if (m_udpSocket.bind(Packet::Port_UDP_Server) != sf::Socket::Done) {
@@ -153,6 +154,15 @@ void NetworkManagerServer::sendMessage(const Message& _msg) {
 	sendPacket(Packet::TCP::CHAT_MESSAGE);
 }
 
+void NetworkManagerServer::sendWorldTime() {
+	auto currentTime{m_server.m_world->getTime()};
+	if(m_lastTime == currentTime) {
+		return;
+	}
+	sendPacket(Packet::UDP::DATA_WORLDTIME);
+	m_lastTime = currentTime;
+}
+
 void NetworkManagerServer::removePlayer(sf::TcpSocket* _conn) {
 	auto info{getIPInfo(_conn)};
 
@@ -207,6 +217,7 @@ void NetworkManagerServer::accept() {
 }
 
 void NetworkManagerServer::update() {
+	sendWorldTime();
 	PacketSender::get_instance().update();
 }
 
@@ -372,5 +383,4 @@ void NetworkManagerServer::receiveDataPlayer(sf::Packet*    _p,
 	m_server.updatePlayer(p);
 
 	sendPacket(Packet::UDP::DATA_PLAYER, _conn);
-	sendPacket(Packet::UDP::DATA_WORLDTIME, _conn);
 }

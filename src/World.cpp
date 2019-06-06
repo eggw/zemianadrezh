@@ -16,7 +16,7 @@
 World::World()
             : m_chunks{},
               m_rendererChunk{std::make_unique<RendererChunk>(*this)},
-              m_time{{5, 0}},
+              m_time{{7, 0}},
               m_dayNightCycle{} {
 }
 

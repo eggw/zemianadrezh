@@ -11,6 +11,7 @@
 #include "PacketTypes.h"
 #include "PacketSender.h"
 #include "Message.h"
+#include "Util/HHMM.h"
 
 class Server;
 
@@ -38,6 +39,9 @@ class NetworkManagerServer {
 
 	//Sends a message to all connected players
 	void sendMessage(const Message& _msg);
+	//Sends the world time (if it has been updated)
+	//to all connected players
+	void sendWorldTime();
 
 	void listen();
 	void accept();
@@ -124,6 +128,7 @@ class NetworkManagerServer {
 	sf::UdpSocket        m_udpSocket;
 	std::vector<Message> m_messages;
 	std::string          m_lastRemovedPlayer;
+	HHMM                 m_lastTime;
 
 	/*
 	Similar to the behaviour in NetworkManagerClient, we're going to have 4
