@@ -28,3 +28,11 @@ class WorldTime {
 	mutable bool m_paused;
 	//---------------------------------------------
 };
+
+//Forward declare Packet here and define the overloading in .cpp, so
+//we don't have to include SFML/Networking.hpp here
+namespace sf {
+	class Packet;
+}
+sf::Packet& operator<<(sf::Packet& _p, const WorldTime& _t);
+sf::Packet& operator>>(sf::Packet& _p, WorldTime& _t);

@@ -8,6 +8,20 @@
 
 #include "WorldTime.h"
 
+#include <SFML/Network.hpp>
+//Packet operator overloading
+//----------------------------------------------------------------------------------------------------------------
+sf::Packet& operator<<(sf::Packet& _p, const WorldTime& _t) {
+	auto time {_t.get()};
+	return _p << time.hours << time.minutes;
+}
+
+sf::Packet& operator>>(sf::Packet& _p, WorldTime& _t) {
+	auto time {_t.get()};
+	return _p >> time.hours >> time.minutes;
+}
+//----------------------------------------------------------------------------------------------------------------
+
 WorldTime::WorldTime(HHMM _t) : m_time{0, 0}, m_paused{false} {
 	set(_t);
 }
