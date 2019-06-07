@@ -118,16 +118,11 @@ bool Client::isLocal() const {
 }
 
 void Client::handleZoom(sf::Event& _event) {
-	if(_event.type == sf::Event::KeyPressed) {
-		if (_event.key.code == Key::ZOOM_IN
-			&&
-			m_zoomLevel > MIN_ZOOM) {
+	if (_event.type == sf::Event::KeyPressed) {
+		if (_event.key.code == Key::ZOOM_IN && m_zoomLevel > MIN_ZOOM) {
 			m_zoomLevel -= ZOOM_STEP;
-
 		}
-		else if (_event.key.code == Key::ZOOM_OUT
-				&&
-				m_zoomLevel < MAX_ZOOM) {
+		else if (_event.key.code == Key::ZOOM_OUT && m_zoomLevel < MAX_ZOOM) {
 			m_zoomLevel += ZOOM_STEP;
 		}
 	}
