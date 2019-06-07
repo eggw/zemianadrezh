@@ -17,6 +17,12 @@
 #include "Components/ComponentAnimation.h"
 #include "Components/ComponentsPlayer.h"
 
+#include "Keybinds.h"
+
+static constexpr float MIN_ZOOM{0.5f};
+static constexpr float MAX_ZOOM{1.0f};
+static constexpr float ZOOM_STEP{0.1f};
+
 static constexpr int LEFTMOST{0};
 static constexpr int RIGHTMOST{Dimensions::Chunk::X * Dimensions::Block::X *
                                Dimensions::World::X};
@@ -45,7 +51,8 @@ Client::Client(sf::IpAddress _serverIP, Server* _localServer)
               m_systemPhysics{LEFTMOST, RIGHTMOST},
               m_systemPlayerMovement{},
               m_view{},
-              m_skyView{} {
+              m_skyView{},
+              m_zoomLevel{1.0f} {
 	initialisePlayer();
 
 	m_networkManager.connect(m_serverIP, Packet::Port_TCP_Server);
@@ -56,6 +63,7 @@ Client::~Client() {
 }
 
 void Client::getInput(sf::Event& _event) {
+	handleZoom(_event);
 	m_interface.getInput(_event);
 	m_systemPlayerMovement.getInput(*m_registry, m_player);
 }
@@ -109,6 +117,22 @@ bool Client::isLocal() const {
 	return m_localServer != nullptr;
 }
 
+void Client::handleZoom(sf::Event& _event) {
+	if(_event.type == sf::Event::KeyPressed) {
+		if (_event.key.code == Key::ZOOM_IN
+			&&
+			m_zoomLevel > MIN_ZOOM) {
+			m_zoomLevel -= ZOOM_STEP;
+
+		}
+		else if (_event.key.code == Key::ZOOM_OUT
+				&&
+				m_zoomLevel < MAX_ZOOM) {
+			m_zoomLevel += ZOOM_STEP;
+		}
+	}
+}
+
 void Client::initialisePlayer() {
 	m_player = m_registry->create();
 	ComponentsPlayer p{};
@@ -140,6 +164,7 @@ void Client::adjustViews(sf::RenderTarget& _target) const {
 	}
 
 	m_view.setCenter(viewCenter);
+	m_view.zoom(m_zoomLevel);
 
 	m_skyView.setCenter(
 	  {float(_target.getSize().x / 2), float(_target.getSize().y / 2)});

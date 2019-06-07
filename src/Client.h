@@ -46,6 +46,7 @@ class Client
 
   private:
 	//Functions -----------------------------------
+	void handleZoom(sf::Event& _event);
 	void initialisePlayer();
 	//For now, this sets the player's position to the center of
 	//the world (x-axis), on the surface (y-axis 0)
@@ -72,6 +73,8 @@ class Client
 	mutable sf::View m_view;
 	//m_skyView is the view used to draw the background, sun/moon, etc.
 	mutable sf::View m_skyView;
+
+	float m_zoomLevel;
 	//---------------------------------------------
 };
 
