@@ -76,7 +76,7 @@ void Client::update(int _timeslice) {
 }
 
 void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	adjustViews(target);
+	updateViews(target);
 
 	target.setView(m_skyView);
 	m_world->drawBackground(target, states);
@@ -142,7 +142,7 @@ void Client::respawnPlayer() {
 	playerPos.y     = 0;
 }
 
-void Client::adjustViews(sf::RenderTarget& _target) const {
+void Client::updateViews(sf::RenderTarget& _target) const {
 	m_view.reset(
 	  {0, 0, float(_target.getSize().x), float(_target.getSize().y)});
 
@@ -150,12 +150,13 @@ void Client::adjustViews(sf::RenderTarget& _target) const {
 	  {0, 0, float(_target.getSize().x), float(_target.getSize().y)});
 
 	auto viewCenter{getPlayerPosition()};
+	float VIEW_RIGHTMOST_CURRENT {VIEW_RIGHTMOST + ((1 - m_zoomLevel) * (RIGHTMOST - VIEW_RIGHTMOST))};
 
-	if (viewCenter.x < VIEW_LEFTMOST) {
-		viewCenter.x = VIEW_LEFTMOST;
+	if (viewCenter.x < VIEW_LEFTMOST * m_zoomLevel) {
+		viewCenter.x = VIEW_LEFTMOST * m_zoomLevel;
 	}
-	else if (viewCenter.x > VIEW_RIGHTMOST) {
-		viewCenter.x = VIEW_RIGHTMOST;
+	else if (viewCenter.x > VIEW_RIGHTMOST_CURRENT) {
+		viewCenter.x = VIEW_RIGHTMOST_CURRENT;
 	}
 
 	m_view.setCenter(viewCenter);

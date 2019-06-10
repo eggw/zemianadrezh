@@ -51,7 +51,7 @@ class Client
 	//For now, this sets the player's position to the center of
 	//the world (x-axis), on the surface (y-axis 0)
 	void respawnPlayer();
-	void adjustViews(sf::RenderTarget& _target) const;
+	void updateViews(sf::RenderTarget& _target) const;
 
 	sf::Vector2f      getPlayerPosition() const;
 	const std::string getPlayerName() const;
