@@ -19,13 +19,12 @@ void SystemAnimation::update(int _timeslice, entt::registry& _reg) {
 		auto&      animation = view.get<ComponentAnimation>(entity).m_animation;
 		const auto left = view.get<ComponentDirection>(entity).m_facingLeft;
 		const auto vel  = view.get<ComponentPhysics>(entity).m_velocity;
-		const auto pos  = view.get<ComponentPosition>(entity).m_position;
 
 		if (left) {
-			animation.setAnimationRange(0, 10);
+			animation.setFacingLeft();
 		}
 		else {
-			animation.setAnimationRange(11, 21);
+			animation.setFacingRight();
 		}
 
 		float effectiveSpeed{vel.x};

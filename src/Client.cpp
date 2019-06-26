@@ -88,11 +88,6 @@ void Client::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	m_systemDrawing.draw(*m_registry, target, states);
 }
 
-void Client::updateSystems(int _timeslice) {
-	m_systemAnimation.update(_timeslice, *m_registry);
-	m_systemPhysics.update(_timeslice, *m_registry);
-}
-
 void Client::sendPlayerPacket() {
 	//Ensure that a reasonable rate of packet sending is maintained.
 	static sf::Clock c;
@@ -115,6 +110,11 @@ bool Client::isConnected() const {
 
 bool Client::isLocal() const {
 	return m_localServer != nullptr;
+}
+
+void Client::updateSystems(int _timeslice) {
+	m_systemAnimation.update(_timeslice, *m_registry);
+	m_systemPhysics.update(_timeslice, *m_registry);
 }
 
 void Client::handleZoom(sf::Event& _event) {

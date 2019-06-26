@@ -36,8 +36,6 @@ class Client
 	void update(int _timeslice);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	void updateSystems(int _timeslice);
-
 	void receivePackets();
 	void sendPlayerPacket();
 
@@ -46,6 +44,7 @@ class Client
 
   private:
 	//Functions -----------------------------------
+	void updateSystems(int _timeslice);
 	void handleZoom(sf::Event& _event);
 	void initialisePlayer();
 	//For now, this sets the player's position to the center of

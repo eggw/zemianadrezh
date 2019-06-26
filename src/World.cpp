@@ -126,9 +126,11 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	std::vector<WorldChunk*> toRecurseOver{};
 
+	int chunksSize {int(m_chunks.size())};
+
 	if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(northPosition, dim.x)};
-		if (i < m_chunks.size()) {
+		if (i < chunksSize) {
 			neighbors[Direction::NORTH] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}
@@ -136,7 +138,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	if (!Utility::Coordinates::outOfRange(southPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(southPosition, dim.x)};
-		if (i < m_chunks.size()) {
+		if (i < chunksSize) {
 			neighbors[Direction::SOUTH] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}
@@ -144,7 +146,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	if (!Utility::Coordinates::outOfRange(eastPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(eastPosition, dim.x)};
-		if (i < m_chunks.size()) {
+		if (i < chunksSize) {
 			neighbors[Direction::EAST] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}
@@ -152,7 +154,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	if (!Utility::Coordinates::outOfRange(westPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(westPosition, dim.x)};
-		if (i < m_chunks.size()) {
+		if (i < chunksSize) {
 			neighbors[Direction::WEST] = &m_chunks[i];
 			toRecurseOver.push_back(&m_chunks[i]);
 		}

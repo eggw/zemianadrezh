@@ -1,6 +1,6 @@
-#include "Animation.h"
+#include "AnimationMovement.h"
 
-Animation::Animation(const sf::Texture& _texture)
+AnimationMovement::AnimationMovement(const sf::Texture& _texture)
             : m_textureRects(),
               m_currentIndex{0},
               m_minIndex{0},
@@ -60,18 +60,18 @@ Animation::Animation(const sf::Texture& _texture)
 	//walk right 10
 	addFrame({SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT});
 
+	setFacingRight();
+}
+
+void AnimationMovement::setFacingLeft() {
+	setAnimationRange(0, 10);
+}
+
+void AnimationMovement::setFacingRight() {
 	setAnimationRange(11, 21);
 }
 
-void Animation::setAnimationRange(int _beginIndex, int _maxIndex) {
-	m_minIndex = _beginIndex;
-	m_maxIndex = _maxIndex;
-	if (m_currentIndex > _maxIndex || m_currentIndex < _beginIndex) {
-		m_currentIndex = m_minIndex;
-	}
-}
-
-void Animation::setAnimationSpeed(float _speed) {
+void AnimationMovement::setAnimationSpeed(float _speed) {
 	m_animationSpeed = _speed;
 	if (m_animationSpeed == 0) {
 		stopAnimation();
@@ -81,7 +81,7 @@ void Animation::setAnimationSpeed(float _speed) {
 	}
 }
 
-void Animation::update() {
+void AnimationMovement::update() {
 	//So long as the animation is running...
 	if (m_animationRunning) {
 		//And enough time has passed...
@@ -100,26 +100,34 @@ void Animation::update() {
 	}
 }
 
-const sf::Sprite Animation::getCurrentSprite() const {
+void AnimationMovement::setAnimationRange(int _beginIndex, int _maxIndex) {
+	m_minIndex = _beginIndex;
+	m_maxIndex = _maxIndex;
+	if (m_currentIndex > _maxIndex || m_currentIndex < _beginIndex) {
+		m_currentIndex = m_minIndex;
+	}
+}
+
+const sf::Sprite AnimationMovement::getCurrentSprite() const {
 	return getSprite(m_currentIndex);
 }
 
-const sf::Sprite Animation::getSprite(int _index) const {
+const sf::Sprite AnimationMovement::getSprite(int _index) const {
 	sf::Sprite sprite{m_texture, m_textureRects[_index]};
 	sprite.setOrigin(sprite.getGlobalBounds().width / 2,
 	                 sprite.getGlobalBounds().height);
 	return sprite;
 }
 
-void Animation::addFrame(sf::IntRect _rect) {
+void AnimationMovement::addFrame(sf::IntRect _rect) {
 	m_textureRects.push_back(_rect);
 }
 
-void Animation::beginAnimation() {
+void AnimationMovement::beginAnimation() {
 	m_animationRunning = true;
 }
 
-void Animation::stopAnimation() {
+void AnimationMovement::stopAnimation() {
 	m_currentIndex     = m_minIndex;
 	m_animationRunning = false;
 }

@@ -24,6 +24,9 @@ void ProgramState::getInput(sf::Event& _event) {
 		onResize(newSize);
 		break;
 	}
+
+	default: break;
+
 	}
 }
 

@@ -3,13 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Animation.h"
+#include "AnimationMovement.h"
 
 struct ComponentAnimation {
   public:
-	ComponentAnimation(Animation _a) : m_animation{_a} {};
+	ComponentAnimation(AnimationMovement _a) : m_animation{_a} {};
 
-	Animation m_animation;
+	AnimationMovement m_animation;
 };
 
 #endif // COMPONENTSPRITE_H_INCLUDED

@@ -1,24 +1,32 @@
-#ifndef ANIMATION_H_INCLUDED
-#define ANIMATION_H_INCLUDED
+#ifndef ANIMATIONMOVEMENT_H_INCLUDED
+#define ANIMATIONMOVEMENT_H_INCLUDED
 
 #include <SFML/Graphics.hpp>
 
-class Animation {
+//The texture for a movement animation should contain 11 sprites for
+//each direction (left, right) with the first row being the left-facing
+//sprite and the second being the right-facing sprite.
+//
+//The dimensions of the player sprite are specified in AnimationMovement.cpp
+
+class AnimationMovement {
   public:
-	Animation(const sf::Texture& _texture);
+	AnimationMovement(const sf::Texture& _texture);
 
 	//Move assignment overload
-	Animation& operator=(const Animation&) noexcept {
+	AnimationMovement& operator=(const AnimationMovement&) noexcept {
 		return *this;
 	};
 
-	void             setAnimationRange(int _beginIndex, int _maxIndex);
+	void             setFacingLeft();
+	void             setFacingRight();
 	void             setAnimationSpeed(float _speed);
 	const sf::Sprite getCurrentSprite() const;
 	void             update();
 
   private:
 	//Functions -----------------------------------
+	void             setAnimationRange(int _beginIndex, int _maxIndex);
 	const sf::Sprite getSprite(int _index) const;
 	void             addFrame(sf::IntRect _rect);
 	void             beginAnimation();
@@ -41,4 +49,4 @@ class Animation {
 	//---------------------------------------------
 };
 
-#endif // ANIMATION_H_INCLUDED
+#endif // ANIMATIONMOVEMENT_H_INCLUDED
