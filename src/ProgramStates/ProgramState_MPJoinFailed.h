@@ -1,9 +1,11 @@
 #ifndef PROGRAMSTATE_MPJOINFAILED_H_INCLUDED
 #define PROGRAMSTATE_MPJOINFAILED_H_INCLUDED
 
-#include "ProgramStates/ProgramState_Menu.h"
+#include <SPSS/System/MenuState.h>
 
-class ProgramState_MPJoinFailed : public ProgramState_Menu {
+#include "Program.h"
+
+class ProgramState_MPJoinFailed : public spss::MenuState {
   public:
 	ProgramState_MPJoinFailed(Program& _program, const std::string& _ip);
 };

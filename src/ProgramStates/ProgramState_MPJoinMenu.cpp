@@ -2,60 +2,51 @@
 
 #include "FontManager.h"
 
-//Here are the variables we'll use to initialise the IP entry box
-//in the correct position. It will take 20% of the screen width and
-//be located just above the first item in m_menuItems (which should be
-//"Connect" in this case)
-//////////////////////////////////////////////////////////////////////////////////////////////
-constexpr unsigned int IPENTRY_CHARACTER_SIZE{20};
-constexpr float        IPENTRY_WIDTH_FACTOR{0.2f};
-constexpr float        IPENTRY_X_POS{0.5f - (IPENTRY_WIDTH_FACTOR / 2)};
-//////////////////////////////////////////////////////////////////////////////////////////////
-
 ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
-            : ProgramState_Menu(_program), m_IPEntry(true, true, 18, 45) {
-	addMenuItem(
-	  "Connect", &Program::pushState_Play_MP_Join, sf::Keyboard::Enter);
+            : MenuState(_program.m_window,
+						FontManager::get_instance().getFont(FontManager::Type::ANDY),
+						"Multiplayer - Join"),
+						m_textEntryView{},
+						m_IPEntry(FontManager::get_instance().getFont(FontManager::Type::ANDY),
+								  200,
+								  "localhost") {
+
+	m_IPEntry.setCharSize(22);
+	m_IPEntry.setMaxChars(45);
+	m_IPEntry.setAlwaysVisible(true);
+	m_IPEntry.setAlwaysActive(true);
+
+	m_IPStr = std::make_unique<std::string>("");
 
 	addGap();
-	addMenuItem("Back to Main Menu", &Program::returnToMainMenu);
+	addMenuItem(
+	  "Connect", std::bind(&Program::pushState_Play_MP_Join, &_program, m_IPStr.get()), sf::Keyboard::Enter);
+	addGap();
+	addMenuItem("Back to Main Menu", std::bind(&Program::returnToMainMenu, &_program));
 
 	onResize(_program.m_window.getSize());
-	m_IPEntry.setText("localhost");
 }
 
 void ProgramState_MPJoinMenu::getInput(sf::Event& _event) {
-	ProgramState_Menu::getInput(_event);
+	MenuState::getInput(_event);
 	m_IPEntry.getInput(_event);
 }
 
 void ProgramState_MPJoinMenu::update(int _timeslice) {
-	ProgramState_Menu::update(_timeslice);
+	MenuState::update(_timeslice);
 	m_IPEntry.update();
-	m_program.setIpAddress(m_IPEntry.getCurrentString());
+	*m_IPStr = m_IPEntry.getCurrentString();
 }
 
 void ProgramState_MPJoinMenu::draw() {
-	m_program.m_window.draw(m_IPEntry);
-	ProgramState_Menu::draw();
+	MenuState::draw();
+	m_window.setView(m_textEntryView);
+	m_window.draw(m_IPEntry);
 }
 
 void ProgramState_MPJoinMenu::onResize(sf::Vector2u _newSize) {
-	ProgramState_Menu::onResize(_newSize);
-
-	float FIRST_ITEM_POS_Y{
-	  std::get<2>(m_menuItems.front()).getPosition().y -
-	  float(2 * (std::get<2>(m_menuItems.front()).getGlobalBounds().height))};
-	float SCREEN_SIZE_Y{float(m_program.m_window.getSize().y)};
-
-	float IPENTRY_Y_POS{FIRST_ITEM_POS_Y / SCREEN_SIZE_Y};
-
-	sf::FloatRect ipEntryViewport{
-	  IPENTRY_X_POS,
-	  IPENTRY_Y_POS,
-	  IPENTRY_WIDTH_FACTOR,
-	  0 //this can be removed now as it's unused
-	};
-
-	m_IPEntry.initialise(m_program.m_window.getSize(), ipEntryViewport);
+	//TODO: figure out a more elegant way to position m_IPEntry
+	MenuState::onResize(_newSize);
+	m_textEntryView.reset({0,0, float(_newSize.x), float(_newSize.y)});
+	m_IPEntry.setPosition({float(m_window.getSize().x) / 2, float(m_window.getSize().y / 2.5)});
 }

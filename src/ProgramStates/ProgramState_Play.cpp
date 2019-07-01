@@ -8,19 +8,28 @@
 #include <iostream>
 
 ProgramState_Play::ProgramState_Play(Program&      _program,
-                                     sf::IpAddress _ipAddress)
-            : ProgramState(_program),
+                                     sf::IpAddress _ipAddress,
+                                     Server* _localServer)
+            : State(_program.m_window),
               //set the last argument of m_client's constructor
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
-              m_client(_ipAddress, m_program.getServer()) {
+              m_program{_program},
+              m_client(_ipAddress, _localServer) {
+
+	setDrawnInBackground(true);
+	if(_localServer != nullptr) {
+		if(_localServer->connectionsAllowed()) {
+			setUpdatedInBackground(true);
+		}
+	}
 }
 
 ProgramState_Play::~ProgramState_Play() {
 }
 
 void ProgramState_Play::getInput(sf::Event& _event) {
-	ProgramState::getInput(_event);
+	State::getInput(_event);
 
 	if (_event.type == sf::Event::KeyPressed) {
 		if (_event.key.code == Key::PAUSE_KEY) {
@@ -62,5 +71,5 @@ bool ProgramState_Play::clientConnected() const {
 }
 
 void ProgramState_Play::onResize(sf::Vector2u _newSize) {
-	ProgramState::onResize(_newSize);
+	State::onResize(_newSize);
 }

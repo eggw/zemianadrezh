@@ -21,13 +21,13 @@ All this should work seamlessly over a network connection.
 
 ## What works so far?
 
-As of 10/5/2019, the following features are in:
+As of 12/7/2019, the following features are in:
 
 * A basic Client-Server architecture
 
 * Some basic program states, including the main menu, the multiplayer hosting/joining menu, and the in-game playing state
 
-* The ability to connect to a local or remote host and have the world (only dirt blocks), in addition to the attributes of the host and remote players, synced between both clients*
+* The ability to connect to a local or remote host and have the world (only dirt and grass blocks at the moment), in addition to the attributes of the host and remote players, synced between both clients*
 
 * A fully functional chat box
 
@@ -37,12 +37,12 @@ As of 10/5/2019, the following features are in:
 
 An image showing the game in its current state:
 
-![img](https://i.imgur.com/rx1KYEk.png)
+![img](https://i.imgur.com/fOQjsZ6.png)
 
 
 ## Dependencies
 
-This project makes use of [SFML 2.5.1](https://www.sfml-dev.org/) and [entt](https://github.com/skypjack/entt), as well as [doctest](https://github.com/onqtam/doctest) for testing. The latter two have been included directly in the dependencies dir, as they are header-only.
+This project makes use of [SFML 2.5.1](https://www.sfml-dev.org/), [SPSS](https://github.com/eggw/spss), and [entt](https://github.com/skypjack/entt), as well as [doctest](https://github.com/onqtam/doctest) for testing. The latter two have been included directly in the dependencies dir, as they are header-only.
 
 ## Contributing
 

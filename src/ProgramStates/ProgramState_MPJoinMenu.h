@@ -1,11 +1,12 @@
 #ifndef PROGRAMSTATE_MPJOINMENU_H_INCLUDED
 #define PROGRAMSTATE_MPJOINMENU_H_INCLUDED
 
-#include "ProgramStates/ProgramState_Menu.h"
+#include <SPSS/System/MenuState.h>
+#include <SPSS/Graphics/TextEntryBox.h>
 
-#include "TextEntryBox.h"
+#include "Program.h"
 
-class ProgramState_MPJoinMenu : public ProgramState_Menu {
+class ProgramState_MPJoinMenu : public spss::MenuState {
   public:
 	ProgramState_MPJoinMenu(Program& _program);
 	void getInput(sf::Event& _event);
@@ -19,7 +20,15 @@ class ProgramState_MPJoinMenu : public ProgramState_Menu {
 
   private:
 	//Data members --------------------------------
-	TextEntryBox m_IPEntry;
+	sf::View                      m_textEntryView;
+	spss::TextEntryBox            m_IPEntry;
+	/*
+	When we bind "Connect" to Program::pushState_Play_MP_Join,
+	we'll pass a ptr to the IP string, because its value will
+	be different by the time the user actually enters the IP
+	and clicks it
+	*/
+	std::unique_ptr<std::string>  m_IPStr;
 	//---------------------------------------------
 };
 

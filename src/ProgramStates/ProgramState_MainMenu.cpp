@@ -1,18 +1,22 @@
 #include "ProgramStates/ProgramState_MainMenu.h"
 
+#include "FontManager.h"
+
 ProgramState_MainMenu::ProgramState_MainMenu(Program& _program)
-            : ProgramState_Menu(_program) {
-	addMenuItem("Singleplayer", &Program::pushState_Play_SP);
+            : MenuState(_program.m_window,
+						FontManager::get_instance().getFont(FontManager::Type::ANDY),
+						"zemianadrezh") {
 
-	addMenuItem("Multiplayer", &Program::pushState_MPMenu);
+	setRandomisedColors(true);
+	setScalingText(true);
+	setRotatingText(true);
 
-	addMenuItem("Options");
-
+	addMenuItem("Singleplayer", std::bind(&Program::pushState_Play_SP, &_program));
+	addMenuItem("Multiplayer", std::bind(&Program::pushState_MPMenu, &_program));
 	addGap();
-	addMenuItem("Exit", &Program::closeWindow);
+	addMenuItem("Exit", std::bind(&Program::exit, &_program));
 }
 
 void ProgramState_MainMenu::onStateSwitch() {
-	ProgramState_Menu::onStateSwitch();
-	m_program.terminateLocalServer();
+	MenuState::onStateSwitch();
 }

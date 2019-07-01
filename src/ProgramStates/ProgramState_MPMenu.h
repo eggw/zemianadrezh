@@ -1,9 +1,11 @@
 #ifndef PROGRAMSTATE_MPMENU_H_INCLUDED
 #define PROGRAMSTATE_MPMENU_H_INCLUDED
 
-#include "ProgramStates/ProgramState_Menu.h"
+#include <SPSS/System/MenuState.h>
 
-class ProgramState_MPMenu : public ProgramState_Menu {
+#include "Program.h"
+
+class ProgramState_MPMenu : public spss::MenuState {
   public:
 	ProgramState_MPMenu(Program& _program);
 };

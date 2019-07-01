@@ -1,14 +1,15 @@
 #ifndef PROGRAMSTATE_PLAY_H_INCLUDED
 #define PROGRAMSTATE_PLAY_H_INCLUDED
 
-#include "ProgramState.h"
+#include <SPSS/System/State.h>
 
+#include "Program.h"
 #include "Server.h"
 #include "Client.h"
 
-class ProgramState_Play : public ProgramState {
+class ProgramState_Play : public spss::State {
   public:
-	ProgramState_Play(Program& _program, sf::IpAddress _ipAddress);
+	ProgramState_Play(Program& _program, sf::IpAddress _ipAddress, Server* _localServer = nullptr);
 	~ProgramState_Play();
 
 	void getInput(sf::Event& _event);
@@ -22,7 +23,8 @@ class ProgramState_Play : public ProgramState {
 
   private:
 	//Data members --------------------------------
-	Client m_client;
+	Client   m_client;
+	Program& m_program;
 	//---------------------------------------------
 };
 

@@ -1,74 +1,47 @@
 #ifndef PROGRAM_H_INCLUDED
 #define PROGRAM_H_INCLUDED
 
+#include <SPSS/System/Core.h>
 #include <memory>
 
-#include <SFML/Graphics.hpp>
-
 #include "Server.h"
-#include "Singleton.h"
 
-class ProgramState;
-
-class Program : public Singleton<Program> {
+class Program : public spss::Core {
   public:
 	Program(sf::RenderWindow& _window);
 	~Program();
 
-	void init();
-	void gameLoop();
+	//overloaded from Core; this is because in addition
+	//to the functionality Core::run() provides, we also
+	//need to update the local server at a specific point
+	//(just after updating the client)
+	void run();
 
 	void pushState_Play_SP();
 	void pushState_Play_MP_Host();
-	void pushState_Play_MP_Join();
+	void pushState_Play_MP_Join(std::string* _ip);
 
 	void pushState_Pause();
 	void pushState_MPMenu();
 	void pushState_MPHostMenu();
 	void pushState_MPJoinMenu();
 
-	void pushState_MPJoinFailed();
+	void pushState_MPJoinFailed(std::string* _ip);
 	void pushState_MPConnectionLost();
 
 	void returnToMainMenu();
 
-	bool localServerInitialised();
+	bool localServerInitialised() const;
 	void initialiseLocalServer(bool _joinable);
-	void terminateLocalServer();
-
-	void popState();
-
-	void closeWindow();
-
-	void setIpAddress(const std::string& _ipStr);
-
-	Server* getServer() const;
-
-	std::vector<std::unique_ptr<ProgramState>> m_states;
-	sf::RenderWindow&                          m_window;
 
   private:
 	//Functions -----------------------------------
-	//getInput() is responsibile for detecting the window being
-	//closed, and, of course, calling the current state's getInput()
-	void getInput();
-	//Update and draw simply call the current gamestate's version of
-	//those functions, as well as checking if they should do so for
-	//the previous state.
-	void update(int _timeslice);
-	void draw();
-	bool isAtMainMenu();
+	bool isAtMainMenu() const;
+	bool isPaused()     const;
 	//---------------------------------------------
 
 	//Data members --------------------------------
 	std::unique_ptr<Server> m_localServer{nullptr};
-	//Due to the way menu items work (ProgramState_Menu),
-	//they can call Program functions, but they can't pass
-	//parameters. Therefore, when a player wants to join
-	//a server, we'll set m_ipAddress to the IP they type,
-	//so that we can initialise the client with
-	//pushState_Play_MP_Join()
-	std::string m_ipAddress{"localhost"};
 	//---------------------------------------------
 };
 

@@ -5,8 +5,8 @@
 TODO: add functions/make stuff private
 */
 
+#include <SPSS/Graphics/MulticolorText.h>
 #include <SFML/Graphics.hpp>
-#include "MulticolourText/MulticolourText.hpp"
 
 #include "Message.h"
 
@@ -31,8 +31,8 @@ class ChatBoxMessage : public sf::Drawable {
 
   private:
 	//Data members --------------------------------
-	sf::MulticolourText m_text;
-	Message             m_message;
+	spss::MulticolorText m_text;
+	Message               m_message;
 	//---------------------------------------------
 };
 

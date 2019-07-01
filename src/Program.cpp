@@ -9,34 +9,28 @@
 #include "ProgramStates/ProgramState_MPJoinFailed.h"
 #include "ProgramStates/ProgramState_ConnectionLost.h"
 
-constexpr int FIXED_TIMESLICE{16};
+constexpr const int FIXED_TIMESLICE{16};
 
-Program::Program(sf::RenderWindow& _window) : m_window{_window} {
-	m_states.push_back(
+Program::Program(sf::RenderWindow& _window) : Core(_window, FIXED_TIMESLICE) {
+	pushState(
 	  std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
-
-	gameLoop();
+	run();
 }
 
 Program::~Program() {
 }
 
-void Program::init() {
-}
-
-void Program::gameLoop() {
+void Program::run() {
 	int       simulationTime{0}; //as milliseconds
 	sf::Clock timesliceClock{};
 
-	while (m_window.isOpen()) {
+	while (m_window.isOpen() && getTopState() != nullptr) {
 		m_window.clear(sf::Color(0, 0, 0));
-
 		getInput();
-
 		int realTime{timesliceClock.getElapsedTime().asMilliseconds()};
-
 		while (simulationTime < realTime) {
 			simulationTime += FIXED_TIMESLICE;
+			update(FIXED_TIMESLICE);
 
 			//The way packet sending between client and server works is
 			//as follows:
@@ -53,12 +47,12 @@ void Program::gameLoop() {
 			//For this reason, it is important that the client updates
 			//and gets input just before the local server does.
 
-			update(FIXED_TIMESLICE);
-
 			if (localServerInitialised()) {
-				m_localServer->acceptConnections();
-				m_localServer->receivePackets();
-				m_localServer->update(FIXED_TIMESLICE);
+				if (!isPaused() || m_localServer->connectionsAllowed()) {
+					m_localServer->acceptConnections();
+					m_localServer->receivePackets();
+					m_localServer->update(FIXED_TIMESLICE);
+				}
 			}
 		}
 
@@ -66,101 +60,77 @@ void Program::gameLoop() {
 	}
 }
 
-void Program::getInput() {
-	sf::Event event;
-	while (m_window.pollEvent(event)) {
-		if (event.type == sf::Event::Closed) {
-			m_window.close();
-		}
-
-		m_states.back()->getInput(event);
-	}
-}
-
-void Program::update(int _timeslice) {
-	if (m_states.back()->isVisibleOverPreviousState()) {
-		m_states.end()[-2]->update(_timeslice);
-	}
-	m_states.back()->update(_timeslice);
-}
-
-void Program::draw() {
-	if (m_states.back()->isVisibleOverPreviousState()) {
-		m_states.end()[-2]->draw();
-	}
-	m_states.back()->draw();
-	m_window.display();
-}
-
 void Program::pushState_Play_SP() {
 	initialiseLocalServer(false);
-	m_states.push_back(std::unique_ptr<ProgramState_Play>(
-	  new ProgramState_Play(*this, sf::IpAddress::LocalHost)));
+	pushState(std::unique_ptr<ProgramState_Play>(
+	  new ProgramState_Play(*this, sf::IpAddress::LocalHost, m_localServer.get())));
 }
 
 void Program::pushState_Play_MP_Host() {
 	initialiseLocalServer(true);
-	m_states.push_back(std::unique_ptr<ProgramState_Play>(
-	  new ProgramState_Play(*this, sf::IpAddress::LocalHost)));
+	pushState(std::unique_ptr<ProgramState_Play>(
+	  new ProgramState_Play(*this, sf::IpAddress::LocalHost, m_localServer.get())));
 }
 
-void Program::pushState_Play_MP_Join() {
-	sf::IpAddress                      ip{sf::IpAddress(m_ipAddress)};
+void Program::pushState_Play_MP_Join(std::string* _ip) {
 	std::unique_ptr<ProgramState_Play> newState(
-	  new ProgramState_Play(*this, m_ipAddress));
+	  new ProgramState_Play(*this, *_ip));
+
 	if (newState->clientConnected()) {
-		m_states.push_back(std::move(newState));
+		pushState(std::move(newState));
 	}
 	else {
-		pushState_MPJoinFailed();
+		pushState_MPJoinFailed(_ip);
 	}
 }
 
 void Program::pushState_Pause() {
-	m_states.push_back(
+	pushState(
 	  std::unique_ptr<ProgramState_Pause>(new ProgramState_Pause(*this)));
 }
 
 void Program::pushState_MPMenu() {
-	m_states.push_back(
+	pushState(
 	  std::unique_ptr<ProgramState_MPMenu>(new ProgramState_MPMenu(*this)));
 }
 
 void Program::pushState_MPHostMenu() {
-	m_states.push_back(std::unique_ptr<ProgramState_MPHostMenu>(
+	pushState(std::unique_ptr<ProgramState_MPHostMenu>(
 	  new ProgramState_MPHostMenu(*this)));
 }
 
 void Program::pushState_MPJoinMenu() {
-	m_states.push_back(std::unique_ptr<ProgramState_MPJoinMenu>(
+	pushState(std::unique_ptr<ProgramState_MPJoinMenu>(
 	  new ProgramState_MPJoinMenu(*this)));
 }
 
-void Program::pushState_MPJoinFailed() {
-	m_states.push_back(std::unique_ptr<ProgramState_MPJoinFailed>(
-	  new ProgramState_MPJoinFailed(*this, m_ipAddress)));
+void Program::pushState_MPJoinFailed(std::string* _ip) {
+	pushState(std::unique_ptr<ProgramState_MPJoinFailed>(
+	  new ProgramState_MPJoinFailed(*this, *_ip)));
 }
 
 void Program::pushState_MPConnectionLost() {
-	m_states.push_back(std::unique_ptr<ProgramState_ConnectionLost>(
+	pushState(std::unique_ptr<ProgramState_ConnectionLost>(
 	  new ProgramState_ConnectionLost(*this)));
 }
 
-bool Program::localServerInitialised() {
+bool Program::localServerInitialised() const {
 	return m_localServer != nullptr;
 }
 
 void Program::initialiseLocalServer(bool _joinable) {
-	m_localServer = std::unique_ptr<Server>(new Server(_joinable));
+	m_localServer = std::make_unique<Server>(_joinable);
 }
 
-void Program::terminateLocalServer() {
-	m_localServer = nullptr;
+bool Program::isAtMainMenu() const {
+	const ProgramState_MainMenu* ptrTest =
+	  dynamic_cast<const ProgramState_MainMenu*>(getTopState());
+	return (ptrTest != nullptr);
 }
 
-bool Program::isAtMainMenu() {
-	ProgramState_MainMenu* ptrTest =
-	  dynamic_cast<ProgramState_MainMenu*>(m_states.back().get());
+bool Program::isPaused() const {
+	const ProgramState_Pause* ptrTest =
+	  dynamic_cast<const ProgramState_Pause*>(getTopState());
 	return (ptrTest != nullptr);
 }
 
@@ -169,27 +139,4 @@ void Program::returnToMainMenu() {
 	while (!isAtMainMenu()) {
 		popState();
 	}
-}
-
-void Program::popState() {
-	m_states.pop_back();
-
-	if (!m_states.empty()) {
-		m_states.back()->onStateSwitch();
-	}
-}
-
-void Program::closeWindow() {
-	m_window.close();
-}
-
-void Program::setIpAddress(const std::string& _ipStr) {
-	m_ipAddress = _ipStr;
-}
-
-Server* Program::getServer() const {
-	if (m_localServer == nullptr) {
-		return nullptr;
-	}
-	return m_localServer.get();
 }

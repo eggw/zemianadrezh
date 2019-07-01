@@ -1,9 +1,11 @@
 #ifndef PROGRAMSTATE_MAINMENU_H_INCLUDED
 #define PROGRAMSTATE_MAINMENU_H_INCLUDED
 
-#include "ProgramStates/ProgramState_Menu.h"
+#include <SPSS/System/MenuState.h>
 
-class ProgramState_MainMenu : public ProgramState_Menu {
+#include "Program.h"
+
+class ProgramState_MainMenu : public spss::MenuState {
   public:
 	ProgramState_MainMenu(Program& _program);
 	void onStateSwitch();

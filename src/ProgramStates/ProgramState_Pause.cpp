@@ -1,13 +1,16 @@
 #include "ProgramStates/ProgramState_Pause.h"
 
+#include "FontManager.h"
 #include "Keybinds.h"
 
 ProgramState_Pause::ProgramState_Pause(Program& _program)
-            : ProgramState_Menu(_program, true) {
-	addMenuItem("Resume", &Program::popState, sf::Keyboard::Escape);
+            : MenuState(_program.m_window,
+						FontManager::get_instance().getFont(FontManager::Type::ANDY),
+						"Paused") {
+	addMenuItem("Resume", std::bind(&Program::popState, &_program), sf::Keyboard::Escape);
 
-	addMenuItem("Back to Main Menu", &Program::returnToMainMenu);
+	addMenuItem("Back to Main Menu", std::bind(&Program::returnToMainMenu, &_program));
 
 	addGap();
-	addMenuItem("Exit", &Program::closeWindow);
+	addMenuItem("Exit", std::bind(&Program::exit, &_program));
 }

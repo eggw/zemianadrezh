@@ -1,7 +1,7 @@
 #include "Interface/ChatBox.h"
 
 #include "FontManager.h"
-
+#include "InputLocker.h"
 #include "Keybinds.h"
 
 //Here are the variables we'll use to initialise the text entry box
@@ -32,11 +32,14 @@ ChatBox::ChatBox(const std::string& _name)
               m_shadedRectangle{},
               m_messages{},
               m_lastMessage{},
-              m_textEntry{false, false},
+              m_textEntry{FontManager::get_instance().getFont(FontManager::Type::ANDY),
+                         0},
               m_clock{},
               m_anchoredToBottom{true} {
 	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
 	snapToBottom();
+	m_textEntry.setOutlineThickness(1);
+	m_textEntry.setOutlineColor(sf::Color::Black);
 }
 
 void ChatBox::appendMessage(const Message _msg) {
@@ -71,6 +74,14 @@ void ChatBox::getInput(sf::Event& _event) {
 	switch (_event.type) {
 	case sf::Event::KeyPressed: {
 		if (_event.key.code == Key::CHAT_SEND) {
+			if(m_textEntry.enteringText()) {
+				m_textEntry.setActive(false);
+				InputLocker::get_instance().unlock();
+			}
+			else {
+				m_textEntry.setActive(true);
+				InputLocker::get_instance().lock();
+			}
 			resetTransparency();
 		}
 
@@ -125,10 +136,11 @@ void ChatBox::update() {
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	m_target = &target;
-
 	sf::View previousView = m_target->getView();
+
 	m_target->setView(m_shadedRectangleView);
 	m_target->draw(m_shadedRectangle, states);
+	m_target->draw(m_textEntry, states);
 
 	m_target->setView(m_view);
 	if (!messagesTransparent()) {
@@ -136,8 +148,6 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 			m_target->draw(message, states);
 		}
 	}
-
-	m_target->draw(m_textEntry, states);
 
 	m_target->setView(previousView);
 }
@@ -250,36 +260,26 @@ void ChatBox::resetTransparency() {
 }
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
-	sf::FloatRect textEntryViewport{
-	  0,
-	  1 - m_textEntry.getHeightAsRatio(_newSize),
-	  VIEWPORT.width,
-	  0 //this can be removed as it's unused now
-	};
+	float newViewportHeight{VIEWPORT.height};
+	float textEntryHeightAsRatio{1 - (_newSize.y - m_textEntry.getLineSpacing()) / _newSize.y};
 
-	m_textEntry.initialise(_newSize, textEntryViewport);
+	newViewportHeight -= textEntryHeightAsRatio;
 
-	float newViewportHeight{VIEWPORT.height -
-	                        (m_textEntry.getHeightAsRatio(_newSize))};
+	sf::FloatRect viewRectWithoutEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * newViewportHeight};
+	sf::FloatRect viewRectWithEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * VIEWPORT.height};
 
-	//I noticed that sometimes, maybe due to float precision reasons, the text entry box
-	//and the shaded rectangle overlap. Because I can't reduce the size of the shaded
-	//rectangle pixel by pixel easily, I tried decrementing it by 0.0001% until they no
-	//longer overlap and there is no visible discrepancy. My do...while loop tests showed
-	//that it just needed to be called once to fix this weird visual quirk.
-	newViewportHeight -= 0.0001f;
+	sf::FloatRect viewPortWithoutEntryBox{VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, newViewportHeight};
+	sf::FloatRect viewPortWithEntryBox{VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, VIEWPORT.height};
 
-	sf::FloatRect viewRect(
-	  {0, 0, _newSize.x * VIEWPORT.width, _newSize.y * newViewportHeight});
+	m_view.reset(viewRectWithoutEntryBox);
+	m_shadedRectangleView.reset(viewRectWithEntryBox);
 
-	m_view.reset(viewRect);
-	m_view.setViewport(
-	  {VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, newViewportHeight});
+	m_view.setViewport(viewPortWithoutEntryBox);
+	m_shadedRectangleView.setViewport(viewPortWithEntryBox);
 
-	m_shadedRectangleView.reset(viewRect);
-	m_shadedRectangleView.setViewport(m_view.getViewport());
-
-	m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
+	auto shadedRectangleSize {m_shadedRectangleView.getSize()};
+	shadedRectangleSize.y -= m_textEntry.getLineSpacing();
+	m_shadedRectangle.setSize(shadedRectangleSize);
 
 	for (size_t i{0}; i < m_messages.size(); i++) {
 		ChatBoxMessage& message = m_messages[i];
@@ -288,6 +288,11 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 	}
 
 	snapToBottom();
+
+	m_textEntry.setWidth(m_shadedRectangleView.getSize().x);
+	auto textEntryPos{m_shadedRectangle.getPosition()};
+	textEntryPos.y += m_shadedRectangle.getGlobalBounds().height;
+	m_textEntry.setPosition(textEntryPos);
 }
 
 //This function checks if the last message is "outside" (below) the view.

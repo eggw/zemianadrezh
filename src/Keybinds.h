@@ -18,17 +18,6 @@ namespace Key {
 	const sf::Keyboard::Key CHAT_TOP    = sf::Keyboard::Home;
 	const sf::Keyboard::Key CHAT_BOTTOM = sf::Keyboard::End;
 
-	const sf::Keyboard::Key LCTRL            = sf::Keyboard::LControl;
-	const sf::Keyboard::Key LSHIFT           = sf::Keyboard::LShift;
-	const sf::Keyboard::Key TEXT_SELECTALL   = sf::Keyboard::A;
-	const sf::Keyboard::Key TEXT_SELECTLEFT  = sf::Keyboard::Left;
-	const sf::Keyboard::Key TEXT_SELECTRIGHT = sf::Keyboard::Right;
-	const sf::Keyboard::Key TEXT_MOVELEFT    = sf::Keyboard::Left;
-	const sf::Keyboard::Key TEXT_MOVERIGHT   = sf::Keyboard::Right;
-	const sf::Keyboard::Key TEXT_COPY        = sf::Keyboard::C;
-	const sf::Keyboard::Key TEXT_CUT         = sf::Keyboard::X;
-	const sf::Keyboard::Key TEXT_PASTE       = sf::Keyboard::V;
-
 	const sf::Keyboard::Key PAUSE_KEY = sf::Keyboard::Escape;
 
 	const sf::Keyboard::Key HOTBAR_1 = sf::Keyboard::Num1;

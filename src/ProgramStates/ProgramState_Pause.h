@@ -1,9 +1,11 @@
 #ifndef PROGRAMSTATE_PAUSE_H_INCLUDED
 #define PROGRAMSTATE_PAUSE_H_INCLUDED
 
-#include "ProgramStates/ProgramState_Menu.h"
+#include <SPSS/System/MenuState.h>
 
-class ProgramState_Pause : public ProgramState_Menu {
+#include "Program.h"
+
+class ProgramState_Pause : public spss::MenuState {
   public:
 	ProgramState_Pause(Program& _program);
 };

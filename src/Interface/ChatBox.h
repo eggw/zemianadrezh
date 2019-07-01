@@ -1,12 +1,11 @@
 #ifndef CHATBOX_H_INCLUDED
 #define CHATBOX_H_INCLUDED
 
+#include <SPSS/Graphics/TextEntryBox.h>
+#include <SPSS/Graphics/MulticolorText.h>
 #include <SFML/Graphics.hpp>
-#include "MulticolourText/MulticolourText.hpp"
 
-#include "TextEntryBox.h"
 #include "Interface/ChatBoxMessage.h"
-
 #include "Message.h"
 
 class ChatBox : public sf::Drawable {
@@ -57,7 +56,7 @@ class ChatBox : public sf::Drawable {
 
 	std::vector<ChatBoxMessage> m_messages;
 	Message                     m_lastMessage;
-	TextEntryBox                m_textEntry;
+	spss::TextEntryBox          m_textEntry;
 	//m_clock will be used to determine when the
 	//messages in the chatbox will begin to fade
 	//away.

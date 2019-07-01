@@ -1,9 +1,11 @@
 #ifndef PROGRAMSTATE_CONNECTIONLOST_H_INCLUDED
 #define PROGRAMSTATE_CONNECTIONLOST_H_INCLUDED
 
-#include "ProgramStates/ProgramState_Menu.h"
+#include <SPSS/System/MenuState.h>
 
-class ProgramState_ConnectionLost : public ProgramState_Menu {
+#include "Program.h"
+
+class ProgramState_ConnectionLost : public spss::MenuState {
   public:
 	ProgramState_ConnectionLost(Program& _program);
 };
