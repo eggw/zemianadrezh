@@ -135,8 +135,10 @@ bool Program::isPaused() const {
 }
 
 //This function simply keeps popping the state until it's the main menu state.
+//It additionally resets the local server.
 void Program::returnToMainMenu() {
 	while (!isAtMainMenu()) {
 		popState();
 	}
+	m_localServer.reset();
 }
