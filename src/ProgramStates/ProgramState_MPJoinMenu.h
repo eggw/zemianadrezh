@@ -20,15 +20,15 @@ class ProgramState_MPJoinMenu : public spss::MenuState {
 
   private:
 	//Data members --------------------------------
-	sf::View                      m_textEntryView;
-	spss::TextEntryBox            m_IPEntry;
+	sf::View           m_textEntryView;
+	spss::TextEntryBox m_IPEntry;
 	/*
 	When we bind "Connect" to Program::pushState_Play_MP_Join,
 	we'll pass a ptr to the IP string, because its value will
 	be different by the time the user actually enters the IP
 	and clicks it
 	*/
-	std::unique_ptr<std::string>  m_IPStr;
+	std::unique_ptr<std::string> m_IPStr;
 	//---------------------------------------------
 };
 

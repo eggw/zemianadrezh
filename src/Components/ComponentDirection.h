@@ -5,8 +5,10 @@
 
 struct ComponentDirection {
   public:
-	ComponentDirection() : m_facingLeft{true} {};
-	ComponentDirection(bool _left) : m_facingLeft{_left} {};
+	ComponentDirection()
+	            : m_facingLeft{true} {};
+	ComponentDirection(bool _left)
+	            : m_facingLeft{_left} {};
 
 	bool m_facingLeft;
 };

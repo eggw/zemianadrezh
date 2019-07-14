@@ -4,13 +4,12 @@
 
 ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
             : MenuState(_program.m_window,
-						FontManager::get_instance().getFont(FontManager::Type::ANDY),
-						"Multiplayer - Join"),
-						m_textEntryView{},
-						m_IPEntry(FontManager::get_instance().getFont(FontManager::Type::ANDY),
-								  200,
-								  "localhost") {
-
+                        FontManager::get_instance().getFont(FontManager::Type::ANDY),
+                        "Multiplayer - Join"),
+              m_textEntryView{},
+              m_IPEntry(FontManager::get_instance().getFont(FontManager::Type::ANDY),
+                        200,
+                        "localhost") {
 	m_IPEntry.setCharSize(22);
 	m_IPEntry.setMaxChars(45);
 	m_IPEntry.setAlwaysVisible(true);
@@ -47,6 +46,6 @@ void ProgramState_MPJoinMenu::draw() {
 void ProgramState_MPJoinMenu::onResize(sf::Vector2u _newSize) {
 	//TODO: figure out a more elegant way to position m_IPEntry
 	MenuState::onResize(_newSize);
-	m_textEntryView.reset({0,0, float(_newSize.x), float(_newSize.y)});
+	m_textEntryView.reset({0, 0, float(_newSize.x), float(_newSize.y)});
 	m_IPEntry.setPosition({float(m_window.getSize().x) / 2, float(m_window.getSize().y / 2.5)});
 }

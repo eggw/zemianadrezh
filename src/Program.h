@@ -37,7 +37,7 @@ class Program : public spss::Core {
   private:
 	//Functions -----------------------------------
 	bool isAtMainMenu() const;
-	bool isPaused()     const;
+	bool isPaused() const;
 	//---------------------------------------------
 
 	//Data members --------------------------------

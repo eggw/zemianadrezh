@@ -17,8 +17,8 @@ void SystemAnimation::update(int _timeslice, entt::registry& _reg) {
 	                      ComponentPosition>();
 	for (auto& entity : view) {
 		auto&      animation = view.get<ComponentAnimation>(entity).m_animation;
-		const auto left = view.get<ComponentDirection>(entity).m_facingLeft;
-		const auto vel  = view.get<ComponentPhysics>(entity).m_velocity;
+		const auto left      = view.get<ComponentDirection>(entity).m_facingLeft;
+		const auto vel       = view.get<ComponentPhysics>(entity).m_velocity;
 
 		if (left) {
 			animation.setFacingLeft();

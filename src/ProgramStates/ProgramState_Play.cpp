@@ -9,17 +9,16 @@
 
 ProgramState_Play::ProgramState_Play(Program&      _program,
                                      sf::IpAddress _ipAddress,
-                                     Server* _localServer)
+                                     Server*       _localServer)
             : State(_program.m_window),
               //set the last argument of m_client's constructor
               //to nullptr to test a non-local (non-resource sharing)
               //instance of Server and Client
               m_program{_program},
               m_client(_ipAddress, _localServer) {
-
 	setDrawnInBackground(true);
-	if(_localServer != nullptr) {
-		if(_localServer->connectionsAllowed()) {
+	if (_localServer != nullptr) {
+		if (_localServer->connectionsAllowed()) {
 			setUpdatedInBackground(true);
 		}
 	}

@@ -5,7 +5,8 @@
 
 struct ComponentSprite {
   public:
-	ComponentSprite(sf::Sprite& _s) : m_sprite{_s} {};
+	ComponentSprite(sf::Sprite& _s)
+	            : m_sprite{_s} {};
 
 	sf::Sprite m_sprite;
 };

@@ -3,7 +3,6 @@
 
 #include <SFML/System/Vector2.hpp>
 
-
 namespace Utility::Coordinates {
 
 	int          getIndex(sf::Vector2i _coords, int _rowLength);
@@ -14,9 +13,9 @@ namespace Utility::Coordinates {
 	sf::Vector2i eastOf(sf::Vector2i _coords);
 	sf::Vector2i westOf(sf::Vector2i _coords);
 
-	bool         outOfRange(sf::Vector2i _coords, const sf::Vector2i _size);
-	bool         outOfRange(int _index, const sf::Vector2i _size);
+	bool outOfRange(sf::Vector2i _coords, const sf::Vector2i _size);
+	bool outOfRange(int _index, const sf::Vector2i _size);
 
-}
+} // namespace Utility::Coordinates
 
 #endif // COORDINATES_H_INCLUDED

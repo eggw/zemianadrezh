@@ -126,7 +126,7 @@ void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
 
 	std::vector<WorldChunk*> toRecurseOver{};
 
-	int chunksSize {int(m_chunks.size())};
+	int chunksSize{int(m_chunks.size())};
 
 	if (!Utility::Coordinates::outOfRange(northPosition, dim)) {
 		int i{Utility::Coordinates::getIndex(northPosition, dim.x)};

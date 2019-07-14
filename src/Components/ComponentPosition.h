@@ -5,9 +5,12 @@
 
 struct ComponentPosition {
   public:
-	ComponentPosition() : m_position{0, 0} {};
-	ComponentPosition(sf::Vector2f _v) : m_position{_v} {};
-	ComponentPosition(float _x, float _y) : m_position{_x, _y} {};
+	ComponentPosition()
+	            : m_position{0, 0} {};
+	ComponentPosition(sf::Vector2f _v)
+	            : m_position{_v} {};
+	ComponentPosition(float _x, float _y)
+	            : m_position{_x, _y} {};
 
 	sf::Vector2f m_position;
 };

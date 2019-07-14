@@ -1,6 +1,7 @@
 #include "InputLocker.h"
 
-InputLocker::InputLocker() : m_locked{false} {
+InputLocker::InputLocker()
+            : m_locked{false} {
 }
 
 bool InputLocker::isLocked() const {

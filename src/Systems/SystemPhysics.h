@@ -9,8 +9,7 @@ class SystemPhysics {
 	SystemPhysics(int _left, int _right);
 	void update(int _timeslice, entt::registry& _reg);
 
-	private:
-
+  private:
 	const int m_leftmostPoint;
 	const int m_rightmostPoint;
 };

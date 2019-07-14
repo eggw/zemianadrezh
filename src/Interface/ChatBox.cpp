@@ -33,7 +33,7 @@ ChatBox::ChatBox(const std::string& _name)
               m_messages{},
               m_lastMessage{},
               m_textEntry{FontManager::get_instance().getFont(FontManager::Type::ANDY),
-                         0},
+                          0},
               m_clock{},
               m_anchoredToBottom{true} {
 	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
@@ -74,7 +74,7 @@ void ChatBox::getInput(sf::Event& _event) {
 	switch (_event.type) {
 	case sf::Event::KeyPressed: {
 		if (_event.key.code == Key::CHAT_SEND) {
-			if(m_textEntry.enteringText()) {
+			if (m_textEntry.enteringText()) {
 				m_textEntry.setActive(false);
 				InputLocker::get_instance().unlock();
 			}
@@ -135,7 +135,7 @@ void ChatBox::update() {
 }
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-	m_target = &target;
+	m_target              = &target;
 	sf::View previousView = m_target->getView();
 
 	m_target->setView(m_shadedRectangleView);
@@ -277,7 +277,7 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 	m_view.setViewport(viewPortWithoutEntryBox);
 	m_shadedRectangleView.setViewport(viewPortWithEntryBox);
 
-	auto shadedRectangleSize {m_shadedRectangleView.getSize()};
+	auto shadedRectangleSize{m_shadedRectangleView.getSize()};
 	shadedRectangleSize.y -= m_textEntry.getLineSpacing();
 	m_shadedRectangle.setSize(shadedRectangleSize);
 

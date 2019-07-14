@@ -32,7 +32,7 @@ class ChatBoxMessage : public sf::Drawable {
   private:
 	//Data members --------------------------------
 	spss::MulticolorText m_text;
-	Message               m_message;
+	Message              m_message;
 	//---------------------------------------------
 };
 

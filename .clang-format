@@ -66,5 +66,6 @@ Standard: Cpp11
 IndentWidth: 4
 TabWidth: 4
 UseTab: ForIndentation
+ColumnLimit: 0
 
 ...

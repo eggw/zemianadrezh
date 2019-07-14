@@ -9,7 +9,7 @@
 
 class WorldChunk {
   public:
-  	using NeighboringChunks = std::map<Direction, WorldChunk*>;
+	using NeighboringChunks = std::map<Direction, WorldChunk*>;
 
 	struct EncodedChunkData {
 		EncodedChunkData(){};
@@ -19,7 +19,7 @@ class WorldChunk {
 
 	WorldChunk(int _id, bool _empty);
 
-	int          getID() const;
+	int getID() const;
 
 	//returns the chunk's coordinates in the world
 	//(0,0) to (World::X, World::Y)
@@ -39,10 +39,10 @@ class WorldChunk {
 	void assignNeighbors(NeighboringChunks& _neighbors);
 
   private:
-  	//Functions -----------------------------------
-  	void adjustBorders();
-  	Block::NeighboringBlocks getNeighboringBlocks(Block* _b);
-  	//---------------------------------------------
+	//Functions -----------------------------------
+	void                     adjustBorders();
+	Block::NeighboringBlocks getNeighboringBlocks(Block* _b);
+	//---------------------------------------------
 
 	//Data members --------------------------------
 	int                m_id;

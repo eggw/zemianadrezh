@@ -14,7 +14,7 @@ class GameInstance {
 	//TODO: refactor these functions, either remove them or put them somewhere else
 	//-------------------------------------------------------------------------
 	const EncodedChunks encodeWorldChunks() const;
-	void parseWorldChunk(const WorldChunk::EncodedChunkData& _data);
+	void                parseWorldChunk(const WorldChunk::EncodedChunkData& _data);
 	//-------------------------------------------------------------------------
 
 	//Checks if a player with the name given in _data exists, in the entity

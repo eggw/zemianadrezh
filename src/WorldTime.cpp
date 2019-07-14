@@ -20,7 +20,8 @@ sf::Packet& operator>>(sf::Packet& _p, HHMM& _t) {
 }
 //----------------------------------------------------------------------------------------------------------------
 
-WorldTime::WorldTime(HHMM _t) : m_time{0, 0}, m_paused{false} {
+WorldTime::WorldTime(HHMM _t)
+            : m_time{0, 0}, m_paused{false} {
 	set(_t);
 }
 

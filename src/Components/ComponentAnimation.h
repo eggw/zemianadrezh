@@ -7,7 +7,8 @@
 
 struct ComponentAnimation {
   public:
-	ComponentAnimation(AnimationMovement _a) : m_animation{_a} {};
+	ComponentAnimation(AnimationMovement _a)
+	            : m_animation{_a} {};
 
 	AnimationMovement m_animation;
 };

@@ -5,9 +5,12 @@
 
 struct ComponentPhysics {
   public:
-	ComponentPhysics() : m_velocity{0, 0} {};
-	ComponentPhysics(sf::Vector2f _v) : m_velocity{_v} {};
-	ComponentPhysics(float _x, float _y) : m_velocity{_x, _y} {};
+	ComponentPhysics()
+	            : m_velocity{0, 0} {};
+	ComponentPhysics(sf::Vector2f _v)
+	            : m_velocity{_v} {};
+	ComponentPhysics(float _x, float _y)
+	            : m_velocity{_x, _y} {};
 
 	sf::Vector2f m_velocity;
 };

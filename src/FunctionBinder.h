@@ -25,7 +25,8 @@ class FunctionBinder<MapKey, FuncReturnType, FuncArguments...> {
 	Map<MapKey, FuncReturnType, FuncArguments...> m_map;
 
   public:
-	FunctionBinder() : m_map{} {
+	FunctionBinder()
+	            : m_map{} {
 	}
 
 	//when called, call() will execute the function mapped to the

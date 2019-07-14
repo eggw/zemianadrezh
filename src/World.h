@@ -17,7 +17,7 @@ class World {
 	World();
 	~World();
 
-	void initialise();
+	void               initialise();
 	const sf::Vector2f getCenter() const;
 
 	const EncodedChunks encodeChunks() const;
@@ -34,14 +34,14 @@ class World {
 	void setTime(HHMM _t);
 
   private:
-  	//Functions -----------------------------------
-  	void addChunk(WorldChunk _chunk);
-  	//Appropriately sets the given chunk's NESW
-  	//neighbors. Additionally, it calls itself
-  	//again for all the given chunk's neighbors,
-  	//with _recurse = false.
-  	void updateChunkNeighbors(WorldChunk* _chunk, bool _recurse = true);
-  	//---------------------------------------------
+	//Functions -----------------------------------
+	void addChunk(WorldChunk _chunk);
+	//Appropriately sets the given chunk's NESW
+	//neighbors. Additionally, it calls itself
+	//again for all the given chunk's neighbors,
+	//with _recurse = false.
+	void updateChunkNeighbors(WorldChunk* _chunk, bool _recurse = true);
+	//---------------------------------------------
 
 	//Data members --------------------------------
 	std::vector<WorldChunk>        m_chunks;

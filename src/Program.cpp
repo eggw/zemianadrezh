@@ -11,7 +11,8 @@
 
 constexpr const int FIXED_TIMESLICE{16};
 
-Program::Program(sf::RenderWindow& _window) : Core(_window, FIXED_TIMESLICE) {
+Program::Program(sf::RenderWindow& _window)
+            : Core(_window, FIXED_TIMESLICE) {
 	pushState(
 	  std::unique_ptr<ProgramState_MainMenu>(new ProgramState_MainMenu(*this)));
 	run();

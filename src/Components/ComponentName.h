@@ -5,8 +5,10 @@
 
 struct ComponentName {
   public:
-	ComponentName() : m_name{"[BLANK]"} {};
-	ComponentName(std::string _str) : m_name{_str} {};
+	ComponentName()
+	            : m_name{"[BLANK]"} {};
+	ComponentName(std::string _str)
+	            : m_name{_str} {};
 
 	std::string m_name;
 };

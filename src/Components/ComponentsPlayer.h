@@ -12,7 +12,8 @@
 //managers
 struct ComponentsPlayer {
   public:
-	ComponentsPlayer() : compDir{}, compName{}, compVel{}, compPos{} {};
+	ComponentsPlayer()
+	            : compDir{}, compName{}, compVel{}, compPos{} {};
 	ComponentsPlayer(ComponentDirection _d,
 	                 ComponentName      _n,
 	                 ComponentPhysics   _v,

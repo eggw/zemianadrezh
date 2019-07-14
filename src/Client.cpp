@@ -149,8 +149,8 @@ void Client::updateViews(sf::RenderTarget& _target) const {
 	m_skyView.reset(
 	  {0, 0, float(_target.getSize().x), float(_target.getSize().y)});
 
-	auto viewCenter{getPlayerPosition()};
-	float VIEW_RIGHTMOST_CURRENT {VIEW_RIGHTMOST + ((1 - m_zoomLevel) * (RIGHTMOST - VIEW_RIGHTMOST))};
+	auto  viewCenter{getPlayerPosition()};
+	float VIEW_RIGHTMOST_CURRENT{VIEW_RIGHTMOST + ((1 - m_zoomLevel) * (RIGHTMOST - VIEW_RIGHTMOST))};
 
 	if (viewCenter.x < VIEW_LEFTMOST * m_zoomLevel) {
 		viewCenter.x = VIEW_LEFTMOST * m_zoomLevel;

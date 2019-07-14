@@ -11,7 +11,8 @@
 
 class RendererChunk : public RendererBase<WorldChunk> {
   public:
-	RendererChunk(World& _world) : m_world{_world} {};
+	RendererChunk(World& _world)
+	            : m_world{_world} {};
 
 	~RendererChunk(){};
 
