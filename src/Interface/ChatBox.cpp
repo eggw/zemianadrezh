@@ -274,11 +274,11 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 
 	//TODO: error checking if heightWithoutTextEntry is negative.
 
-	sf::FloatRect viewRectWithoutEntryBox   {0, 0, _newSize.x * VIEWPORT.width, _newSize.y * heightWithoutTextEntry};
-	sf::FloatRect viewRectWithEntryBox      {0, 0, _newSize.x * VIEWPORT.width, _newSize.y * VIEWPORT.height};
+	sf::FloatRect viewRectWithoutEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * heightWithoutTextEntry};
+	sf::FloatRect viewRectWithEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * VIEWPORT.height};
 
-	sf::FloatRect viewPortWithoutEntryBox   {VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, heightWithoutTextEntry};
-	sf::FloatRect viewPortWithEntryBox      {VIEWPORT.left, VIEWPORT.top + heightWithoutTextEntry, VIEWPORT.width, VIEWPORT.height};
+	sf::FloatRect viewPortWithoutEntryBox{VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, heightWithoutTextEntry};
+	sf::FloatRect viewPortWithEntryBox{VIEWPORT.left, VIEWPORT.top + heightWithoutTextEntry, VIEWPORT.width, VIEWPORT.height};
 
 	m_view.reset(viewRectWithoutEntryBox);
 	m_shadedRectangleView.reset(viewRectWithEntryBox);

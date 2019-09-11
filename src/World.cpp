@@ -110,8 +110,8 @@ void World::addChunk(WorldChunk _chunk) {
 }
 
 void World::updateChunkNeighbors(WorldChunk* _chunk, bool _recurse) {
-	static const sf::Vector2i dim{Dimensions::World::X, Dimensions::World::Y};
-	const auto                position{_chunk->getPosition()};
+	const sf::Vector2i dim{Dimensions::World::X, Dimensions::World::Y};
+	const sf::Vector2i position{_chunk->getPosition()};
 
 	WorldChunk::NeighboringChunks neighbors;
 	neighbors.insert({Direction::NORTH, nullptr});
