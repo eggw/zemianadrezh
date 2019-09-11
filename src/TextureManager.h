@@ -9,7 +9,7 @@ class TextureManager : public Singleton<TextureManager> {
   public:
 	TextureManager();
 
-	enum class Type
+	enum class TYPE
 	{
 		PLAYER,
 		BLOCKS,
@@ -19,11 +19,11 @@ class TextureManager : public Singleton<TextureManager> {
 		CYCLE_GLOW_GRADIENT
 	};
 
-	const sf::Texture& getTexture(Type _type);
+	const sf::Texture& getTexture(TextureManager::TYPE _type);
 
   private:
 	//Data members --------------------------------
-	std::map<Type, sf::Texture> m_textures;
+	std::map<TextureManager::TYPE, sf::Texture> m_textures;
 	//---------------------------------------------
 };
 

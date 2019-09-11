@@ -5,7 +5,7 @@
 
 ProgramState_Pause::ProgramState_Pause(Program& _program)
             : MenuState(_program.m_window,
-                        FontManager::get_instance().getFont(FontManager::Type::ANDY),
+                        FontManager::get_instance().getFont(FontManager::TYPE::ANDY),
                         "Paused") {
 	addMenuItem("Resume", std::bind(&Program::popState, &_program), sf::Keyboard::Escape);
 

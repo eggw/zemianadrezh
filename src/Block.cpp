@@ -9,7 +9,6 @@
 
 #include "Block.h"
 #include "BlockDatabase.h"
-#include "Util/Coordinates.h"
 
 Block::Block(int _id, BlockData::Type _type, BlockData::BorderType _borderType)
             : m_id{_id},
@@ -70,7 +69,7 @@ void Block::adjustBorders(NeighboringBlocks& _neighbors) {
 
 	auto borders{possibleBorders};
 
-	if (_neighbors[Direction::NORTH] != nullptr) {
+	if (_neighbors[Utility::Coordinates::DIRECTION::NORTH] != nullptr) {
 		borders.erase(std::remove_if(borders.begin(),
 		                             borders.end(),
 		                             [](const int& x) {
@@ -89,7 +88,7 @@ void Block::adjustBorders(NeighboringBlocks& _neighbors) {
 		              borders.end());
 	}
 
-	if (_neighbors[Direction::SOUTH] != nullptr) {
+	if (_neighbors[Utility::Coordinates::DIRECTION::SOUTH] != nullptr) {
 		borders.erase(std::remove_if(borders.begin(),
 		                             borders.end(),
 		                             [](const int& x) {
@@ -108,7 +107,7 @@ void Block::adjustBorders(NeighboringBlocks& _neighbors) {
 		              borders.end());
 	}
 
-	if (_neighbors[Direction::EAST] != nullptr) {
+	if (_neighbors[Utility::Coordinates::DIRECTION::EAST] != nullptr) {
 		borders.erase(std::remove_if(borders.begin(),
 		                             borders.end(),
 		                             [](const int& x) {
@@ -129,7 +128,7 @@ void Block::adjustBorders(NeighboringBlocks& _neighbors) {
 		              borders.end());
 	}
 
-	if (_neighbors[Direction::WEST] != nullptr) {
+	if (_neighbors[Utility::Coordinates::DIRECTION::WEST] != nullptr) {
 		borders.erase(std::remove_if(borders.begin(),
 		                             borders.end(),
 		                             [](const int& x) {

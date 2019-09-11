@@ -2,7 +2,7 @@
 #define BLOCK_H_INCLUDED
 
 #include "BlockData.h"
-#include "Direction.h"
+#include "Util/Coordinates.h"
 
 /*
 Blocks are initialised by specifying a type from BlockData::Type.
@@ -22,7 +22,7 @@ Note that blocks aren't defined as entities.
 
 class Block {
   public:
-	using NeighboringBlocks = std::map<Direction, Block*>;
+	using NeighboringBlocks = std::map<Utility::Coordinates::DIRECTION, Block*>;
 
 	Block(int                   _id,
 	      BlockData::Type       _type,

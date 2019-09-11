@@ -5,11 +5,11 @@
 #include <map>
 
 #include "Block.h"
-#include "Direction.h"
+#include "Util/Coordinates.h"
 
 class WorldChunk {
   public:
-	using NeighboringChunks = std::map<Direction, WorldChunk*>;
+	using NeighboringChunks = std::map<Utility::Coordinates::DIRECTION, WorldChunk*>;
 
 	struct EncodedChunkData {
 		EncodedChunkData(){};

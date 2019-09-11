@@ -5,6 +5,14 @@
 
 namespace Utility::Coordinates {
 
+	enum class DIRECTION
+	{
+		NORTH,
+		SOUTH,
+		EAST,
+		WEST
+	};
+
 	int          getIndex(sf::Vector2i _coords, int _rowLength);
 	sf::Vector2i getCoords(int _index, int _rowLength);
 

@@ -67,7 +67,7 @@ void GameInstance::addPlayer(const ComponentsPlayer& _data) {
 void GameInstance::addPlayer(const ComponentsPlayer& _data, entt::entity _e) {
 	m_registry->assign<ComponentAnimation>(
 	  _e,
-	  TextureManager::get_instance().getTexture(TextureManager::Type::PLAYER));
+	  TextureManager::get_instance().getTexture(TextureManager::TYPE::PLAYER));
 
 	m_registry->assign<PlayerTag>(_e);
 	m_registry->assign<ComponentName>(_e, _data.compName);

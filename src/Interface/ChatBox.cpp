@@ -14,7 +14,7 @@ constexpr float        SECONDS_UNTIL_MESSAGES_FADE{5.0f};
 constexpr unsigned int CHARACTER_SIZE{20};
 
 const float LINESPACING =
-  FontManager::get_instance().getLineSpacing(FontManager::Type::ANDY,
+  FontManager::get_instance().getLineSpacing(FontManager::TYPE::ANDY,
                                              CHARACTER_SIZE);
 const float Y_BUFFERSPACE{1.3f * LINESPACING};
 
@@ -32,7 +32,7 @@ ChatBox::ChatBox(const std::string& _name)
               m_shadedRectangle{},
               m_messages{},
               m_lastMessage{},
-              m_textEntry{FontManager::get_instance().getFont(FontManager::Type::ANDY),
+              m_textEntry{FontManager::get_instance().getFont(FontManager::TYPE::ANDY),
                           CHARACTER_SIZE,
                           0},
               m_clock{},
@@ -46,7 +46,7 @@ ChatBox::ChatBox(const std::string& _name)
 void ChatBox::appendMessage(const Message _msg) {
 	ChatBoxMessage newMessage{
 	  _msg,
-	  FontManager::get_instance().getFont(FontManager::Type::ANDY),
+	  FontManager::get_instance().getFont(FontManager::TYPE::ANDY),
 	  CHARACTER_SIZE};
 
 	newMessage.fitWidth(m_view.getSize().x * 0.9f);

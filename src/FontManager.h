@@ -9,17 +9,18 @@ class FontManager : public Singleton<FontManager> {
   public:
 	FontManager();
 
-	enum class Type
+	enum class TYPE
 	{
 		ANDY
 	};
 
-	const sf::Font& getFont(Type _type);
-	float           getLineSpacing(Type _type, unsigned int _characterSize);
+	const sf::Font& getFont(FontManager::TYPE _type);
+	float           getLineSpacing(FontManager::TYPE _type,
+	                               unsigned int      _characterSize);
 
   private:
 	//Data members --------------------------------
-	std::map<Type, sf::Font> m_fonts;
+	std::map<FontManager::TYPE, sf::Font> m_fonts;
 	//---------------------------------------------
 };
 
