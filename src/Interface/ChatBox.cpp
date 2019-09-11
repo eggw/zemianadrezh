@@ -33,6 +33,7 @@ ChatBox::ChatBox(const std::string& _name)
               m_messages{},
               m_lastMessage{},
               m_textEntry{FontManager::get_instance().getFont(FontManager::Type::ANDY),
+                          CHARACTER_SIZE,
                           0},
               m_clock{},
               m_anchoredToBottom{true} {
@@ -260,16 +261,24 @@ void ChatBox::resetTransparency() {
 }
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
-	float newViewportHeight{VIEWPORT.height};
-	float textEntryHeightAsRatio{1 - (_newSize.y - m_textEntry.getLineSpacing()) / _newSize.y};
+	//First, we'll get the text entry height as a ratio.
+	//For example, if the window height is 1000p and the
+	//text entry is 100p, textEntryHeight will be 0.1
+	float textEntryHeight{1 - (_newSize.y - m_textEntry.getHeight()) / _newSize.y};
 
-	newViewportHeight -= textEntryHeightAsRatio;
+	//We'll then subtract that the entire ChatBox height.
+	//For example, if the ChatBox's viewport height is 0.25 (it takes
+	//up a quarter of the vertical space), and textEntryHeight is 0.1,
+	//heightWithoutTextEntry would be 0.15.
+	float heightWithoutTextEntry{VIEWPORT.height - textEntryHeight};
 
-	sf::FloatRect viewRectWithoutEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * newViewportHeight};
-	sf::FloatRect viewRectWithEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * VIEWPORT.height};
+	//TODO: error checking if heightWithoutTextEntry is negative.
 
-	sf::FloatRect viewPortWithoutEntryBox{VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, newViewportHeight};
-	sf::FloatRect viewPortWithEntryBox{VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, VIEWPORT.height};
+	sf::FloatRect viewRectWithoutEntryBox   {0, 0, _newSize.x * VIEWPORT.width, _newSize.y * heightWithoutTextEntry};
+	sf::FloatRect viewRectWithEntryBox      {0, 0, _newSize.x * VIEWPORT.width, _newSize.y * VIEWPORT.height};
+
+	sf::FloatRect viewPortWithoutEntryBox   {VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, heightWithoutTextEntry};
+	sf::FloatRect viewPortWithEntryBox      {VIEWPORT.left, VIEWPORT.top + heightWithoutTextEntry, VIEWPORT.width, VIEWPORT.height};
 
 	m_view.reset(viewRectWithoutEntryBox);
 	m_shadedRectangleView.reset(viewRectWithEntryBox);
@@ -277,9 +286,7 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 	m_view.setViewport(viewPortWithoutEntryBox);
 	m_shadedRectangleView.setViewport(viewPortWithEntryBox);
 
-	auto shadedRectangleSize{m_shadedRectangleView.getSize()};
-	shadedRectangleSize.y -= m_textEntry.getLineSpacing();
-	m_shadedRectangle.setSize(shadedRectangleSize);
+	m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
 
 	for (size_t i{0}; i < m_messages.size(); i++) {
 		ChatBoxMessage& message = m_messages[i];
@@ -290,9 +297,7 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 	snapToBottom();
 
 	m_textEntry.setWidth(m_shadedRectangleView.getSize().x);
-	auto textEntryPos{m_shadedRectangle.getPosition()};
-	textEntryPos.y += m_shadedRectangle.getGlobalBounds().height;
-	m_textEntry.setPosition(textEntryPos);
+	m_textEntry.setPosition(m_shadedRectangle.getPosition());
 }
 
 //This function checks if the last message is "outside" (below) the view.

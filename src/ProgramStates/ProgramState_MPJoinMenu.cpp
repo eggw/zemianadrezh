@@ -8,6 +8,7 @@ ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
                         "Multiplayer - Join"),
               m_textEntryView{},
               m_IPEntry(FontManager::get_instance().getFont(FontManager::Type::ANDY),
+                        18,
                         200,
                         "localhost") {
 	m_IPEntry.setCharSize(22);
