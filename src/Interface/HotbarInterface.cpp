@@ -1,5 +1,6 @@
 #include "Interface/HotbarInterface.h"
 
+#include "InputLocker.h"
 #include "Keybinds.h"
 
 HotbarInterface::HotbarInterface()
@@ -33,6 +34,10 @@ HotbarInterface::HotbarInterface()
 }
 
 void HotbarInterface::getInput(sf::Event& _event) {
+	if (InputLocker::get_instance().isLocked()) {
+		return;
+	}
+
 	switch (_event.type) {
 	case sf::Event::KeyPressed: {
 		if (_event.key.code == Key::HOTBAR_1) {
@@ -73,10 +78,6 @@ void HotbarInterface::getInput(sf::Event& _event) {
 		}
 		else if (_event.key.code == Key::HOTBAR_0) {
 			setActiveHotbarSlot(0);
-			return;
-		}
-
-		else {
 			return;
 		}
 	}

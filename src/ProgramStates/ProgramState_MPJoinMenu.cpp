@@ -4,10 +4,10 @@
 
 ProgramState_MPJoinMenu::ProgramState_MPJoinMenu(Program& _program)
             : MenuState(_program.m_window,
-                        FontManager::get_instance().getFont(FontManager::TYPE::ANDY),
+                        *FontManager::get_instance().get(FONT::ANDY),
                         "Multiplayer - Join"),
               m_textEntryView{},
-              m_IPEntry(FontManager::get_instance().getFont(FontManager::TYPE::ANDY),
+              m_IPEntry(*FontManager::get_instance().get(FONT::ANDY),
                         18,
                         200,
                         "localhost") {

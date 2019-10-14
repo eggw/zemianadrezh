@@ -4,7 +4,7 @@
 
 ProgramState_MainMenu::ProgramState_MainMenu(Program& _program)
             : MenuState(_program.m_window,
-                        FontManager::get_instance().getFont(FontManager::TYPE::ANDY),
+                        *FontManager::get_instance().get(FONT::ANDY),
                         "zemianadrezh") {
 	setRandomisedColors(true);
 	setScalingText(true);

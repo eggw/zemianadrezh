@@ -19,7 +19,7 @@ class HotbarInterface : public sf::Drawable {
 		HotbarRect(sf::RectangleShape _rectangle, int _number)
 		            : m_rectangle{_rectangle}, m_numberText{} {
 			m_numberText.setFont(
-			  FontManager::get_instance().getFont(FontManager::TYPE::ANDY));
+			  *FontManager::get_instance().get(FONT::ANDY));
 			m_numberText.setCharacterSize(18);
 			m_numberText.setString(std::to_string(_number));
 

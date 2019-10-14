@@ -4,7 +4,7 @@
 
 ProgramState_MPHostMenu::ProgramState_MPHostMenu(Program& _program)
             : MenuState(_program.m_window,
-                        FontManager::get_instance().getFont(FontManager::TYPE::ANDY),
+                        *FontManager::get_instance().get(FONT::ANDY),
                         "Multiplayer - Host") {
 	addMenuItem("Start", std::bind(&Program::pushState_Play_MP_Host, &_program));
 

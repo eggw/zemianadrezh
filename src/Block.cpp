@@ -26,7 +26,7 @@ void Block::setType(BlockData::Type _t) {
 }
 
 const BlockData& Block::getData() const {
-	return BlockDatabase::get_instance().getData(m_type);
+	return *BlockDatabase::get_instance().get(m_type);
 }
 
 sf::FloatRect Block::getTextureRect() const {
@@ -37,7 +37,7 @@ sf::FloatRect Block::getTextureRect() const {
 
 	sf::Vector2f textureCoordinates{
 	  float(m_borderType * Dimensions::Block::X),
-	  float(BlockDatabase::get_instance().getData(m_type).getTextureColumn() *
+	  float(BlockDatabase::get_instance().get(m_type)->getTextureColumn() *
 	        Dimensions::Block::Y)};
 
 	return {textureCoordinates.x,

@@ -26,7 +26,7 @@ DayNightCycle::DayNightCycle()
               m_lastTargetSize{},
               m_planetYProgress{0} {
 	m_timeText.setFont(
-	  FontManager::get_instance().getFont(FontManager::TYPE::ANDY));
+	  *FontManager::get_instance().get(FONT::ANDY));
 	m_timeText.setCharacterSize(30);
 	m_timeText.setOutlineThickness(1);
 	m_timeText.setOrigin(m_timeText.getGlobalBounds().width / 2,
@@ -38,11 +38,11 @@ DayNightCycle::DayNightCycle()
 	}
 
 	m_shader.setUniform("sky",
-	                    TextureManager::get_instance().getTexture(
-	                      TextureManager::TYPE::CYCLE_SKY_GRADIENT));
+	                    *TextureManager::get_instance().get(
+	                      TEXTURE::CYCLE_SKY_GRADIENT));
 	m_shader.setUniform("glow",
-	                    TextureManager::get_instance().getTexture(
-	                      TextureManager::TYPE::CYCLE_GLOW_GRADIENT));
+	                    *TextureManager::get_instance().get(
+	                      TEXTURE::CYCLE_GLOW_GRADIENT));
 }
 
 void DayNightCycle::update(const WorldTime& _time) {
@@ -221,11 +221,11 @@ void DayNightCycle::updateTimeText(const WorldTime& _time) {
 void DayNightCycle::updatePlanetTexture(const WorldTime& _time) {
 	if (isDaytime(_time)) {
 		m_sunMoonSprite.setTexture(
-		  TextureManager::get_instance().getTexture(TextureManager::TYPE::SUN));
+		  *TextureManager::get_instance().get(TEXTURE::SUN));
 	}
 	else {
-		m_sunMoonSprite.setTexture(TextureManager::get_instance().getTexture(
-		  TextureManager::TYPE::MOON));
+		m_sunMoonSprite.setTexture(*TextureManager::get_instance().get(
+		  TEXTURE::MOON));
 	}
 	//We're going to set the origin to be at the rightmost point horizontally and the
 	//uppermost point vertically. Later, when determining xPos, we add the width of the
