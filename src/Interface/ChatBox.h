@@ -1,48 +1,28 @@
 #ifndef CHATBOX_H_INCLUDED
 #define CHATBOX_H_INCLUDED
 
+#include <SPSS/Graphics/InfoBox.h>
 #include <SPSS/Graphics/TextEntryBox.h>
-#include <SPSS/Graphics/MulticolorText.h>
+#include <SPSS/Util/Message.h>
+
 #include <SFML/Graphics.hpp>
 
 #include "Interface/ChatBoxMessage.h"
-#include "Message.h"
 
 class ChatBox : public sf::Drawable {
   public:
 	ChatBox(const std::string& _name);
 
-	void appendMessage(const Message _msg);
+	void appendMessage(const spss::Message& _msg);
 	void getInput(sf::Event& _event);
 	void update();
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	bool completedMessage(Message* _ptr = nullptr);
+	bool completedMessage(spss::Message* _ptr = nullptr);
 
   private:
-	//Functions -----------------------------------
-	//
-	//Message-related
-	void positionMessage(int _index);
-	void setTransparency(int _a);
-	bool messagesTransparent() const;
-	void updateShadedRectangleTransparency();
-	void updateMessageTransparency();
-	void updateMessageAlertTransparency();
-	void setNewMessageAlert(bool _b);
-	void resetTransparency();
-
-	//View-related
+  	//Functions -----------------------------------
 	void  onResize(sf::Vector2u _newSize);
-	void  snapToTop();
-	void  snapToBottom();
-	float getUpperViewBound() const;
-	float getLowerViewBound() const;
-	bool  viewAtHighest() const;
-	bool  viewAtLowest() const;
-	void  scrollUp();
-	void  scrollDown();
-	//---------------------------------------------
 
 	//Data members --------------------------------
 	mutable sf::RenderTarget* m_target;
@@ -50,12 +30,10 @@ class ChatBox : public sf::Drawable {
 
 	const std::string m_name;
 
+	spss::InfoBox      m_infoBox;
 	sf::View           m_view;
-	sf::View           m_shadedRectangleView;
-	sf::RectangleShape m_shadedRectangle;
 
-	std::vector<ChatBoxMessage> m_messages;
-	Message                     m_lastMessage;
+	spss::Message               m_lastMessage;
 	spss::TextEntryBox          m_textEntry;
 	//m_clock will be used to determine when the
 	//messages in the chatbox will begin to fade
