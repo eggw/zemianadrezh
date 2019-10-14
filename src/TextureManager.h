@@ -3,9 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Singleton.h"
+#include <SPSS/Util/Singleton.h>
 
-class TextureManager : public Singleton<TextureManager> {
+class TextureManager : public spss::Singleton<TextureManager> {
   public:
 	TextureManager();
 

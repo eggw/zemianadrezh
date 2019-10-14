@@ -3,9 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Singleton.h"
+#include <SPSS/Util/Singleton.h>
 
-class FontManager : public Singleton<FontManager> {
+class FontManager : public spss::Singleton<FontManager> {
   public:
 	FontManager();
 

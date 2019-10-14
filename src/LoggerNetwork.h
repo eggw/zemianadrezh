@@ -1,9 +1,9 @@
 #ifndef LOGGERNETWORK_H_INCLUDED
 #define LOGGERNETWORK_H_INCLUDED
 
-#include "Singleton.h"
+#include <SPSS/Util/Singleton.h>
 
-class LoggerNetwork : public Singleton<LoggerNetwork> {
+class LoggerNetwork : public spss::Singleton<LoggerNetwork> {
   public:
 	LoggerNetwork();
 

@@ -4,7 +4,7 @@
 #include <memory>
 #include <SFML/Network.hpp>
 
-#include "Singleton.h"
+#include <SPSS/Util/Singleton.h>
 
 /*
 When using non-blocking TcpSockets, it is important to send
@@ -22,7 +22,7 @@ https://www.sfml-dev.org/tutorials/2.5/network-socket.php
 typedef std::shared_ptr<sf::Packet> PacketSharedPtr;
 typedef std::unique_ptr<sf::Packet> PacketUPtr;
 
-class PacketSender : public Singleton<PacketSender> {
+class PacketSender : public spss::Singleton<PacketSender> {
   public:
 	struct TCPPacketWithSocket {
 		TCPPacketWithSocket(sf::TcpSocket*        _socket,

@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "Singleton.h"
+#include <SPSS/Util/Singleton.h>
 #include "BlockData.h"
 
 /*
@@ -14,7 +14,7 @@ This way, we don't have to redundantly store countless copies of BlockData
 in every block.
 */
 
-class BlockDatabase : public Singleton<BlockDatabase> {
+class BlockDatabase : public spss::Singleton<BlockDatabase> {
   public:
 	BlockDatabase();
 	const BlockData& getData(BlockData::Type _t);

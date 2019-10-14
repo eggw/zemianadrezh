@@ -1,7 +1,7 @@
 #ifndef INPUTLOCKER_H_INCLUDED
 #define INPUTLOCKER_H_INCLUDED
 
-#include "Singleton.h"
+#include <SPSS/Util/Singleton.h>
 
 /*
 This class serves one simple but vital purpose:
@@ -11,7 +11,7 @@ player won't move around while typing a message in
 the chat box
 */
 
-class InputLocker : public Singleton<InputLocker> {
+class InputLocker : public spss::Singleton<InputLocker> {
   public:
 	InputLocker();
 
