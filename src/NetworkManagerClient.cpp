@@ -122,8 +122,8 @@ void logToConsole(int& _i) {
 	static sf::Clock clock{};
 	if (clock.getElapsedTime().asSeconds() >= 1) {
 		if (_i > 0) {
-			std::cout << "[CLIENT] UDP packets received: " << _i << std::endl;
-			std::cout << "----------------------------------" << std::endl;
+			//std::cout << "[CLIENT] UDP packets received: " << _i << std::endl;
+			//std::cout << "----------------------------------" << std::endl;
 			_i = 0;
 		}
 		clock.restart();
@@ -183,8 +183,8 @@ bool NetworkManagerClient::connectionActive() const {
 	return m_connectionActive && !invalidHost;
 }
 
-bool NetworkManagerClient::receivedMessage(Message* _ptr) {
-	bool valid{m_lastReceivedMessage.sender != ""};
+bool NetworkManagerClient::receivedMessage(spss::Message* _ptr) {
+	bool valid{m_lastReceivedMessage.title != ""};
 
 	if (_ptr != nullptr) {
 		*_ptr = m_lastReceivedMessage;
@@ -194,11 +194,11 @@ bool NetworkManagerClient::receivedMessage(Message* _ptr) {
 }
 
 void NetworkManagerClient::clearLastReceivedMessage() {
-	m_lastReceivedMessage.sender  = "";
+	m_lastReceivedMessage.title  = "";
 	m_lastReceivedMessage.content = "";
 }
 
-void NetworkManagerClient::setMessageToSend(Message _msg) {
+void NetworkManagerClient::setMessageToSend(spss::Message _msg) {
 	m_messageToSend = _msg;
 }
 
@@ -220,7 +220,7 @@ void NetworkManagerClient::sendJustJoined(sf::Packet* _p) {
 void NetworkManagerClient::sendChatMessage(sf::Packet* _p) {
 	//At this stage, m_messageToSend should have been set (usually by
 	//UserInterface)
-	*_p << m_messageToSend.sender;
+	*_p << m_messageToSend.title;
 	*_p << m_messageToSend.content;
 }
 
@@ -234,12 +234,12 @@ void NetworkManagerClient::receiveConnectionLost(sf::Packet* _p) {
 }
 
 void NetworkManagerClient::receiveChatMessage(sf::Packet* _p) {
-	std::string sender;
+	std::string title;
 	std::string message;
-	*_p >> sender;
+	*_p >> title;
 	*_p >> message;
 
-	m_lastReceivedMessage = {sender, message};
+	m_lastReceivedMessage = {title, message};
 }
 
 void NetworkManagerClient::receiveDataWorld(sf::Packet* _p) {

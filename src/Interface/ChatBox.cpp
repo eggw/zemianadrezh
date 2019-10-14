@@ -4,6 +4,8 @@
 #include "InputLocker.h"
 #include "Keybinds.h"
 
+#include <iostream>
+
 //Here are the variables we'll use to initialise the text entry box
 //in the correct position
 //Note that the height (0.25 by default) specifies that of both the
@@ -26,42 +28,31 @@ ChatBox::ChatBox(const std::string& _name)
             : m_target{nullptr},
               m_lastTargetSize{},
               m_name{_name},
+              m_infoBox{{0, 0}, {0, 0}, *FontManager::get_instance().get(FONT::ANDY)},
               m_view{},
-              m_shadedRectangleView{},
-              m_shadedRectangle{},
-              m_messages{},
               m_lastMessage{},
               m_textEntry{*FontManager::get_instance().get(FONT::ANDY),
                           CHARACTER_SIZE,
                           0},
               m_clock{},
               m_anchoredToBottom{true} {
-	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
-	snapToBottom();
+	//snapToBottom();
 	m_textEntry.setOutlineThickness(1);
 	m_textEntry.setOutlineColor(sf::Color::Black);
 }
 
-void ChatBox::appendMessage(const Message _msg) {
-	ChatBoxMessage newMessage{
-	  _msg,
-	  *FontManager::get_instance().get(FONT::ANDY),
-	  CHARACTER_SIZE};
-
-	newMessage.fitWidth(m_view.getSize().x * 0.9f);
-
-	m_messages.push_back(newMessage);
-	positionMessage(m_messages.size() - 1);
-	resetTransparency();
+void ChatBox::appendMessage(const spss::Message& _msg) {
+	m_infoBox.appendMessage(_msg);
+	//resetTransparency();
 
 	if (m_anchoredToBottom) {
-		snapToBottom();
+		//snapToBottom();
 	}
 
 	//If we get a new message and we're not anchored to the bottom, we make sure to
 	//enable the visual notification of a new unviewed message
 	else {
-		setNewMessageAlert(true);
+		//setNewMessageAlert(true);
 	}
 }
 
@@ -69,6 +60,8 @@ void ChatBox::getInput(sf::Event& _event) {
 	//In the case of the enter key, we're going to poll an event.
 	//The reason for this is that we only want to toggle this once,
 	//and not have it rapidly be called every frame.
+
+	m_infoBox.getInput(_event);
 	m_textEntry.getInput(_event);
 
 	switch (_event.type) {
@@ -82,23 +75,23 @@ void ChatBox::getInput(sf::Event& _event) {
 				m_textEntry.setActive(true);
 				InputLocker::get_instance().lock();
 			}
-			resetTransparency();
+			//resetTransparency();
 		}
 
 		else if (_event.key.code == Key::CHAT_UP) {
-			scrollUp();
+			//scrollUp();
 		}
 
 		else if (_event.key.code == Key::CHAT_DOWN) {
-			scrollDown();
+			//scrollDown();
 		}
 
 		else if (_event.key.code == Key::CHAT_TOP) {
-			snapToTop();
+			//snapToTop();
 		}
 
 		else if (_event.key.code == Key::CHAT_BOTTOM) {
-			snapToBottom();
+			//snapToBottom();
 		}
 
 		break;
@@ -122,144 +115,50 @@ void ChatBox::update() {
 		}
 	}
 
+	m_infoBox.update();
 	m_textEntry.update();
+
 	if (m_textEntry.inputComplete()) {
 		m_lastMessage = {m_name, m_textEntry.getLastString()};
 	}
 	if (m_textEntry.enteringText()) {
-		resetTransparency();
+		//resetTransparency();
 	}
-	updateShadedRectangleTransparency();
-	updateMessageTransparency();
-	updateMessageAlertTransparency();
+	//updateShadedRectangleTransparency();
+	//updateMessageTransparency();
+	//updateMessageAlertTransparency();
 }
 
 void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	m_target              = &target;
 	sf::View previousView = m_target->getView();
 
-	m_target->setView(m_shadedRectangleView);
-	m_target->draw(m_shadedRectangle, states);
-	m_target->draw(m_textEntry, states);
-
 	m_target->setView(m_view);
-	if (!messagesTransparent()) {
-		for (const auto& message : m_messages) {
-			m_target->draw(message, states);
-		}
-	}
+	//if (!messagesTransparent()) {
+		m_target->draw(m_infoBox, states);
+		m_target->draw(m_textEntry, states);
+	//}
 
 	m_target->setView(previousView);
 }
 
-bool ChatBox::completedMessage(Message* _ptr) {
-	if (m_lastMessage.sender == "" && m_lastMessage.content == "") {
+bool ChatBox::completedMessage(spss::Message* _ptr) {
+	if (m_lastMessage.title == "" && m_lastMessage.content == "") {
 		return false;
 	}
 
 	*_ptr                 = m_lastMessage;
-	m_lastMessage.sender  = "";
+	m_lastMessage.title  = "";
 	m_lastMessage.content = "";
 
 	return true;
 }
 
-//This function sets the position of a new message, at the
-//very bottom of the box
-void ChatBox::positionMessage(int _index) {
-	if (!m_messages.empty() && _index > 0) {
-		ChatBoxMessage& message = m_messages[_index];
-		sf::Vector2f    newPosition{m_messages[_index - 1].getPosition()};
-		unsigned int    lastMessageLines{
-          m_messages[_index - 1].getNumberOfLines()};
-		newPosition.y += lastMessageLines * (LINESPACING);
-		message.setPosition(newPosition);
-	}
-}
-
-void ChatBox::setTransparency(int _a) {
-	for (auto& message : m_messages) {
-		message.setTransparency(_a);
-	}
-}
-
-bool ChatBox::messagesTransparent() const {
-	//Since all messages will have the same transparency,
-	//it's enough for us to get the alpha value of the first
-	//element
-	if (!m_messages.empty()) {
-		return m_messages.front().getTransparency() == 0;
-	}
-	return true;
-}
-
-void ChatBox::updateShadedRectangleTransparency() {
-	static int rectangleAlphaValue{0};
-
-	if (m_textEntry.enteringText()) {
-		rectangleAlphaValue = 25;
-	}
-	else {
-		if (rectangleAlphaValue > 0) {
-			rectangleAlphaValue -= 1;
-		}
-	}
-
-	m_shadedRectangle.setFillColor(sf::Color(0, 0, 0, rectangleAlphaValue));
-}
-
-void ChatBox::updateMessageTransparency() {
-	static int textAlphaValue{255};
-
-	if (m_clock.getElapsedTime().asSeconds() > SECONDS_UNTIL_MESSAGES_FADE) {
-		if (textAlphaValue > 0) {
-			textAlphaValue -= 1;
-		}
-
-		setTransparency(textAlphaValue);
-	}
-	else {
-		textAlphaValue = 255;
-	}
-}
-
-void ChatBox::updateMessageAlertTransparency() {
-	static bool alphaDecreasing{true};
-	static int  alphaValue{255};
-
-	if (alphaDecreasing) {
-		alphaValue -= 5;
-		if (alphaValue <= 0) {
-			alphaDecreasing = false;
-		}
-	}
-	else {
-		alphaValue += 5;
-		if (alphaValue >= 255) {
-			alphaDecreasing = true;
-		}
-	}
-
-	sf::Color color = m_shadedRectangle.getOutlineColor();
-	color.a         = alphaValue;
-	m_shadedRectangle.setOutlineColor(color);
-}
-
-void ChatBox::setNewMessageAlert(bool _b) {
-	if (_b) {
-		m_shadedRectangle.setOutlineThickness(-1);
-	}
-	else {
-		m_shadedRectangle.setOutlineThickness(0);
-	}
-}
-
-void ChatBox::resetTransparency() {
-	m_clock.restart();
-	setTransparency(255);
-}
 
 void ChatBox::onResize(sf::Vector2u _newSize) {
+	m_view = sf::View({float(_newSize.x / 2), float(_newSize.y / 2)},
+			 {float(_newSize.x), float(_newSize.y)});
+
 	//First, we'll get the text entry height as a ratio.
 	//For example, if the window height is 1000p and the
 	//text entry is 100p, textEntryHeight will be 0.1
@@ -273,151 +172,17 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 
 	//TODO: error checking if heightWithoutTextEntry is negative.
 
-	sf::FloatRect viewRectWithoutEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * heightWithoutTextEntry};
-	sf::FloatRect viewRectWithEntryBox{0, 0, _newSize.x * VIEWPORT.width, _newSize.y * VIEWPORT.height};
+	//snapToBottom();
 
-	sf::FloatRect viewPortWithoutEntryBox{VIEWPORT.left, VIEWPORT.top, VIEWPORT.width, heightWithoutTextEntry};
-	sf::FloatRect viewPortWithEntryBox{VIEWPORT.left, VIEWPORT.top + heightWithoutTextEntry, VIEWPORT.width, VIEWPORT.height};
+	const sf::Vector2f boxPos{VIEWPORT.left * _newSize.x, VIEWPORT.top * _newSize.y};
+	const sf::Vector2f boxSize{VIEWPORT.width * _newSize.x, heightWithoutTextEntry * _newSize.y};
 
-	m_view.reset(viewRectWithoutEntryBox);
-	m_shadedRectangleView.reset(viewRectWithEntryBox);
+	m_infoBox.setPosition(boxPos);
+	m_infoBox.setSize(boxSize);
 
-	m_view.setViewport(viewPortWithoutEntryBox);
-	m_shadedRectangleView.setViewport(viewPortWithEntryBox);
+	const float textEntryWidth{m_infoBox.getSize().x};
+	const sf::Vector2f textEntryPos{boxPos.x, boxPos.y + boxSize.y};
 
-	m_shadedRectangle.setSize(m_shadedRectangleView.getSize());
-
-	for (size_t i{0}; i < m_messages.size(); i++) {
-		ChatBoxMessage& message = m_messages[i];
-		message.fitWidth(m_view.getSize().x * 0.9f);
-		positionMessage(i);
-	}
-
-	snapToBottom();
-
-	m_textEntry.setWidth(m_shadedRectangleView.getSize().x);
-	m_textEntry.setPosition(m_shadedRectangle.getPosition());
-}
-
-//This function checks if the last message is "outside" (below) the view.
-//If so, it adjusts the view's center so that the very first message is
-//on top.
-void ChatBox::snapToTop() {
-	if (!viewAtLowest()) {
-		m_anchoredToBottom = false;
-	}
-
-	resetTransparency();
-
-	if (!m_messages.empty()) {
-		ChatBoxMessage& latestMessage = m_messages.back();
-
-		float lastLineYPosition{latestMessage.getPosition().y +
-		                        (latestMessage.getNumberOfLines() - 1) *
-		                          LINESPACING};
-
-		float boundary{m_view.getSize().y - Y_BUFFERSPACE};
-
-		if (lastLineYPosition < boundary) {
-			return;
-		}
-
-		ChatBoxMessage& earliestMessage = m_messages.front();
-		sf::Vector2f    newCenter{m_view.getCenter().x,
-                               earliestMessage.getPosition().y};
-
-		newCenter.y += (m_view.getSize().y / 2);
-
-		m_view.setCenter(newCenter);
-	}
-}
-
-//This function checks if the last message is "outside" (below) the view.
-//If so, it adjusts the view's center so that it is visible.
-void ChatBox::snapToBottom() {
-	resetTransparency();
-	m_anchoredToBottom = true;
-
-	if (!m_messages.empty()) {
-		ChatBoxMessage& latestMessage = m_messages.back();
-		float           lastLineYPosition{latestMessage.getPosition().y +
-                                (latestMessage.getNumberOfLines() - 1) *
-                                  LINESPACING};
-
-		float boundary{m_view.getSize().y - Y_BUFFERSPACE};
-
-		if (lastLineYPosition < boundary) {
-			return;
-		}
-
-		sf::Vector2f newCenter{m_view.getCenter().x, lastLineYPosition};
-
-		newCenter.y -= (m_view.getSize().y / 2) - (Y_BUFFERSPACE);
-
-		m_view.setCenter(newCenter);
-	}
-
-	//We can safely assume that all new messages are "viewed" after having
-	//snapped to the bottom; therefore, we call this.
-	setNewMessageAlert(false);
-}
-
-float ChatBox::getUpperViewBound() const {
-	return 0;
-}
-float ChatBox::getLowerViewBound() const {
-	if (m_messages.empty()) {
-		return 0;
-	}
-	float lowestPoint{m_messages.back().getPosition().y};
-	lowestPoint += Y_BUFFERSPACE;
-	return lowestPoint;
-}
-
-bool ChatBox::viewAtHighest() const {
-	if (m_view.getCenter().y - m_view.getSize().y / 2 <= getUpperViewBound()) {
-		return true;
-	}
-
-	return false;
-}
-
-bool ChatBox::viewAtLowest() const {
-	if (m_view.getCenter().y + m_view.getSize().y / 2 >= getLowerViewBound()) {
-		return true;
-	}
-
-	return false;
-}
-
-void ChatBox::scrollUp() {
-	if (!viewAtLowest()) {
-		m_anchoredToBottom = false;
-	}
-
-	resetTransparency();
-
-	if (!viewAtHighest()) {
-		m_view.setCenter(m_view.getCenter().x,
-		                 m_view.getCenter().y - (LINESPACING));
-	}
-	if (viewAtHighest()) {
-		snapToTop();
-	}
-}
-
-void ChatBox::scrollDown() {
-	if (!viewAtLowest()) {
-		m_anchoredToBottom = false;
-	}
-
-	resetTransparency();
-
-	if (!viewAtLowest()) {
-		m_view.setCenter(m_view.getCenter().x,
-		                 m_view.getCenter().y + (LINESPACING));
-	}
-	if (viewAtLowest()) {
-		snapToBottom();
-	}
+	m_textEntry.setWidth(textEntryWidth);
+	m_textEntry.setPosition(textEntryPos);
 }

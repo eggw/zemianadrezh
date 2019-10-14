@@ -31,7 +31,7 @@ void UserInterface::draw(sf::RenderTarget& target,
 //network manager. If so, we'll add it to the chatbox and clear it from
 //the network manager.
 void UserInterface::handleIncomingMessages() {
-	auto ptr(std::make_unique<Message>());
+	auto ptr(std::make_unique<spss::Message>());
 
 	if (m_networkManager.receivedMessage(ptr.get())) {
 		m_chatBox.appendMessage(*ptr);
@@ -43,7 +43,7 @@ void UserInterface::handleIncomingMessages() {
 //and if so, we'll set it as our latest pending message, and order the
 //server to send a message packet.
 void UserInterface::handleOutgoingMessages() {
-	auto ptr(std::make_unique<Message>());
+	auto ptr(std::make_unique<spss::Message>());
 
 	if (m_chatBox.completedMessage(ptr.get())) {
 		m_networkManager.setMessageToSend(*ptr);

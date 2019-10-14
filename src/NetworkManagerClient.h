@@ -1,12 +1,13 @@
 #ifndef NETWORKMANAGERCLIENT_H_INCLUDED
 #define NETWORKMANAGERCLIENT_H_INCLUDED
 
+#include <SPSS/Util/Message.h>
+#include <SFML/Network.hpp>
+
 #include "FunctionBinder.h"
-#include "SFML/Network.hpp"
 
 #include "PacketTypes.h"
 #include "PacketSender.h"
-#include "Message.h"
 
 class Client;
 
@@ -28,13 +29,13 @@ class NetworkManagerClient {
 	//This function returns a bool that specifies whether new message
 	//was received over the network or not. An optional pointer can be
 	//passed that will be assigned the new message.
-	bool receivedMessage(Message* _ptr = nullptr);
+	bool receivedMessage(spss::Message* _ptr = nullptr);
 	void clearLastReceivedMessage();
 
 	//When we send a CHAT_MESSAGE packet, it sends the contents of
 	//m_messageToSend. This function can be used to set that variable
 	//(such as by the UserInterface class) before a chat message is sent.
-	void setMessageToSend(Message _msg);
+	void setMessageToSend(spss::Message _msg);
 
   private:
 	//Functions -----------------------------------
@@ -73,8 +74,8 @@ class NetworkManagerClient {
 	sf::UdpSocket m_udpSocket;
 	sf::TcpSocket m_serverConnection;
 
-	Message m_lastReceivedMessage;
-	Message m_messageToSend;
+	spss::Message m_lastReceivedMessage;
+	spss::Message m_messageToSend;
 
 	//These will basically serve as registries to which packet types
 	//(TCP and UDP) can be mapped to functions. The functions can be
