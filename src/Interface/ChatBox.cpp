@@ -12,7 +12,7 @@
 //ChatBox and m_textEntry combined.
 //////////////////////////////////////////////////////////////////////////////////////////////
 const sf::FloatRect    VIEWPORT{0, 0.75f, 0.3f, 0.25f};
-constexpr float        SECONDS_UNTIL_MESSAGES_FADE{5.0f};
+constexpr float        SECONDS_UNTIL_MESSAGES_DISAPPEAR{7.0f};
 constexpr unsigned int CHARACTER_SIZE{20};
 
 const float LINESPACING =
@@ -34,26 +34,19 @@ ChatBox::ChatBox(const std::string& _name)
               m_textEntry{*FontManager::get_instance().get(FONT::ANDY),
                           CHARACTER_SIZE,
                           0},
-              m_clock{},
-              m_anchoredToBottom{true} {
-	//snapToBottom();
+              m_clock{} {
+	m_infoBox.setAnchor(spss::Scrollbar::Anchor::SOFT);
 	m_textEntry.setOutlineThickness(1);
 	m_textEntry.setOutlineColor(sf::Color::Black);
 }
 
 void ChatBox::appendMessage(const spss::Message& _msg) {
+	m_clock.restart();
 	m_infoBox.appendMessage(_msg);
-	//resetTransparency();
-
-	if (m_anchoredToBottom) {
-		//snapToBottom();
-	}
 
 	//If we get a new message and we're not anchored to the bottom, we make sure to
 	//enable the visual notification of a new unviewed message
-	else {
-		//setNewMessageAlert(true);
-	}
+	//setNewMessageAlert(true);
 }
 
 void ChatBox::getInput(sf::Event& _event) {
@@ -76,22 +69,6 @@ void ChatBox::getInput(sf::Event& _event) {
 				InputLocker::get_instance().lock();
 			}
 			//resetTransparency();
-		}
-
-		else if (_event.key.code == Key::CHAT_UP) {
-			//scrollUp();
-		}
-
-		else if (_event.key.code == Key::CHAT_DOWN) {
-			//scrollDown();
-		}
-
-		else if (_event.key.code == Key::CHAT_TOP) {
-			//snapToTop();
-		}
-
-		else if (_event.key.code == Key::CHAT_BOTTOM) {
-			//snapToBottom();
 		}
 
 		break;
@@ -122,6 +99,7 @@ void ChatBox::update() {
 		m_lastMessage = {m_name, m_textEntry.getLastString()};
 	}
 	if (m_textEntry.enteringText()) {
+		m_clock.restart();
 		//resetTransparency();
 	}
 	//updateShadedRectangleTransparency();
@@ -134,10 +112,10 @@ void ChatBox::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	sf::View previousView = m_target->getView();
 
 	m_target->setView(m_view);
-	//if (!messagesTransparent()) {
+	if (m_clock.getElapsedTime().asSeconds() < SECONDS_UNTIL_MESSAGES_DISAPPEAR) {
 		m_target->draw(m_infoBox, states);
 		m_target->draw(m_textEntry, states);
-	//}
+	}
 
 	m_target->setView(previousView);
 }
@@ -171,8 +149,6 @@ void ChatBox::onResize(sf::Vector2u _newSize) {
 	float heightWithoutTextEntry{VIEWPORT.height - textEntryHeight};
 
 	//TODO: error checking if heightWithoutTextEntry is negative.
-
-	//snapToBottom();
 
 	const sf::Vector2f boxPos{VIEWPORT.left * _newSize.x, VIEWPORT.top * _newSize.y};
 	const sf::Vector2f boxSize{VIEWPORT.width * _newSize.x, heightWithoutTextEntry * _newSize.y};

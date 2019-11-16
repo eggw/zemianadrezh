@@ -39,8 +39,6 @@ class ChatBox : public sf::Drawable {
 	//messages in the chatbox will begin to fade
 	//away.
 	sf::Clock m_clock;
-
-	bool m_anchoredToBottom;
 	//---------------------------------------------
 };
 

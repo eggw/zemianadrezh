@@ -4,7 +4,7 @@
 #include "Program.h"
 
 int main(int argc, char** argv) {
-	sf::RenderWindow window{sf::VideoMode(800, 600), "zemianadrezh"};
+	sf::RenderWindow window{sf::VideoMode(1600, 900), "zemianadrezh"};
 	window.setFramerateLimit(144);
 	//doctest related setup
 	//For more information, see:
