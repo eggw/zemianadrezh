@@ -61,7 +61,7 @@ void ProgramState_Play::update(int _timeslice) {
 	}
 }
 
-void ProgramState_Play::draw() {
+void ProgramState_Play::draw() const {
 	m_program.m_window.draw(m_client);
 }
 

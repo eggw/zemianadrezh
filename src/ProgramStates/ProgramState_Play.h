@@ -14,7 +14,7 @@ class ProgramState_Play : public spss::State {
 
 	void getInput(sf::Event& _event);
 	void update(int _timeslice);
-	void draw();
+	void draw() const;
 
 	bool clientConnected() const;
 

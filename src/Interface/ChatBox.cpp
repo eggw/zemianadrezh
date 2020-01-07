@@ -31,9 +31,10 @@ ChatBox::ChatBox(const std::string& _name)
               m_shadedRectangle{},
               m_messages{},
               m_lastMessage{},
-              m_textEntry{*FontManager::get_instance().get(FONT::ANDY),
-                          CHARACTER_SIZE,
-                          0},
+              m_textEntry{0,
+						  {0.F, 0.F},
+              	          *FontManager::get_instance().get(FONT::ANDY),
+						  CHARACTER_SIZE},
               m_clock{},
               m_anchoredToBottom{true} {
 	m_shadedRectangle.setOutlineColor(sf::Color(255, 165, 0));
